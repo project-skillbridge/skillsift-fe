@@ -221,8 +221,16 @@ async function refreshAuthCookies(): Promise<string | undefined> {
   return refreshRequest;
 }
 
+/**
+ * In the browser, talk to the same-origin `/backend` rewrite (see
+ * next.config.ts) so the API's `SameSite=Strict` cookies are stored and sent.
+ * On the server there is no cookie jar, so call the API directly.
+ */
 const baseConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "",
+  baseURL:
+    typeof window === "undefined"
+      ? (process.env.NEXT_PUBLIC_API_URL ?? "")
+      : "/backend",
   /** Send cookies for refresh / logout / cookie-based session with the API. */
   withCredentials: true,
   /**
