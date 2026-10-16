@@ -8,12 +8,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "api.staging.skillbridge.hng14.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "api.skillbridge.hng14.com",
+        hostname: "api.skillsift.online",
         pathname: "/uploads/**",
       },
       {
