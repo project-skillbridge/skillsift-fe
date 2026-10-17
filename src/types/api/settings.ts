@@ -63,9 +63,7 @@ export type TalentSettingsAccount = {
 };
 
 export type TalentAvailabilityStatus =
-  | "actively_looking"
-  | "open_to_opportunities"
-  | "not_looking";
+  "actively_looking" | "open_to_opportunities" | "not_looking";
 
 export type UpdateTalentAvailabilityInput = {
   availabilityStatus: TalentAvailabilityStatus;

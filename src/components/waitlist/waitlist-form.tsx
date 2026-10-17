@@ -57,7 +57,7 @@ const WaitlistForm = ({ onCancel, onSubmit }: Props) => {
     >
       <fieldset className="flex flex-col gap-1.25" disabled={isPending}>
         <legend className="text-base font-semibold leading-5 tracking-[0.017em] text-[#151515]">
-          I am joining Skillbridge as
+          I am joining SkillSift as
         </legend>
         <div className="mt-1.25 flex gap-1.25">
           <AudienceOption
@@ -124,7 +124,7 @@ const WaitlistForm = ({ onCancel, onSubmit }: Props) => {
         </SelectInput>
       </Field>
       <p className="text-xs font-normal leading-3.75 tracking-[0.017em] text-[#64748B] sm:text-base sm:font-semibold sm:leading-5 sm:text-center">
-        By joining, you agree to Skillbridge data{" "}
+        By joining, you agree to SkillSift data{" "}
         <Link href={"terms-of-use"} className="font-semibold underline">
           Terms of Use
         </Link>{" "}

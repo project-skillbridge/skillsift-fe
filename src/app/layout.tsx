@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "SkillBridge";
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "SkillSift";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",

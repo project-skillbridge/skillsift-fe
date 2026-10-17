@@ -8,7 +8,7 @@ const SiteHeader = () => {
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/assets/logo/logo-with-text.svg"
-            alt="SkillBridge"
+            alt="SkillSift"
             width={168}
             height={56}
             className="h-10 w-auto sm:h-14"

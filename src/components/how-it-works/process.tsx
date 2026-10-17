@@ -19,7 +19,7 @@ const processSteps = [
     eyebrow: "Verification",
     title: "Get Verified",
     description:
-      "SkillBridge evaluates overall performance and assigns a standardized employability score employers can trust and compare easily.",
+      "SkillSift evaluates overall performance and assigns a standardized employability score employers can trust and compare easily.",
     img: "/assets/step-verification.svg",
     accent: "bg-violet-200",
     reverse: true,

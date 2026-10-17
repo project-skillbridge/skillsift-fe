@@ -13,7 +13,7 @@ export function EmployerDashboardHero() {
             Hire with confidence, verify skills before interviews.
           </h2>
           <p className="text-base leading-normal tracking-[0.017em] text-[#081536]">
-            SkillBridge helps you discover pre-assisted talent, create custom
+            SkillSift helps you discover pre-assisted talent, create custom
             assessments, and shortlist talents who are ready to contribute from
             day one
           </p>

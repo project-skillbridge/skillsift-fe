@@ -16,9 +16,7 @@ export type CredentialSignInParams = {
 };
 
 export type CredentialSignInFromAuthResponse =
-  | LoginResponseData
-  | VerifyEmailResponseData
-  | GoogleVerifyCodeResponseData;
+  LoginResponseData | VerifyEmailResponseData | GoogleVerifyCodeResponseData;
 
 export type GoogleSignInResult = {
   result: SignInResponse | undefined;

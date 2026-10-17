@@ -58,7 +58,7 @@ export function EmployerDashboardActions() {
   return (
     <section className="rounded-2xl bg-[#f2f2f2] p-4 sm:p-6">
       <h2 className="text-xl font-semibold leading-normal text-[#151515]">
-        What can you do on SkillBridge
+        What can you do on SkillSift
       </h2>
 
       <div className="mt-6 grid grid-cols-1 gap-2 md:grid-cols-3">

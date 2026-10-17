@@ -54,7 +54,7 @@ export const featureCards = [
     role: "Product Designer",
     rating: 4.8,
     description:
-      "I've used several job platforms before, but SkillBridge stood out because employers could see my verified skills rather than just my resume. I landed a role within a few weeks of joining.",
+      "I've used several job platforms before, but SkillSift stood out because employers could see my verified skills rather than just my resume. I landed a role within a few weeks of joining.",
     accent: "#A5C8D8",
     img: "/assets/personalized_guidance.svg",
   },
@@ -63,7 +63,7 @@ export const featureCards = [
     role: "Founder",
     rating: 4.7,
     description:
-      "The quality of candidates we received through SkillBridge exceeded our expectations. Having access to skill-based evaluations gave us more confidence in our hiring decisions.",
+      "The quality of candidates we received through SkillSift exceeded our expectations. Having access to skill-based evaluations gave us more confidence in our hiring decisions.",
     accent: "#CBB0EB",
     img: "/assets/verified_profile.svg",
   },
@@ -71,20 +71,20 @@ export const featureCards = [
 
 export const faqs = [
   {
-    q: "What is SkillBridge?",
-    a: "SkillBridge is a career growth platform that helps you learn the right skills, prove your work with verified data, and get discovered by employers.",
+    q: "What is SkillSift?",
+    a: "SkillSift is a career growth platform that helps you learn the right skills, prove your work with verified data, and get discovered by employers.",
   },
   {
-    q: "How does SkillBridge verify talent?",
-    a: "SkillBridge verifies talent through completed work, skill signals, and profile data that helps employers understand readiness.",
+    q: "How does SkillSift verify talent?",
+    a: "SkillSift verifies talent through completed work, skill signals, and profile data that helps employers understand readiness.",
   },
   {
-    q: "Is SkillBridge free for candidates?",
-    a: "Candidates can create a profile and start building proof of skill on SkillBridge.",
+    q: "Is SkillSift free for candidates?",
+    a: "Candidates can create a profile and start building proof of skill on SkillSift.",
   },
   {
-    q: "Who can use SkillBridge?",
-    a: "SkillBridge is for candidates building career proof and employers looking for credible, job-ready talent.",
+    q: "Who can use SkillSift?",
+    a: "SkillSift is for candidates building career proof and employers looking for credible, job-ready talent.",
   },
   {
     q: "What happens if I'm not job-ready yet?",
@@ -115,7 +115,7 @@ export const hiringSteps = [
     id: "access-talent",
     title: "Access Verified Talent",
     description:
-      "Browse candidates who have already completed SkillBridge's assessment and verification process.",
+      "Browse candidates who have already completed SkillSift's assessment and verification process.",
     img: "/assets/hiring-preview-1.svg",
     accent: "#CBEAFE",
     featured: false,

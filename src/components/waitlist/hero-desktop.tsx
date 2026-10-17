@@ -18,7 +18,7 @@ const HeroDesktop = ({ onJoinClick }: HeroDesktopProps) => {
           Find talent. Get hired
         </h1>
         <p className="mx-auto mt-6 max-w-123.25 text-[#151515] text-base leading-[160%]">
-          SkillBridge helps candidate prove their skills and connects them with
+          SkillSift helps candidate prove their skills and connects them with
           employers who needs them.
         </p>
         <div className="mt-8 flex justify-center">

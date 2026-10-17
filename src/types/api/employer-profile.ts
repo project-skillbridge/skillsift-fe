@@ -17,9 +17,7 @@ export type RestrictedFieldMeta = {
 };
 
 export type EmployerRestrictedFieldKey =
-  | "companyName"
-  | "companyWebsite"
-  | "linkedinCompanyPageUrl";
+  "companyName" | "companyWebsite" | "linkedinCompanyPageUrl";
 
 export type EmployerRestrictedFields = Partial<
   Record<EmployerRestrictedFieldKey, RestrictedFieldMeta>
@@ -90,9 +88,7 @@ export type UpdateEmployerProfileInput = {
 };
 
 export type EmployerVerificationCriterion =
-  | "email_verified"
-  | "website_resolvable"
-  | "linkedin_provided";
+  "email_verified" | "website_resolvable" | "linkedin_provided";
 
 export type RawEmployerVerificationStatusResponseData = {
   verified: boolean;

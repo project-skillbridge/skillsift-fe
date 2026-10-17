@@ -78,9 +78,8 @@ export function RateHireDialog({
         <DialogHeader>
           <DialogTitle>How did the hire go?</DialogTitle>
           <DialogDescription>
-            Your rating of {candidateName} helps other employers trust
-            SkillBridge scores, and helps {candidateName} build their track
-            record.
+            Your rating of {candidateName} helps other employers trust SkillSift
+            scores, and helps {candidateName} build their track record.
           </DialogDescription>
         </DialogHeader>
 

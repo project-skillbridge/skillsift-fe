@@ -43,7 +43,7 @@ function AuthNavigationLoading() {
           <div className="absolute inset-2 rounded-full bg-background flex items-center justify-center shadow-lg">
             <Image
               src="/assets/logo/logo.svg"
-              alt="SkillBridge Logo"
+              alt="SkillSift Logo"
               width={48}
               height={48}
               className="h-12 w-12"
