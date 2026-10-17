@@ -7,7 +7,9 @@ import {
   type AssessmentPreview,
   type AssessmentSlug,
 } from "@/constants/assessment-previews";
+import { useSkillAvailability } from "@/hooks/api/use-assessment";
 import { useDashboardHome } from "@/hooks/api/use-dashboard";
+import { ASSESSMENT_PREPARING_MESSAGE } from "@/lib/assessment-start";
 
 type AssessmentPreviewPageProps = {
   assessmentName: AssessmentSlug;
@@ -55,6 +57,9 @@ function withDynamicAttempts(
 function AssessmentPreviewPage({ assessmentName }: AssessmentPreviewPageProps) {
   const base = getAssessmentPreview(assessmentName);
   const { data: dashboardHome } = useDashboardHome();
+  const { data: skillAvailability } = useSkillAvailability(
+    assessmentName === "skill",
+  );
   const assessment = withDynamicAttempts(base, assessmentName, dashboardHome);
 
   const skillExhausted =
@@ -76,12 +81,19 @@ function AssessmentPreviewPage({ assessmentName }: AssessmentPreviewPageProps) {
   const advancedRetakeBlocked = advancedRetake?.ctaEnabled === false;
 
   const startHref = skillExhausted ? "/t/assessments/advanced" : undefined;
-  const startLabel = skillExhausted
-    ? "Continue to advanced"
-    : skillIsRetake || advancedRetake != null
-      ? "Retake"
-      : undefined;
-  const startDisabled = advancedRetakeBlocked;
+  // No unseen questions left yet: say so up front instead of failing after Start.
+  const skillPreparing =
+    assessmentName === "skill" &&
+    !skillExhausted &&
+    skillAvailability?.can_start === false;
+  const startLabel = skillPreparing
+    ? "Available soon"
+    : skillExhausted
+      ? "Continue to advanced"
+      : skillIsRetake || advancedRetake != null
+        ? "Retake"
+        : undefined;
+  const startDisabled = advancedRetakeBlocked || skillPreparing;
 
   return (
     <div className="flex min-h-[calc(100dvh-72px)] items-start justify-center px-4 pt-11 pb-14 sm:pt-14 lg:pt-16 2xl:pt-20">
@@ -92,6 +104,14 @@ function AssessmentPreviewPage({ assessmentName }: AssessmentPreviewPageProps) {
           startLabel={startLabel}
           startDisabled={startDisabled}
         />
+        {skillPreparing && (
+          <p
+            role="status"
+            className="mt-4 text-center font-sans text-sm text-muted-foreground"
+          >
+            {ASSESSMENT_PREPARING_MESSAGE}
+          </p>
+        )}
       </div>
     </div>
   );

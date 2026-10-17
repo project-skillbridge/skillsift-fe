@@ -35,9 +35,7 @@ export type PersonalAssessmentSessionResponseData = {
 // ─── Skill Assessment ─────────────────────────────────────────────────────────
 
 export type SkillAssessmentQuestionType =
-  | "single_pick"
-  | "multi_pick"
-  | "required_text";
+  "single_pick" | "multi_pick" | "required_text";
 
 /** Raw question shape returned by the skill assessment API. */
 export type SkillAssessmentApiQuestion = {
@@ -128,15 +126,10 @@ export type SkillAssessmentSubmitResponseData = {
 
 /** Question grouping / rendering block. */
 export type AdvancedAssessmentQuestionBlock =
-  | "mcq"
-  | "short_text"
-  | "long_text";
+  "mcq" | "short_text" | "long_text";
 
 export type AdvancedAssessmentQuestionType =
-  | "single_pick"
-  | "multi_pick"
-  | "required_text"
-  | "optional_text";
+  "single_pick" | "multi_pick" | "required_text" | "optional_text";
 
 export type AdvancedAssessmentSlotType = "work_task" | "situational";
 
@@ -225,4 +218,10 @@ export type AssessmentFlagInput = {
 export type AssessmentFlagResponseData = {
   message?: string;
   sessionVoided?: boolean;
+};
+
+export type SkillAssessmentAvailabilityData = {
+  /** False while a fresh set of questions is still being prepared. */
+  can_start: boolean;
+  waitlisted: boolean;
 };

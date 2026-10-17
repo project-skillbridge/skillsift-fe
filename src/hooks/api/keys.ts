@@ -22,6 +22,8 @@ export const assessmentKeys = {
   personalSession: () =>
     [...assessmentKeys.all, "personal", "session"] as const,
   session: (id: string) => [...assessmentKeys.all, "session", id] as const,
+  skillAvailability: () =>
+    [...assessmentKeys.all, "skill", "availability"] as const,
 };
 
 export const dashboardKeys = {

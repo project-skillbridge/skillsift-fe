@@ -1,3 +1,21 @@
+import { ApiError } from "@/lib/api";
+
+export const ASSESSMENT_PREPARING_TITLE =
+  "Your next assessment is being prepared";
+export const ASSESSMENT_PREPARING_MESSAGE =
+  "We are putting together a fresh set of questions for you, so you never see the same question twice. We will notify you as soon as it is ready.";
+
+/** The API answers 503 ASSESSMENT_PREPARING when no unseen questions are left. */
+export function isAssessmentPreparingError(error: unknown): boolean {
+  if (!(error instanceof ApiError) || error.status !== 503) return false;
+  const data = error.data;
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    (data as { error?: unknown }).error === "ASSESSMENT_PREPARING"
+  );
+}
+
 export const ASSESSMENT_START_TIMEOUT_MS = 90_000;
 
 export class AssessmentStartTimeoutError extends Error {

@@ -105,6 +105,7 @@ export type {
   PersonalAssessmentSubmitResponseData,
   SkillAssessmentApiQuestion,
   SkillAssessmentQuestionType,
+  SkillAssessmentAvailabilityData,
   SkillAssessmentStartResponseData,
   SkillAssessmentSubmitAnswer,
   SkillAssessmentSubmitInput,

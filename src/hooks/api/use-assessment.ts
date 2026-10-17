@@ -6,6 +6,7 @@ import {
   flagAssessmentEvent,
   getAssessmentSession,
   getPersonalAssessmentSession,
+  getSkillAssessmentAvailability,
   resolveAdvancedAssessmentSession,
   startAdvancedAssessment,
   startPersonalAssessment,
@@ -49,6 +50,16 @@ export function useSubmitPersonalAssessment() {
 }
 
 // ─── Skill Assessment ─────────────────────────────────────────────────────────
+
+/** Whether a skill assessment can start now, so the UI can say "available soon". */
+export function useSkillAvailability(enabled = true) {
+  return useQuery({
+    queryKey: assessmentKeys.skillAvailability(),
+    queryFn: () => getSkillAssessmentAvailability(),
+    enabled,
+    staleTime: 60_000,
+  });
+}
 
 export function useStartSkillAssessment() {
   return useMutation({

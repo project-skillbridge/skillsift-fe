@@ -12,15 +12,18 @@ import {
   useStartSkillAssessment,
   useSubmitSkillAssessment,
 } from "@/hooks/api";
-import { dashboardKeys } from "@/hooks/api/keys";
+import { assessmentKeys, dashboardKeys } from "@/hooks/api/keys";
 import { useFlagAssessmentEvent } from "@/hooks/api/use-assessment";
 import {
   mapSkillQuestions,
   toSkillSubmitAnswers,
 } from "@/lib/assessment-questions";
 import {
+  ASSESSMENT_PREPARING_MESSAGE,
+  ASSESSMENT_PREPARING_TITLE,
   ASSESSMENT_START_FAILED_MESSAGE,
   ASSESSMENT_START_TIMEOUT_MESSAGE,
+  isAssessmentPreparingError,
   isAssessmentStartTimeoutError,
   withAssessmentStartTimeout,
 } from "@/lib/assessment-start";
@@ -35,7 +38,8 @@ import type {
   SkillAssessmentStartResponseData,
 } from "@/types/api";
 
-type SkillStartState = "loading" | "ready" | "unavailable" | "failed";
+type SkillStartState =
+  "loading" | "ready" | "preparing" | "unavailable" | "failed";
 
 const SKILL_PREVIEW_PATH = "/t/assessments/skill";
 
@@ -124,7 +128,12 @@ export function SkillAssessmentFlow() {
           return;
         }
 
-        if (isServiceUnavailableError(e)) {
+        if (isAssessmentPreparingError(e)) {
+          void queryClient.invalidateQueries({
+            queryKey: assessmentKeys.skillAvailability(),
+          });
+          setStartState("preparing");
+        } else if (isServiceUnavailableError(e)) {
           setStartState("unavailable");
         } else {
           void queryClient.invalidateQueries({
@@ -149,6 +158,17 @@ export function SkillAssessmentFlow() {
     () => mapSkillQuestions(apiQuestions),
     [apiQuestions],
   );
+
+  if (startState === "preparing") {
+    return (
+      <AssessmentStartBlocked
+        title={ASSESSMENT_PREPARING_TITLE}
+        message={ASSESSMENT_PREPARING_MESSAGE}
+        backHref={SKILL_PREVIEW_PATH}
+        backLabel="Back to assessments"
+      />
+    );
+  }
 
   if (startState === "unavailable") {
     return (

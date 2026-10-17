@@ -11,6 +11,7 @@ import type {
   PersonalAssessmentSessionResponseData,
   PersonalAssessmentSubmitInput,
   PersonalAssessmentSubmitResponseData,
+  SkillAssessmentAvailabilityData,
   SkillAssessmentStartResponseData,
   SkillAssessmentSubmitInput,
   SkillAssessmentSubmitResponseData,
@@ -46,6 +47,13 @@ export async function submitPersonalAssessment(
 export async function startSkillAssessment(): Promise<SkillAssessmentStartResponseData> {
   const res = await authApi.post<ApiEnvelope<SkillAssessmentStartResponseData>>(
     "/talent/assessment/skill/start",
+  );
+  return unwrapData(res);
+}
+
+export async function getSkillAssessmentAvailability(): Promise<SkillAssessmentAvailabilityData> {
+  const res = await authApi.get<ApiEnvelope<SkillAssessmentAvailabilityData>>(
+    "/talent/assessment/skill/availability",
   );
   return unwrapData(res);
 }
