@@ -127,7 +127,7 @@ export function EmployerTalentsPage() {
       <TalentsHeroBanner total={data?.total} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="font-sans text-lg font-semibold text-[#0B1220]">
+        <h2 className="font-sans text-lg font-semibold text-[#0D2025]">
           Talent list
         </h2>
         <TalentsViewToggle view={view} onChange={setView} />

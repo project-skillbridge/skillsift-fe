@@ -31,7 +31,7 @@ function ActivityCard({ item }: { item: EmployerRecentActivityItem }) {
           <Image src={meta.icon} alt="" width={17} height={17} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <p className="font-sans text-sm font-semibold text-[#0B1220]">
+          <p className="font-sans text-sm font-semibold text-[#0D2025]">
             {item.title}
           </p>
           {item.description ? (
@@ -54,12 +54,12 @@ export function EmployerRecentActivity({ items }: EmployerRecentActivityProps) {
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-[#E4E7EC] bg-white p-5">
       <div className="flex items-center justify-between">
-        <h2 className="font-sans text-lg font-semibold text-[#0B1220]">
+        <h2 className="font-sans text-lg font-semibold text-[#0D2025]">
           Recent activity
         </h2>
         <Link
           href="/e/notifications"
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#475467] hover:text-[#0B1220]"
+          className="inline-flex items-center gap-1 text-sm font-medium text-[#475467] hover:text-[#0D2025]"
         >
           See all
           <ArrowRight className="size-4" />

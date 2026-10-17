@@ -35,14 +35,14 @@ export function AssessmentStatCards({
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <StatTile
         icon={ClipboardList}
-        tone="blue"
+        tone="green"
         label="Assessments"
         value={String(total)}
         hint="Created by you"
       />
       <StatTile
         icon={Radio}
-        tone="green"
+        tone="sand"
         label="Live now"
         value={String(active)}
         hint="Open to candidates"
@@ -56,7 +56,7 @@ export function AssessmentStatCards({
       />
       <StatTile
         icon={Send}
-        tone="amber"
+        tone="grey"
         label="Direct invites"
         value={String(candidates)}
         hint="SkillSift talent you invited"

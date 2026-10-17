@@ -12,7 +12,7 @@ export function PageHeader({ title, description, actions }: Props) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-1.5">
-        <h1 className="font-sans text-2xl font-bold tracking-tight text-[#0B1220] sm:text-3xl">
+        <h1 className="font-sans text-2xl font-bold tracking-tight text-[#0D2025] sm:text-3xl">
           {title}
         </h1>
         {description ? (

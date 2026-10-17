@@ -21,7 +21,7 @@ type TalentCardProps = {
 
 const shortlistButtonBase = cn(
   "shrink-0 rounded-lg border border-[#D0D5DD] bg-white transition-colors",
-  "text-[#0B1220] hover:bg-[#F2F4F7] disabled:cursor-not-allowed",
+  "text-[#0D2025] hover:bg-[#F2F4F7] disabled:cursor-not-allowed",
 );
 const shortlistedStyle =
   "border-[#A7F3D0] bg-[#ECFDF5] text-[#065F46] hover:bg-[#ECFDF5]";

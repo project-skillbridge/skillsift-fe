@@ -52,7 +52,7 @@ const columns: ColumnDef<EmployerAssessmentItem>[] = [
         href={`/e/assessments/${row.original.id}`}
         className="flex items-center gap-3"
       >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#0B1220] text-white">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#0D2025] text-white">
           <FlaskConical className="size-4" aria-hidden />
         </span>
         <span className="font-sans text-sm font-medium text-[#151515] hover:underline">

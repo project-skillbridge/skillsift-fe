@@ -30,7 +30,7 @@ export function AssessmentsPageHeader() {
           <Button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="h-11 gap-1.5 rounded-xl bg-[#0B1220] px-5 font-semibold text-white hover:bg-[#0B1220]/90"
+            className="h-11 gap-1.5 rounded-xl bg-[#0D2025] px-5 font-semibold text-white hover:bg-[#0D2025]/90"
           >
             <Plus className="size-4" aria-hidden />
             Create assessment

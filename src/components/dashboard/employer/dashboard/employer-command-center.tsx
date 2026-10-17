@@ -43,7 +43,7 @@ function greeting(): string {
 
 type Attention = {
   id: string;
-  tone: "rose" | "amber" | "blue";
+  tone: "rose" | "amber" | "green";
   title: string;
   body: string;
   href: string;
@@ -53,7 +53,7 @@ type Attention = {
 const ATTENTION_STYLES = {
   rose: "bg-[#FDE2E7] text-[#BE123C]",
   amber: "bg-[#FFF0D1] text-[#B45309]",
-  blue: "bg-[#E0EDFF] text-[#1D4FD8]",
+  green: "bg-[#D3E6DF] text-[#0E7A55]",
 } as const;
 
 /** The returning employer's home: where they stand, what came in, what needs them. */
@@ -105,7 +105,7 @@ export function EmployerCommandCenter({
   if (quiet) {
     attention.push({
       id: "quiet",
-      tone: "blue",
+      tone: "green",
       title: `Nobody has taken ${quiet.title} yet`,
       body: "Share the link in your job post or send invites by email.",
       href: `/e/assessments/${quiet.id}`,
@@ -115,7 +115,7 @@ export function EmployerCommandCenter({
   if (profileCompletion != null && profileCompletion < 100) {
     attention.push({
       id: "profile",
-      tone: "blue",
+      tone: "green",
       title: `Your company profile is ${profileCompletion}% complete`,
       body: "A complete profile helps talent trust your invites.",
       href: "/e/settings",
@@ -125,18 +125,10 @@ export function EmployerCommandCenter({
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="relative overflow-hidden rounded-3xl bg-[#0B1220] p-6 text-white sm:p-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-[#19A878]/25 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-[#3B82F6]/20 blur-3xl"
-        />
+      <section className="relative overflow-hidden rounded-2xl bg-[#dfe4e2] p-6 text-[#151515] sm:p-8">
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex max-w-xl flex-col gap-4">
-            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
+            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-medium text-[#151515]">
               <Sparkles className="size-3.5" aria-hidden />
               Hiring overview
             </p>
@@ -144,7 +136,7 @@ export function EmployerCommandCenter({
               {greeting()}
               {firstName ? `, ${firstName}` : ""}
             </h1>
-            <p className="text-base text-white/70">
+            <p className="text-base text-[#3d3d3d]">
               {stats && stats.assessed > 0
                 ? `${stats.assessed} candidate${stats.assessed === 1 ? "" : "s"} completed your assessments in the last 30 days.`
                 : "Send your first assessment and see how candidates really perform."}
@@ -152,7 +144,7 @@ export function EmployerCommandCenter({
             <div className="flex flex-wrap gap-3 pt-1">
               <Button
                 asChild
-                className="h-11 rounded-xl bg-white px-5 font-semibold text-[#0B1220] hover:bg-white/90"
+                className="h-11 rounded-lg bg-primary px-5 font-semibold text-white hover:bg-[#05060f]/90"
               >
                 <Link href="/e/assessments">
                   <Plus className="size-4" aria-hidden />
@@ -162,7 +154,7 @@ export function EmployerCommandCenter({
               <Button
                 asChild
                 variant="outline"
-                className="h-11 rounded-xl border-white/25 bg-transparent px-5 font-semibold text-white hover:bg-white/10 hover:text-white"
+                className="h-11 rounded-lg border-[#05060f] bg-white px-5 font-semibold text-[#151515] hover:bg-white/60"
               >
                 <Link href="/e/talents">Browse verified talent</Link>
               </Button>
@@ -171,23 +163,25 @@ export function EmployerCommandCenter({
 
           <Link
             href="/e/billing"
-            className="flex items-center gap-5 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10"
+            className="flex items-center gap-5 rounded-xl border border-[#D9D9D9] bg-white p-5 transition-colors hover:bg-white/70"
           >
             {invitesLeft == null ? (
-              <Skeleton className="size-24 rounded-full bg-white/10" />
+              <Skeleton className="size-24 rounded-full" />
             ) : (
               <ProgressRing
                 fraction={invitesTotal ? invitesLeft / invitesTotal : 0}
+                trackClassName="stroke-[#E4E7EC]"
+                barClassName="stroke-[#009f6a]"
               >
                 <span className="text-2xl font-bold">{invitesLeft}</span>
               </ProgressRing>
             )}
             <div className="flex flex-col gap-1">
-              <p className="text-sm text-white/60">Invites left</p>
+              <p className="text-sm text-[#667085]">Invites left</p>
               <p className="text-base font-semibold">
                 {billing.data?.planName ?? "Your plan"}
               </p>
-              <span className="inline-flex items-center gap-1 text-sm font-medium text-[#6EE7B7]">
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#008458]">
                 Manage plan
                 <ArrowRight className="size-3.5" aria-hidden />
               </span>
@@ -198,27 +192,31 @@ export function EmployerCommandCenter({
 
       <section
         aria-label="Last 30 days"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        className="grid gap-4 rounded-2xl bg-[#F2F2F2] p-4 sm:grid-cols-2"
       >
         {overview.isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-36 rounded-2xl" />
+            <Skeleton key={i} className="h-44 rounded-[10px]" />
           ))
         ) : (
           <>
             <StatTile
               icon={Users}
-              tone="blue"
+              tone="green"
               label="Candidates assessed"
               value={String(stats?.assessed ?? 0)}
-              hint="Last 30 days"
+              hint="Completed one of your assessments in the last 30 days."
+              linkLabel="View assessments"
+              linkHref="/e/assessments"
             />
             <StatTile
               icon={CheckCircle2}
-              tone="green"
+              tone="sand"
               label="Pass rate"
               value={stats?.passRate == null ? "-" : `${stats.passRate}%`}
-              hint="Scored at or above the pass mark"
+              hint="Scored at or above the pass mark."
+              linkLabel="See results"
+              linkHref="/e/assessments"
             />
             <StatTile
               icon={Gauge}
@@ -227,18 +225,22 @@ export function EmployerCommandCenter({
               value={
                 stats?.averageScore == null ? "-" : `${stats.averageScore}%`
               }
-              hint="Across everyone who finished"
+              hint="Across everyone who finished."
+              linkLabel="See results"
+              linkHref="/e/assessments"
             />
             <StatTile
               icon={ShieldAlert}
-              tone={(stats?.needsReview ?? 0) > 0 ? "rose" : "green"}
+              tone={(stats?.needsReview ?? 0) > 0 ? "rose" : "grey"}
               label="Needs a closer look"
               value={String(stats?.needsReview ?? 0)}
               hint={
                 (stats?.needsReview ?? 0) > 0
-                  ? "Integrity signals to check"
-                  : "No integrity concerns"
+                  ? "Integrity signals worth checking."
+                  : "No integrity concerns."
               }
+              linkLabel="Review results"
+              linkHref="/e/assessments"
             />
           </>
         )}
@@ -247,12 +249,12 @@ export function EmployerCommandCenter({
       <div className="grid gap-6 lg:grid-cols-5">
         <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5 lg:col-span-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-sans text-lg font-semibold text-[#0B1220]">
+            <h2 className="font-sans text-lg font-semibold text-[#0D2025]">
               Latest results
             </h2>
             <Link
               href="/e/assessments"
-              className="inline-flex items-center gap-1 text-sm font-medium text-[#475467] hover:text-[#0B1220]"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[#475467] hover:text-[#0D2025]"
             >
               All assessments
               <ArrowRight className="size-3.5" aria-hidden />
@@ -262,10 +264,10 @@ export function EmployerCommandCenter({
             <Skeleton className="h-56 rounded-xl" />
           ) : (overview.data?.recent.length ?? 0) === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#D0D5DD] px-6 py-10 text-center">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-[#E0EDFF] text-[#1D4FD8]">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-[#D3E6DF] text-[#0E7A55]">
                 <ClipboardCheck className="size-6" aria-hidden />
               </span>
-              <p className="font-semibold text-[#0B1220]">No results yet</p>
+              <p className="font-semibold text-[#0D2025]">No results yet</p>
               <p className="max-w-xs text-sm text-[#667085]">
                 When candidates finish a test, their scores show up here ranked
                 and ready to compare.
@@ -292,7 +294,7 @@ export function EmployerCommandCenter({
                         {r.score}%
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col">
-                        <p className="truncate text-sm font-semibold text-[#0B1220]">
+                        <p className="truncate text-sm font-semibold text-[#0D2025]">
                           {label}
                         </p>
                         <p className="truncate text-xs text-[#667085]">
@@ -322,7 +324,7 @@ export function EmployerCommandCenter({
         </section>
 
         <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5 lg:col-span-2">
-          <h2 className="font-sans text-lg font-semibold text-[#0B1220]">
+          <h2 className="font-sans text-lg font-semibold text-[#0D2025]">
             Needs your attention
           </h2>
           {attention.length === 0 ? (
@@ -330,7 +332,7 @@ export function EmployerCommandCenter({
               <span className="flex size-12 items-center justify-center rounded-2xl bg-[#DDF5EA] text-[#0E7A55]">
                 <CheckCircle2 className="size-6" aria-hidden />
               </span>
-              <p className="font-semibold text-[#0B1220]">
+              <p className="font-semibold text-[#0D2025]">
                 You&apos;re all caught up
               </p>
               <p className="max-w-xs text-sm text-[#667085]">
@@ -360,13 +362,13 @@ export function EmployerCommandCenter({
                     )}
                   </span>
                   <div className="flex min-w-0 flex-col gap-1">
-                    <p className="text-sm font-semibold text-[#0B1220]">
+                    <p className="text-sm font-semibold text-[#0D2025]">
                       {item.title}
                     </p>
                     <p className="text-xs text-[#667085]">{item.body}</p>
                     <Link
                       href={item.href}
-                      className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-[#0B1220] underline underline-offset-4"
+                      className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-[#0D2025] underline underline-offset-4"
                     >
                       {item.cta}
                       <ArrowRight className="size-3.5" aria-hidden />
