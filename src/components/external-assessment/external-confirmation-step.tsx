@@ -28,7 +28,7 @@ export function ExternalConfirmationStep() {
           asChild
           className="w-full bg-[#EF4444] hover:bg-[#EF4444]/90 text-white"
         >
-          <Link href="/signup">Check CredLane for job opportunities</Link>
+          <Link href="/signup">Find jobs on SkillSift</Link>
         </Button>
       </div>
     </div>

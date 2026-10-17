@@ -4,7 +4,12 @@ import { formatRelativeTime } from "@/lib/format-date";
 import type { AssessmentSubmission } from "@/types/api/employer-assessments";
 
 import { CandidateSourceBadge } from "./candidate-source-badge";
-import { RankChip, ResultPill, ScoreBar } from "./results-shared";
+import {
+  IntegrityBadge,
+  RankChip,
+  ResultPill,
+  ScoreBar,
+} from "./results-shared";
 import {
   candidateLabel,
   formatDuration,
@@ -41,6 +46,7 @@ export function ResultsTable({
             <th className={HEAD}>Candidate</th>
             <th className={`${HEAD} w-44`}>Score</th>
             <th className={`${HEAD} w-32`}>Result</th>
+            <th className={`${HEAD} w-32`}>Integrity</th>
             <th className={`${HEAD} w-28`}>Time taken</th>
             <th className={`${HEAD} w-32`}>Completed</th>
             <th className="w-32 px-3 py-3" />
@@ -83,6 +89,9 @@ export function ResultsTable({
               </td>
               <td className={CELL}>
                 <ResultPill passed={s.status === "pass"} />
+              </td>
+              <td className={CELL}>
+                <IntegrityBadge level={s.integrityLevel} />
               </td>
               <td className={`${CELL} whitespace-nowrap text-[#344054]`}>
                 {formatDuration(s.timeTakenSeconds)}

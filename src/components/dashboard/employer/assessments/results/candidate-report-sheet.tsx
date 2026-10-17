@@ -13,7 +13,10 @@ import {
 import { useEmployerAssessmentResultDetail } from "@/hooks/api/use-employer-assessments";
 import { cn } from "@/lib/utils";
 
+import type { AssessmentResultDetail } from "@/types/api/employer-assessments";
+
 import { CandidateSourceBadge } from "./candidate-source-badge";
+import { IntegrityBadge } from "./results-shared";
 import {
   candidateLabel,
   formatDuration,
@@ -98,6 +101,12 @@ export function CandidateReportSheet({
                 />
               </div>
 
+              <IntegrityPanel
+                level={data.integrityLevel}
+                reasons={data.integrityReasons}
+                events={data.integrityEvents}
+              />
+
               <ol className="flex flex-col gap-3">
                 {data.questions.map((q, i) => (
                   <li
@@ -141,5 +150,46 @@ export function CandidateReportSheet({
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function IntegrityPanel({
+  level,
+  reasons,
+  events,
+}: {
+  level: AssessmentResultDetail["integrityLevel"];
+  reasons: string[];
+  events: AssessmentResultDetail["integrityEvents"];
+}) {
+  if (!level) return null;
+  return (
+    <section className="flex flex-col gap-2 rounded-xl border border-[#E4E7EC] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold text-[#151515]">Test integrity</h3>
+        <IntegrityBadge level={level} />
+      </div>
+      {reasons.length > 0 ? (
+        <ul className="list-disc pl-5 text-sm text-[#344054]">
+          {reasons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-[#667085]">
+          Nothing unusual was recorded while they took the test.
+        </p>
+      )}
+      {events ? (
+        <p className="text-xs text-[#667085]">
+          {events.tabSwitches} tab switches, {events.awaySeconds}s away,{" "}
+          {events.copyAttempts + events.pasteAttempts} copy or paste attempts.
+        </p>
+      ) : null}
+      <p className="text-xs text-[#98A2B3]">
+        These are prompts for a closer look, not proof. A shaky connection or a
+        shared network can trigger them too.
+      </p>
+    </section>
   );
 }

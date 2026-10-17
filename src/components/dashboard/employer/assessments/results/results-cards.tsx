@@ -4,7 +4,12 @@ import { formatRelativeTime } from "@/lib/format-date";
 import type { AssessmentSubmission } from "@/types/api/employer-assessments";
 
 import { CandidateSourceBadge } from "./candidate-source-badge";
-import { RankChip, ResultPill, ScoreBar } from "./results-shared";
+import {
+  IntegrityBadge,
+  RankChip,
+  ResultPill,
+  ScoreBar,
+} from "./results-shared";
 import {
   candidateLabel,
   formatDuration,
@@ -69,6 +74,9 @@ export function ResultsCards({
             </span>
             <span>{formatRelativeTime(s.dateCompleted)}</span>
           </div>
+          {s.integrityLevel && s.integrityLevel !== "clean" ? (
+            <IntegrityBadge level={s.integrityLevel} />
+          ) : null}
 
           <Button
             type="button"

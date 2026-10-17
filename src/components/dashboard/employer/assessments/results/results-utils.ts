@@ -35,6 +35,7 @@ export function exportResultsCsv(
     "Score %",
     "Result",
     "Time taken",
+    "Integrity",
     "Completed",
   ];
   const lines = rows.map((r) =>
@@ -46,6 +47,7 @@ export function exportResultsCsv(
       r.score,
       r.status === "pass" ? "Passed" : "Not passed",
       formatDuration(r.timeTakenSeconds),
+      r.integrityLevel ?? "not checked",
       new Date(r.dateCompleted).toISOString(),
     ]
       .map(csvCell)

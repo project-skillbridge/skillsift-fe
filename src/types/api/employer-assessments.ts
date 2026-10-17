@@ -160,6 +160,9 @@ export type AssessmentSubmission = {
   rank: number;
   /** Null until there are at least 3 submissions to compare against. */
   percentile: number | null;
+  /** Advisory only. Null for results from before integrity checks existed. */
+  integrityLevel: "clean" | "review" | "flagged" | null;
+  integrityReasons: string[];
 };
 
 export type AssessmentResultsSummary = {
@@ -187,6 +190,12 @@ export type AssessmentResultDetail = AssessmentSubmission & {
   questions: AssessmentResultQuestion[];
   correctCount: number;
   questionCount: number;
+  integrityEvents: {
+    tabSwitches: number;
+    awaySeconds: number;
+    pasteAttempts: number;
+    copyAttempts: number;
+  } | null;
 };
 
 export type AssessmentResultsParams = {
