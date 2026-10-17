@@ -141,15 +141,57 @@ export type ListEmployerAssessmentsResponse = {
   limit?: number;
 };
 
-/** One submission on GET /employer/assessments/:id (`results.submissions`). */
+/** One ranked row from GET /employer/assessments/:id/results. */
 export type AssessmentSubmission = {
   id: string;
+  /** Talent are verified SkillSift users; external takers only left an email. */
+  source: "talent" | "external";
   candidateUserId: string | null;
   candidateName: string | null;
+  email: string | null;
   score: number;
   status: "pass" | "fail";
   timeTakenSeconds: number | null;
   dateCompleted: string;
+  deliveryMode: string | null;
+  /** 1-based by score across all submissions; ties share a rank. */
+  rank: number;
+  /** Null until there are at least 3 submissions to compare against. */
+  percentile: number | null;
+};
+
+export type AssessmentResultsSummary = {
+  total: number;
+  averageScore: number | null;
+  medianScore: number | null;
+  topScore: number | null;
+  passRate: number | null;
+};
+
+export type AssessmentResultQuestion = {
+  questionId: string;
+  position: number;
+  questionText: string;
+  questionType: string;
+  options: string[] | null;
+  correctAnswer: string;
+  givenAnswer: string | null;
+  isCorrect: boolean;
+};
+
+/** GET /employer/assessments/:id/results/:submissionId */
+export type AssessmentResultDetail = AssessmentSubmission & {
+  questions: AssessmentResultQuestion[];
+  correctCount: number;
+  questionCount: number;
+};
+
+export type AssessmentResultsParams = {
+  page?: number;
+  limit?: number;
+  status?: "pass" | "fail";
+  source?: "talent" | "external";
+  sort?: "score" | "date";
 };
 
 export type EmployerAssessmentDetail = {
@@ -163,5 +205,7 @@ export type EmployerAssessmentDetail = {
 
 export type ListEmployerAssessmentResultsResponse = {
   submissions: AssessmentSubmission[];
+  summary: AssessmentResultsSummary;
   total: number;
+  emptyState?: string | null;
 };

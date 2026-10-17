@@ -5,6 +5,7 @@ import {
   deactivateEmployerAssessment,
   getEmployerAssessment,
   getEmployerAssessmentDetail,
+  getEmployerAssessmentResultDetail,
   getEmployerAssessmentResults,
   getEmployerAssessments,
   importAssessmentQuestions,
@@ -12,6 +13,7 @@ import {
   searchAssessmentTalent,
 } from "@/actions/employer-assessments";
 import type {
+  AssessmentResultsParams,
   CreateEmployerAssessmentInput,
   InviteToAssessmentInput,
 } from "@/types/api/employer-assessments";
@@ -45,12 +47,28 @@ export function useEmployerAssessmentDetail(assessmentId: string) {
 
 export function useEmployerAssessmentResults(
   assessmentId: string,
-  params?: { page?: number; limit?: number },
+  params?: AssessmentResultsParams,
 ) {
   return useQuery({
     queryKey: [...employerAssessmentsKeys.results(assessmentId), params ?? {}],
     queryFn: () => getEmployerAssessmentResults(assessmentId, params),
     enabled: !!assessmentId,
+  });
+}
+
+export function useEmployerAssessmentResultDetail(
+  assessmentId: string,
+  submissionId: string | null,
+) {
+  return useQuery({
+    queryKey: [
+      ...employerAssessmentsKeys.results(assessmentId),
+      "detail",
+      submissionId,
+    ],
+    queryFn: () =>
+      getEmployerAssessmentResultDetail(assessmentId, submissionId as string),
+    enabled: !!assessmentId && !!submissionId,
   });
 }
 

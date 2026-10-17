@@ -10,6 +10,8 @@ import type {
   AssessmentTalentOption,
   ImportedQuestionsResult,
   EmployerAssessmentDetail,
+  AssessmentResultDetail,
+  AssessmentResultsParams,
   AssessmentSubmission,
 } from "@/types/api/employer-assessments";
 import { unwrapData } from "./utils";
@@ -140,11 +142,21 @@ export async function deactivateEmployerAssessment(
 
 export async function getEmployerAssessmentResults(
   assessmentId: string,
-  params?: { page?: number; limit?: number },
+  params?: AssessmentResultsParams,
 ): Promise<ListEmployerAssessmentResultsResponse> {
   const res = await authApi.get<
     ApiEnvelope<ListEmployerAssessmentResultsResponse>
   >(`/employer/assessments/${assessmentId}/results`, { params });
+  return unwrapData(res);
+}
+
+export async function getEmployerAssessmentResultDetail(
+  assessmentId: string,
+  submissionId: string,
+): Promise<AssessmentResultDetail> {
+  const res = await authApi.get<ApiEnvelope<AssessmentResultDetail>>(
+    `/employer/assessments/${assessmentId}/results/${submissionId}`,
+  );
   return unwrapData(res);
 }
 

@@ -6,23 +6,19 @@ import { ChevronLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { levelLabel, trackLabel } from "@/constants/employer-roles";
-import { useEmployerAssessmentDetail } from "@/hooks/api/use-employer-assessments";
-import { formatRelativeTime } from "@/lib/format-date";
-import { cn } from "@/lib/utils";
+import {
+  useEmployerAssessmentDetail,
+  useEmployerAssessmentResults,
+} from "@/hooks/api/use-employer-assessments";
 
 import { AssessmentInviteModal } from "./assessment-invite-modal";
 import { AssessmentShareLinkModal } from "./assessment-share-link-modal";
 import { AssessmentStatusBadge } from "./assessment-status-badge";
+import { AssessmentResultsTab } from "./results/assessment-results-tab";
 
 type Props = { assessmentId: string };
-
-function formatDuration(seconds: number | null): string {
-  if (seconds == null) return "—";
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}m ${s.toString().padStart(2, "0")}s`;
-}
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
@@ -37,6 +33,9 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
   const router = useRouter();
   const { data, isLoading, isError } =
     useEmployerAssessmentDetail(assessmentId);
+  const { data: results } = useEmployerAssessmentResults(assessmentId, {
+    limit: 1,
+  });
   const [inviteOpen, setInviteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -52,11 +51,9 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
 
   if (isError || !data) notFound();
 
-  const { assessment, questions, submissions, shareUrl, isExternal } = data;
-  const passed = submissions.filter((s) => s.status === "pass").length;
-  const passRate = submissions.length
-    ? `${Math.round((passed / submissions.length) * 100)}%`
-    : "—";
+  const { assessment, questions, shareUrl, isExternal } = data;
+  const summary = results?.summary;
+  const passRate = summary?.passRate == null ? "—" : `${summary.passRate}%`;
   const isActive = assessment.status === "active";
 
   return (
@@ -102,8 +99,13 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
         </div>
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Fact label="Invited" value={String(assessment.talentsCount ?? 0)} />
-          <Fact label="Completed" value={String(data.submissionsTotal)} />
+          {isExternal ? null : (
+            <Fact
+              label="Invited"
+              value={String(assessment.talentsCount ?? 0)}
+            />
+          )}
+          <Fact label="Completed" value={String(summary?.total ?? 0)} />
           <Fact label="Pass rate" value={passRate} />
           <Fact
             label="Time limit · Pass mark"
@@ -112,78 +114,45 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
         </div>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-6">
-        <h2 className="text-lg font-semibold text-[#151515]">Results</h2>
-        {submissions.length === 0 ? (
-          <p className="text-sm text-[#757575]">
-            No submissions yet. Results appear here as soon as someone finishes.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="text-[#52525B]">
-                <tr>
-                  <th className="py-2 font-medium">Candidate</th>
-                  <th className="py-2 font-medium">Score</th>
-                  <th className="py-2 font-medium">Result</th>
-                  <th className="py-2 font-medium">Time taken</th>
-                  <th className="py-2 font-medium">Completed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((s) => (
-                  <tr key={s.id} className="border-t border-[#EEF0F3]">
-                    <td className="py-3 font-medium text-[#151515]">
-                      {s.candidateName || "Candidate"}
-                    </td>
-                    <td className="py-3">{s.score}%</td>
-                    <td className="py-3">
-                      <span
-                        className={cn(
-                          "rounded-md px-2.5 py-1 text-xs font-semibold",
-                          s.status === "pass"
-                            ? "bg-[#D1FAE5] text-[#065F46]"
-                            : "bg-[#FEE2E2] text-[#991B1B]",
-                        )}
-                      >
-                        {s.status === "pass" ? "Passed" : "Not passed"}
-                      </span>
-                    </td>
-                    <td className="py-3">
-                      {formatDuration(s.timeTakenSeconds)}
-                    </td>
-                    <td className="py-3 text-[#757575]">
-                      {formatRelativeTime(s.dateCompleted)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-6">
-        <h2 className="text-lg font-semibold text-[#151515]">
-          Questions ({questions.length})
-        </h2>
-        <ol className="flex flex-col gap-3">
-          {questions.map((q, i) => (
-            <li key={q.id} className="rounded-xl border border-[#EEF0F3] p-4">
-              <p className="text-sm font-medium text-[#151515]">
-                {i + 1}. {q.questionText}
-              </p>
-              {q.options?.length ? (
-                <ul className="mt-2 list-disc pl-5 text-sm text-[#52525B]">
-                  {q.options.map((o) => (
-                    <li key={o}>{o}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      </section>
+      <Tabs defaultValue="candidates">
+        <TabsList>
+          <TabsTrigger value="candidates">
+            Candidates ({summary?.total ?? data.submissionsTotal})
+          </TabsTrigger>
+          <TabsTrigger value="questions">
+            Questions ({questions.length})
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="candidates" className="mt-4">
+          <AssessmentResultsTab
+            assessmentId={assessment.id}
+            title={assessment.title}
+          />
+        </TabsContent>
+        <TabsContent value="questions" className="mt-4">
+          <section className="flex flex-col gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-6">
+            <ol className="flex flex-col gap-3">
+              {questions.map((q, i) => (
+                <li
+                  key={q.id}
+                  className="rounded-xl border border-[#EEF0F3] p-4"
+                >
+                  <p className="text-sm font-medium text-[#151515]">
+                    {i + 1}. {q.questionText}
+                  </p>
+                  {q.options?.length ? (
+                    <ul className="mt-2 list-disc pl-5 text-sm text-[#52525B]">
+                      {q.options.map((o) => (
+                        <li key={o}>{o}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          </section>
+        </TabsContent>
+      </Tabs>
 
       <AssessmentInviteModal
         open={inviteOpen}
