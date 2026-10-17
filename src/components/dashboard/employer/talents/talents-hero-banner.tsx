@@ -1,38 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { BadgeCheck, Bookmark } from "lucide-react";
 
-export function TalentsHeroBanner() {
+import { Button } from "@/components/ui/button";
+
+type Props = {
+  /** Candidates matching the current filters; shown once known. */
+  total?: number;
+};
+
+/** Compact intro band: what this page is, and the way to the shortlist. */
+export function TalentsHeroBanner({ total }: Props) {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-[#DFE4E2] px-5 py-6 sm:px-6 sm:py-8">
-      <div className="relative z-10 flex flex-col gap-6 sm:max-w-[55%]">
-        <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-semibold text-[#081536] sm:text-2xl">
-            Verified candidate discovery
-          </h2>
-          <p className="text-sm font-normal tracking-[0.017em] text-[#081536] sm:text-base">
-            Every candidate here has passed a skills assessment. Shortlist the
-            ones you want to talk to.
+    <section className="relative overflow-hidden rounded-3xl bg-[#0B1220] px-6 py-7 text-white sm:px-8">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-20 -right-10 size-64 rounded-full bg-[#19A878]/25 blur-3xl"
+      />
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex max-w-xl flex-col gap-2">
+          <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
+            <BadgeCheck className="size-3.5 text-[#6EE7B7]" aria-hidden />
+            {total == null
+              ? "Skills-assessed talent"
+              : `${total.toLocaleString()} skills-assessed talent`}
+          </p>
+          <h1 className="font-sans text-2xl font-bold tracking-tight sm:text-3xl">
+            Find talent who can already do the job
+          </h1>
+          <p className="text-sm text-white/70 sm:text-base">
+            Everyone here passed a skills assessment. Filter by role and level,
+            then shortlist the people you want to talk to.
           </p>
         </div>
-
-        <Link
-          href="/e/shortlist"
-          className="flex w-fit items-center justify-center rounded-lg bg-[#05060F] px-4 py-2 text-sm font-semibold text-white sm:text-base"
+        <Button
+          asChild
+          className="h-11 w-fit rounded-xl bg-white px-5 font-semibold text-[#0B1220] hover:bg-white/90"
         >
-          View Shortlist
-        </Link>
-      </div>
-
-      <div className="pointer-events-none absolute top-0 right-0 hidden h-full w-[40%] max-w-105 sm:block">
-        <Image
-          src="/assets/images/employer-talent-hero.svg"
-          alt="Hero Preview Illustration"
-          fill
-          className="object-contain object-right"
-          priority
-        />
+          <Link href="/e/shortlist">
+            <Bookmark className="size-4" aria-hidden />
+            View shortlist
+          </Link>
+        </Button>
       </div>
     </section>
   );

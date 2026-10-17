@@ -255,3 +255,27 @@ export type LibraryAssessmentDetail = LibraryAssessmentItem & {
     options: string[] | null;
   }[];
 };
+
+/** GET /employer/assessments/overview */
+export type EmployerAssessmentsOverview = {
+  last30Days: {
+    assessed: number;
+    passRate: number | null;
+    averageScore: number | null;
+    /** Results whose integrity level is "review" or "flagged". */
+    needsReview: number;
+  };
+  activeAssessments: number;
+  recent: Array<{
+    id: string;
+    assessmentId: string;
+    assessmentTitle: string;
+    source: "talent" | "external";
+    candidateName: string | null;
+    email: string | null;
+    score: number;
+    passed: boolean;
+    integrityLevel: "clean" | "review" | "flagged" | null;
+    completedAt: string;
+  }>;
+};

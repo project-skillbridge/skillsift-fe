@@ -123,11 +123,13 @@ export function EmployerTalentsPage() {
       "Try adjusting your filters or clear them to see more results.");
 
   return (
-    <div className="mx-auto max-w-274 space-y-6 py-6 sm:py-8">
-      <TalentsHeroBanner />
+    <div className="mx-auto max-w-6xl space-y-6 py-6 sm:py-8">
+      <TalentsHeroBanner total={data?.total} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Talent list</h1>
+        <h2 className="font-sans text-lg font-semibold text-[#0B1220]">
+          Talent list
+        </h2>
         <TalentsViewToggle view={view} onChange={setView} />
       </div>
 

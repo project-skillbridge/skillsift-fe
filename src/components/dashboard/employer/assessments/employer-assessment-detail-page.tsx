@@ -22,9 +22,11 @@ type Props = { assessmentId: string };
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-[#E4E7EC] p-4">
-      <span className="text-sm text-[#757575]">{label}</span>
-      <span className="text-lg font-semibold text-[#151515]">{value}</span>
+    <div className="flex flex-col gap-1 rounded-xl bg-[#F8FAFC] p-4">
+      <span className="text-xs font-medium tracking-wide text-[#667085] uppercase">
+        {label}
+      </span>
+      <span className="text-xl font-semibold text-[#0B1220]">{value}</span>
     </div>
   );
 }
@@ -67,10 +69,10 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
         Back to assessments
       </button>
 
-      <div className="flex flex-col gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6">
+      <div className="flex flex-col gap-6 rounded-2xl border border-[#E4E7EC] bg-white p-6 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-semibold text-[#151515]">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#0B1220]">
               {assessment.title}
             </h1>
             <p className="text-sm text-[#757575]">

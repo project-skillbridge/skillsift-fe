@@ -11,6 +11,7 @@ import type {
   ImportedQuestionsResult,
   EmployerAssessmentDetail,
   AssessmentResultDetail,
+  EmployerAssessmentsOverview,
   DraftAssessmentQuestionsInput,
   DraftAssessmentQuestionsResult,
   AssessmentResultsParams,
@@ -283,4 +284,11 @@ export async function searchAssessmentTalent(
     roleTrack: row.role_track,
     verifiedLevel: row.role,
   }));
+}
+
+export async function getEmployerAssessmentsOverview(): Promise<EmployerAssessmentsOverview> {
+  const res = await authApi.get<ApiEnvelope<EmployerAssessmentsOverview>>(
+    "/employer/assessments/overview",
+  );
+  return unwrapData(res);
 }

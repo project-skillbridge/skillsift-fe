@@ -11,6 +11,7 @@ import {
   getLibraryAssessments,
   getEmployerAssessmentResults,
   getEmployerAssessments,
+  getEmployerAssessmentsOverview,
   importAssessmentQuestions,
   inviteToAssessment,
   searchAssessmentTalent,
@@ -99,6 +100,13 @@ export function useDeactivateEmployerAssessment() {
         exact: false,
       });
     },
+  });
+}
+
+export function useEmployerAssessmentsOverview() {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.overview(),
+    queryFn: () => getEmployerAssessmentsOverview(),
   });
 }
 

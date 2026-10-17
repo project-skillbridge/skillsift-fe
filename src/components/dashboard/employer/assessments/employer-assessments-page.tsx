@@ -90,7 +90,7 @@ export function EmployerAssessmentsPage() {
     !isLoading && !isError && total === 0 && !hasConfirmedAssessments;
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-274 flex-col gap-6 px-4 py-6 sm:min-h-[calc(100dvh-4.5rem)] sm:py-8">
+    <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-6xl flex-col gap-8 py-6 sm:min-h-[calc(100dvh-4.5rem)] sm:py-8">
       {isEmpty ? (
         <AssessmentHeroBanner />
       ) : (
@@ -103,7 +103,7 @@ export function EmployerAssessmentsPage() {
             candidates={totals.candidates}
             isLoading={isLoading}
           />
-          <div className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-4">
+          <div className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
             <AssessmentsToolbar
               searchValue={searchValue}
               onSearchChange={(v) => {
