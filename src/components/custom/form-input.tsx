@@ -202,8 +202,7 @@ function FormInput(props: FormInputProps) {
 
   if (props.mode === "select") {
     const selectProps = props as
-      | SingleSelectModeProps
-      | MultipleSelectModeProps;
+      SingleSelectModeProps | MultipleSelectModeProps;
     const isMultiple = selectProps.selection === "multiple";
 
     return (

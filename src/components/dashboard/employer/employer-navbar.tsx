@@ -36,7 +36,7 @@ export function EmployerNavbar() {
         <Link
           href="/e/dashboard"
           className="inline-flex shrink-0 items-center gap-2"
-          aria-label="SkillBridge home"
+          aria-label="SkillSift home"
         >
           <Image
             src={LOGO}
@@ -47,7 +47,7 @@ export function EmployerNavbar() {
             priority
           />
           <span className="hidden font-sans text-xl font-bold text-primary-900 sm:text-2xl md:block">
-            SkillBridge
+            SkillSift
           </span>
         </Link>
 

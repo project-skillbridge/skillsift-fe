@@ -27,7 +27,7 @@ const steps: Step[] = [
     mobileBody:
       "Once verified, your profile goes live with your score, tier, and track, all accessible to employers.",
     desktopBody:
-      "SkillBridge evaluates performance and assigns a standardized score.",
+      "SkillSift evaluates performance and assigns a standardized score.",
     image: "/waitlist-images/get-verified.png",
     imageAlt: "Verified talent profile card illustration",
   },

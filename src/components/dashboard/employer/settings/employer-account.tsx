@@ -34,7 +34,7 @@ export function EmployerAccount() {
 
       <AccountRow
         title="Delete my account"
-        description="This will permanently and irreversibly remove all your SkillBridge data."
+        description="This will permanently and irreversibly remove all your SkillSift data."
         action={<EmployerDeleteAccountDialog />}
       />
     </div>

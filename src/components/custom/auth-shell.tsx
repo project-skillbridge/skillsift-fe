@@ -45,7 +45,7 @@ function AuthShell({
             <Link href={logoHref} className="inline-flex shrink-0">
               <Image
                 src="/assets/logo/logo-with-text.svg"
-                alt="SkillBridge"
+                alt="SkillSift"
                 width={220}
                 height={55}
                 className="h-9 w-auto"
@@ -80,7 +80,7 @@ function AuthShell({
             )}
           >
             <div className="body font-light text-slate-600">
-              © 2026 SkillBridge Inc. All rights reserved.
+              © 2026 SkillSift Inc. All rights reserved.
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-slate-600">

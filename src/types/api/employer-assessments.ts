@@ -15,10 +15,7 @@ export type CreateEmployerAssessmentInput = {
   timeLimitMinutes: 20 | 30 | 40 | 60;
   passingThreshold: number;
   questionSource:
-    | "credlane_bank"
-    | "company_questions"
-    | "manual"
-    | "admin_upload";
+    "credlane_bank" | "company_questions" | "manual" | "admin_upload";
   shareViaLink: boolean;
   sendToCandidates: boolean;
   type: "internal" | "external";

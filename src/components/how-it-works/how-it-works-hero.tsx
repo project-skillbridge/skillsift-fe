@@ -30,8 +30,8 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.1, ease }}
         >
-          SkillBridge helps professionals prove what they can actually do
-          through structured assessments, verified profiles, and skill-based
+          SkillSift helps professionals prove what they can actually do through
+          structured assessments, verified profiles, and skill-based
           opportunities.
         </motion.p>
       </div>

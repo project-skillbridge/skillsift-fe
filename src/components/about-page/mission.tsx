@@ -20,7 +20,7 @@ export function AboutMissionSection() {
             viewport={viewport}
           >
             <h2 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl">
-              Why Early&#8209;Career Professionals Trust SkillBridge With Their
+              Why Early&#8209;Career Professionals Trust SkillSift With Their
               Growth
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed text-white/70 md:text-base">

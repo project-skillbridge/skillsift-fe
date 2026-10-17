@@ -38,8 +38,8 @@ const CtaSection = ({ onJoinClick }: Props) => {
             opportunities find you.
           </p>
           <p className="mx-auto mt-12.5 hidden max-w-138 text-white font-semibold text-base leading-5 sm:block">
-            Join the SkillBridge waitlist and get early access to a smarter way
-            to hire and get hired.
+            Join the SkillSift waitlist and get early access to a smarter way to
+            hire and get hired.
           </p>
 
           <div className="mt-7 flex justify-center sm:mt-12.5">

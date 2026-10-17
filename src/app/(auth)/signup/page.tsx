@@ -59,7 +59,7 @@ function SignupContent() {
               </h1>
 
               <p className="max-w-130 text-[18px] leading-[160%] font-medium text-foreground lg:text-[22px]">
-                Every candidate on SkillBridge is assessed, scored and verified
+                Every candidate on SkillSift is assessed, scored and verified
                 before becoming visible to employers.
               </p>
             </div>
