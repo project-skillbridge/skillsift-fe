@@ -11,8 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLibraryAssessment } from "@/hooks/api/use-employer-assessments";
+import { questionCountOptions } from "@/lib/employer-assessment-questions";
 import { cn } from "@/lib/utils";
 import type { LibraryAssessmentItem } from "@/types/api/employer-assessments";
 
@@ -21,6 +26,8 @@ type Props = {
   isLoading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  questionCount: number;
+  onQuestionCountChange: (count: number) => void;
 };
 
 function PreviewDialog({
@@ -74,6 +81,8 @@ export function AssessmentLibraryPicker({
   isLoading,
   selectedId,
   onSelect,
+  questionCount,
+  onQuestionCountChange,
 }: Props) {
   const [previewId, setPreviewId] = useState<string | null>(null);
 
@@ -130,6 +139,28 @@ export function AssessmentLibraryPicker({
                 </span>
               </p>
             </div>
+            {selected ? (
+              <label className="flex flex-wrap items-center gap-2 text-xs text-[#344054]">
+                <span className="font-medium">How many questions?</span>
+                <NativeSelect
+                  size="sm"
+                  aria-label="Number of questions"
+                  value={questionCount}
+                  onChange={(e) =>
+                    onQuestionCountChange(Number(e.target.value))
+                  }
+                >
+                  {questionCountOptions(item.questionCount).map((n) => (
+                    <NativeSelectOption key={n} value={n}>
+                      {n === item.questionCount ? `All ${n}` : n} questions
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+                <span className="text-[#667085]">
+                  We pick a random selection from {item.questionCount}.
+                </span>
+              </label>
+            ) : null}
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"

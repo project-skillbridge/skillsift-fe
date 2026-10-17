@@ -17,6 +17,8 @@ type Props = {
   libraryLoading: boolean;
   libraryId: string | null;
   onLibraryChange: (id: string | null) => void;
+  libraryQuestionCount: number;
+  onLibraryQuestionCountChange: (count: number) => void;
   questions: DraftQuestion[];
   onQuestionsChange: (questions: DraftQuestion[]) => void;
 };
@@ -43,6 +45,8 @@ export function CreateAssessmentSourceStep({
   libraryLoading,
   libraryId,
   onLibraryChange,
+  libraryQuestionCount,
+  onLibraryQuestionCountChange,
   questions,
   onQuestionsChange,
 }: Props) {
@@ -86,6 +90,8 @@ export function CreateAssessmentSourceStep({
           isLoading={libraryLoading}
           selectedId={libraryId}
           onSelect={onLibraryChange}
+          questionCount={libraryQuestionCount}
+          onQuestionCountChange={onLibraryQuestionCountChange}
         />
       ) : (
         <CreateAssessmentQuestionsStep

@@ -4,26 +4,19 @@ import { useState } from "react";
 import { Download, GitCompareArrows } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployerAssessmentResults } from "@/hooks/api/use-employer-assessments";
-import { formatRelativeTime } from "@/lib/format-date";
-import { cn } from "@/lib/utils";
 import type { AssessmentResultsParams } from "@/types/api/employer-assessments";
 
 import { CandidateCompareDialog } from "./candidate-compare-dialog";
 import { CandidateReportSheet } from "./candidate-report-sheet";
-import { CandidateSourceBadge } from "./candidate-source-badge";
-import {
-  candidateLabel,
-  exportResultsCsv,
-  formatDuration,
-  percentileLabel,
-} from "./results-utils";
+import { ResultsCards } from "./results-cards";
+import { ResultsTable } from "./results-table";
+import { exportResultsCsv } from "./results-utils";
 
 const MAX_COMPARE = 4;
 
@@ -152,96 +145,25 @@ export function AssessmentResultsTab({ assessmentId, title }: Props) {
           Tick 2 to {MAX_COMPARE} candidates to compare them side by side.
         </p>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-[#52525B]">
-              <tr>
-                <th className="w-8 py-2" />
-                <th className="py-2 font-medium">Rank</th>
-                <th className="py-2 font-medium">Candidate</th>
-                <th className="py-2 font-medium">Score</th>
-                <th className="py-2 font-medium">Versus others</th>
-                <th className="py-2 font-medium">Result</th>
-                <th className="py-2 font-medium">Time taken</th>
-                <th className="py-2 font-medium">Completed</th>
-                <th className="py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((s) => (
-                <tr key={s.id} className="border-t border-[#EEF0F3]">
-                  <td className="py-3">
-                    <Checkbox
-                      aria-label={`Select ${candidateLabel(s)}`}
-                      checked={selected.includes(s.id)}
-                      disabled={
-                        !selected.includes(s.id) &&
-                        selected.length >= MAX_COMPARE
-                      }
-                      onCheckedChange={(c) => toggle(s.id, c === true)}
-                    />
-                  </td>
-                  <td className="py-3 font-semibold text-[#151515]">
-                    #{s.rank}
-                  </td>
-                  <td className="py-3">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-medium text-[#151515]">
-                        {candidateLabel(s)}
-                      </span>
-                      <CandidateSourceBadge source={s.source} />
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#EEF0F3]">
-                        <div
-                          className="h-full rounded-full bg-[#059669]"
-                          style={{ width: `${s.score}%` }}
-                        />
-                      </div>
-                      <span className="font-medium">{s.score}%</span>
-                    </div>
-                  </td>
-                  <td className="py-3 text-[#52525B]">
-                    {percentileLabel(s.percentile)}
-                  </td>
-                  <td className="py-3">
-                    <span
-                      className={cn(
-                        "rounded-md px-2.5 py-1 text-xs font-semibold",
-                        s.status === "pass"
-                          ? "bg-[#D1FAE5] text-[#065F46]"
-                          : "bg-[#FEE2E2] text-[#991B1B]",
-                      )}
-                    >
-                      {s.status === "pass" ? "Passed" : "Not passed"}
-                    </span>
-                  </td>
-                  <td className="py-3">{formatDuration(s.timeTakenSeconds)}</td>
-                  <td className="py-3 text-[#757575]">
-                    {formatRelativeTime(s.dateCompleted)}
-                  </td>
-                  <td className="py-3 text-right">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setReportId(s.id)}
-                    >
-                      View report
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {rows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-[#757575]">
-              No candidates match these filters.
-            </p>
-          ) : null}
-        </div>
+        <ResultsTable
+          rows={rows}
+          selected={selected}
+          maxSelected={MAX_COMPARE}
+          onToggle={toggle}
+          onView={setReportId}
+        />
+        <ResultsCards
+          rows={rows}
+          selected={selected}
+          maxSelected={MAX_COMPARE}
+          onToggle={toggle}
+          onView={setReportId}
+        />
+        {rows.length === 0 ? (
+          <p className="py-6 text-center text-sm text-[#757575]">
+            No candidates match these filters.
+          </p>
+        ) : null}
       </section>
 
       <CandidateReportSheet

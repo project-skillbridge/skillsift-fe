@@ -64,6 +64,9 @@ export async function createEmployerAssessment(
   if (input.credlaneAssessmentId) {
     body.credlaneAssessmentId = input.credlaneAssessmentId;
   }
+  if (input.questionCount) {
+    body.questionCount = input.questionCount;
+  }
   if (input.candidateUserIds && input.candidateUserIds.length) {
     body.candidateUserIds = input.candidateUserIds;
   }

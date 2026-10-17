@@ -93,3 +93,16 @@ export function toApiQuestions(
     correctAnswer: q.correctAnswer.trim(),
   }));
 }
+
+/** 5, 10, 15... up to the pool size, always ending on the full pool. */
+export function questionCountOptions(poolSize: number): number[] {
+  const steps: number[] = [];
+  for (let n = 5; n < poolSize; n += 5) steps.push(n);
+  steps.push(poolSize);
+  return steps;
+}
+
+/** A sensible default: 10 questions, or the whole pool if it is smaller. */
+export function defaultQuestionCount(poolSize: number): number {
+  return Math.min(10, poolSize);
+}

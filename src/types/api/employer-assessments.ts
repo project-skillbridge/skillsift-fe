@@ -16,6 +16,8 @@ export type CreateEmployerAssessmentInput = {
   questionSource: "credlane_bank" | "company_questions";
   /** Required when `questionSource` is `credlane_bank`. */
   credlaneAssessmentId?: string;
+  /** Library only: how many questions to take (5 up to what the entry has). */
+  questionCount?: number;
   shareViaLink: boolean;
   sendToCandidates: boolean;
   type: "internal" | "external";

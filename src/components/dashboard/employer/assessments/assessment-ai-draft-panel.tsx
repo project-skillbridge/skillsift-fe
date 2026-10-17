@@ -4,6 +4,10 @@ import { useState } from "react";
 import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useDraftAssessmentQuestions } from "@/hooks/api/use-employer-assessments";
 import {
@@ -22,13 +26,14 @@ type Props = {
 
 export function AssessmentAiDraftPanel({ level, onDrafted }: Props) {
   const [jobDescription, setJobDescription] = useState("");
+  const [count, setCount] = useState(8);
   const draft = useDraftAssessmentQuestions();
   const length = jobDescription.trim().length;
   const tooShort = length < MIN_JD_LENGTH;
 
   const handleDraft = () =>
     draft.mutate(
-      { jobDescription: jobDescription.trim(), experienceLevel: level },
+      { jobDescription: jobDescription.trim(), experienceLevel: level, count },
       {
         onSuccess: ({ questions }) => {
           onDrafted(
@@ -80,6 +85,21 @@ export function AssessmentAiDraftPanel({ level, onDrafted }: Props) {
             ? `Add ${MIN_JD_LENGTH - length} more characters`
             : `${length}/${MAX_JD_LENGTH}`}
         </span>
+        <label className="ml-auto flex items-center gap-2 text-xs text-[#344054]">
+          <span className="font-medium">Questions</span>
+          <NativeSelect
+            size="sm"
+            aria-label="Number of questions to draft"
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+          >
+            {[5, 6, 7, 8, 9, 10].map((n) => (
+              <NativeSelectOption key={n} value={n}>
+                {n}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </label>
         <Button
           type="button"
           size="sm"
