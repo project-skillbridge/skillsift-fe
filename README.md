@@ -1,6 +1,6 @@
-# Skillbridge
+# SkillSift
 
-SkillBridge is a verified talent pipeline for early-career professionals across Africa. Candidates are evaluated through structured assessments, practical tasks, and Interviews, then assigned a standardized score, and made discoverable to employers only when they are job-ready.
+SkillSift is a verified talent pipeline for early-career professionals across Africa. Candidates are evaluated through structured assessments, practical tasks, and Interviews, then assigned a standardized score, and made discoverable to employers only when they are job-ready.
 
 ## Stack
 
