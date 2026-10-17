@@ -104,8 +104,8 @@ export const PRICING_WHY_PAY = [
     body: "Share a link or email invites. People take the test with just an email, and we invite them to join SkillSift afterwards.",
   },
   {
-    title: "Built for Nigerian budgets",
-    body: "Pay in naira, month to month, with no annual contract. Invite packs never expire.",
+    title: "Priced for where you hire",
+    body: "Prices are set for your region, month to month, with no annual contract. Invite packs never expire.",
   },
 ];
 

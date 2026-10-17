@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
@@ -13,38 +12,20 @@ import {
 import { cn } from "@/lib/utils";
 
 type PlanCardsProps = {
+  currency: PricingCurrency;
   /** Highlights the employer's current plan and swaps the buttons for "Current plan". */
   currentPlanId?: string;
   /** Where the primary button goes for signed-out visitors. */
   signUpHref?: string;
 };
 
-export function PlanCards({ currentPlanId, signUpHref }: PlanCardsProps) {
-  const [currency, setCurrency] = useState<PricingCurrency>("NGN");
-
+export function PlanCards({
+  currency,
+  currentPlanId,
+  signUpHref,
+}: PlanCardsProps) {
   return (
     <div className="flex flex-col gap-6">
-      <div
-        role="group"
-        aria-label="Currency"
-        className="mx-auto inline-flex rounded-full border border-[#E4E7EC] bg-white p-1"
-      >
-        {(["NGN", "USD"] as const).map((c) => (
-          <button
-            key={c}
-            type="button"
-            aria-pressed={currency === c}
-            onClick={() => setCurrency(c)}
-            className={cn(
-              "cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-              currency === c ? "bg-[#05060F] text-white" : "text-[#475467]",
-            )}
-          >
-            {c === "USD" ? "US dollars" : "Naira"}
-          </button>
-        ))}
-      </div>
-
       <div className="grid gap-4 md:grid-cols-3">
         {PRICING_PLANS.map((plan) => {
           const isCurrent = currentPlanId === plan.id;

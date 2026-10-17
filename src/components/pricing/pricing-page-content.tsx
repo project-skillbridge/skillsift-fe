@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
 
@@ -5,12 +7,19 @@ import {
   PRICING_COMPARISON,
   PRICING_FAQ,
   PRICING_WHY_PAY,
+  type PricingCurrency,
 } from "@/constants/employer-pricing";
+import { usePricingCurrency } from "@/hooks/use-pricing-currency";
 
 import { InvitePacks } from "./invite-packs";
 import { PlanCards } from "./plan-cards";
 
-export function PricingPageContent() {
+export function PricingPageContent({
+  serverCurrency,
+}: {
+  serverCurrency: PricingCurrency | null;
+}) {
+  const currency = usePricingCurrency(serverCurrency);
   return (
     <main className="flex flex-1 flex-col bg-background text-foreground">
       <section className="bg-[#EFEFEF] px-6 pt-20 pb-12 text-center md:pt-28">
@@ -19,16 +28,16 @@ export function PricingPageContent() {
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 md:text-lg">
           Every feature is on every plan. You pay for how many candidates you
-          assess, in naira or dollars, with no annual contract.
+          assess, with no annual contract.
         </p>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-6 py-12">
-        <PlanCards signUpHref="/signup" />
+        <PlanCards currency={currency} signUpHref="/signup" />
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-6 py-4">
-        <InvitePacks />
+        <InvitePacks currency={currency} />
       </section>
 
       <section className="mx-auto w-full max-w-4xl px-6 py-8">

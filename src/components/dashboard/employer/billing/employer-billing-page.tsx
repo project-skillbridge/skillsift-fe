@@ -1,12 +1,19 @@
 "use client";
 
+import type { PricingCurrency } from "@/constants/employer-pricing";
+import { usePricingCurrency } from "@/hooks/use-pricing-currency";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployerBillingSummary } from "@/hooks/api/use-employer-billing";
 import { formatAbsoluteDate } from "@/lib/format-date";
 import { InvitePacks } from "@/components/pricing/invite-packs";
 import { PlanCards } from "@/components/pricing/plan-cards";
 
-export function EmployerBillingPage() {
+export function EmployerBillingPage({
+  serverCurrency,
+}: {
+  serverCurrency: PricingCurrency | null;
+}) {
+  const currency = usePricingCurrency(serverCurrency);
   const { data, isLoading, isError } = useEmployerBillingSummary();
 
   if (isLoading) {
@@ -101,8 +108,8 @@ export function EmployerBillingPage() {
         </div>
       </section>
 
-      <PlanCards currentPlanId={data.plan} />
-      <InvitePacks />
+      <PlanCards currency={currency} currentPlanId={data.plan} />
+      <InvitePacks currency={currency} />
     </div>
   );
 }

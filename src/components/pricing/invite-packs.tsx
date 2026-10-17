@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   formatMoney,
   INVITE_PACK_OFFERS,
@@ -12,9 +10,13 @@ import {
 import { cn } from "@/lib/utils";
 
 /** Prepaid candidate packs that never expire, for teams that don't want a subscription. */
-export function InvitePacks({ className }: { className?: string }) {
-  const [currency, setCurrency] = useState<PricingCurrency>("NGN");
-
+export function InvitePacks({
+  currency,
+  className,
+}: {
+  currency: PricingCurrency;
+  className?: string;
+}) {
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -25,26 +27,6 @@ export function InvitePacks({ className }: { className?: string }) {
           <p className="text-sm text-[#757575]">
             Invite packs never expire and work alongside any plan.
           </p>
-        </div>
-        <div
-          role="group"
-          aria-label="Currency"
-          className="inline-flex rounded-full border border-[#E4E7EC] bg-white p-1"
-        >
-          {(["NGN", "USD"] as const).map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={currency === c}
-              onClick={() => setCurrency(c)}
-              className={cn(
-                "cursor-pointer rounded-full px-3 py-1 text-xs font-medium",
-                currency === c ? "bg-[#05060F] text-white" : "text-[#475467]",
-              )}
-            >
-              {c === "USD" ? "USD" : "NGN"}
-            </button>
-          ))}
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
