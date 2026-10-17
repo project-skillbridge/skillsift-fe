@@ -4,9 +4,12 @@ import {
   createEmployerAssessment,
   deactivateEmployerAssessment,
   getEmployerAssessment,
+  getEmployerAssessmentDetail,
   getEmployerAssessmentResults,
   getEmployerAssessments,
+  importAssessmentQuestions,
   inviteToAssessment,
+  searchAssessmentTalent,
 } from "@/actions/employer-assessments";
 import type {
   CreateEmployerAssessmentInput,
@@ -28,6 +31,14 @@ export function useEmployerAssessment(assessmentId: string) {
   return useQuery({
     queryKey: employerAssessmentsKeys.detail(assessmentId),
     queryFn: () => getEmployerAssessment(assessmentId),
+    enabled: !!assessmentId,
+  });
+}
+
+export function useEmployerAssessmentDetail(assessmentId: string) {
+  return useQuery({
+    queryKey: [...employerAssessmentsKeys.detail(assessmentId), "full"],
+    queryFn: () => getEmployerAssessmentDetail(assessmentId),
     enabled: !!assessmentId,
   });
 }
@@ -72,5 +83,19 @@ export function useDeactivateEmployerAssessment() {
 export function useInviteToAssessment() {
   return useMutation({
     mutationFn: (input: InviteToAssessmentInput) => inviteToAssessment(input),
+  });
+}
+
+export function useImportAssessmentQuestions() {
+  return useMutation({
+    mutationFn: (file: File) => importAssessmentQuestions(file),
+  });
+}
+
+export function useSearchAssessmentTalent(q: string, track?: string) {
+  return useQuery({
+    queryKey: [...employerAssessmentsKeys.all, "talent-search", q, track ?? ""],
+    queryFn: () => searchAssessmentTalent(q, track),
+    staleTime: 30_000,
   });
 }

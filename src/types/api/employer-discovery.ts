@@ -36,6 +36,8 @@ export type EmployerDiscoveryCandidate = {
   isSaved: boolean;
   offerSent: boolean;
   offerStatus: string | null;
+  /** False until the employer spends an unlock (name, photo and links stay hidden). */
+  isUnlocked: boolean;
   averageHireRating: number | null;
   hireRatingCount: number;
   wouldHireAgainRate: number | null;
@@ -80,6 +82,9 @@ export type EmployerDiscoveryCandidateProfile = VerifiedProfileResponseData & {
   isSaved: boolean;
   offerSent: boolean;
   offerStatus: "pending" | "accepted" | null;
+  isUnlocked: boolean;
+  portfolioUrl: string | null;
+  linkedinUrl: string | null;
   averageHireRating: number | null;
   hireRatingCount: number;
   wouldHireAgainRate: number | null;
@@ -115,6 +120,7 @@ export type RawEmployerDiscoveryCandidate = {
   is_saved: boolean;
   offer_sent: boolean;
   offer_status: "pending" | "accepted" | null;
+  is_unlocked?: boolean;
   average_hire_rating?: number | null;
   hire_rating_count?: number;
   would_hire_again_rate?: number | null;
@@ -143,6 +149,9 @@ export type RawEmployerDiscoveryCandidateProfile =
     is_saved: boolean;
     offer_sent: boolean;
     offer_status: "pending" | "accepted" | null;
+    is_unlocked?: boolean;
+    portfolio_url?: string | null;
+    linkedin_url?: string | null;
     average_hire_rating?: number | null;
     hire_rating_count?: number;
     would_hire_again_rate?: number | null;

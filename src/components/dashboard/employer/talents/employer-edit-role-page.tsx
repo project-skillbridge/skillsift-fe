@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import { notFound } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -184,7 +185,7 @@ export function EmployerEditRolePage({
               roleDetails={roleDetails}
               selectedAssessmentId={selectedAssessmentId}
               salaryRangeLabel={salaryRangeLabel}
-              educationLabel={loadedRole.education ?? undefined}
+              educationLabel={educationLabel(loadedRole.education) || undefined}
               onViewAssessment={handleViewAssessment}
             />
           )}

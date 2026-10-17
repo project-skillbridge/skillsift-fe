@@ -12,6 +12,11 @@ import { DataPagination } from "../shared/data-pagination";
 import { OffersTable } from "./offers-table";
 import { ShortlistHeroBanner } from "./shortlist-hero-banner";
 import { ShortlistTable } from "./shortlist-table";
+import {
+  PipelineStageStrip,
+  STAGE_STATUSES,
+  type PipelineStageId,
+} from "./pipeline-stage-strip";
 import { SHORTLIST_TAB_IDS, ShortlistToolbar } from "./shortlist-toolbar";
 
 const PAGE_SIZE = 20;
@@ -26,6 +31,9 @@ export function ShortlistPage() {
   const [page, setPage] = useState(1);
   const [offersPage, setOffersPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
+  const [stage, setStage] = useState<PipelineStageId>(
+    searchParams.get("tab") === "offers" ? "invited" : "shortlisted",
+  );
 
   const { data: savedData, isLoading: isSavedLoading } = useSavedCandidates({
     page,
@@ -41,6 +49,22 @@ export function ShortlistPage() {
     { page: offersPage, limit: PAGE_SIZE },
     { enabled: activeTab === "offers" },
   );
+
+  // Whole-funnel counts for the stage strip (invites aren't paged here).
+  const { data: allOffers } = useEmployerOffers({ page: 1, limit: 100 });
+  const stageCounts = useMemo(() => {
+    const live = (allOffers?.offers ?? []).filter(
+      (o) => o.status !== "withdrawn",
+    );
+    const inStage = (id: "accepted" | "hired") =>
+      live.filter((o) => STAGE_STATUSES[id]?.includes(o.status)).length;
+    return {
+      shortlisted: savedData?.total ?? 0,
+      invited: live.length,
+      accepted: inStage("accepted"),
+      hired: inStage("hired"),
+    };
+  }, [allOffers?.offers, savedData?.total]);
 
   const savedTotal = savedData?.total ?? 0;
   const savedTotalPages = savedData?.totalPages ?? 1;
@@ -62,14 +86,18 @@ export function ShortlistPage() {
   }, [savedData?.candidates, searchTerm]);
 
   const filteredOffers = useMemo(() => {
-    const offers = offersData?.offers ?? [];
+    let offers = offersData?.offers ?? [];
+    const statuses = stage === "shortlisted" ? null : STAGE_STATUSES[stage];
+    offers = statuses
+      ? offers.filter((o) => statuses.includes(o.status))
+      : offers.filter((o) => o.status !== "withdrawn");
     if (!searchTerm) return offers;
     return offers.filter((o) =>
       [o.candidateName, o.jobTitle, o.roleTrack ?? ""]
         .filter(Boolean)
         .some((field) => field.toLowerCase().includes(searchTerm)),
     );
-  }, [offersData?.offers, searchTerm]);
+  }, [offersData?.offers, searchTerm, stage]);
 
   const searchPlaceholder =
     activeTab === "shortlist"
@@ -80,14 +108,27 @@ export function ShortlistPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-6 py-8">
       <ShortlistHeroBanner />
 
+      <PipelineStageStrip
+        counts={stageCounts}
+        active={stage}
+        onSelect={(next) => {
+          setStage(next);
+          setActiveTab(next === "shortlisted" ? "shortlist" : "offers");
+          setSearchValue("");
+          setPage(1);
+          setOffersPage(1);
+        }}
+      />
+
       <ShortlistToolbar
         activeTab={activeTab}
         shortlistCount={savedTotal}
-        offersCount={offersTotal}
+        offersCount={stageCounts.invited}
         searchValue={searchValue}
         searchPlaceholder={searchPlaceholder}
         onTabChange={(tab) => {
           setActiveTab(tab);
+          setStage(tab === "shortlist" ? "shortlisted" : "invited");
           setSearchValue("");
           setPage(1);
           setOffersPage(1);

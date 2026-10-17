@@ -45,7 +45,7 @@ export function EditRoleFooter({
           </Button>
         ) : null}
         <Button onClick={onNext} className="h-10 w-31 rounded-lg">
-          {isLastStep ? "Send Offer" : "Next"}
+          {isLastStep ? "Send invite" : "Next"}
         </Button>
       </div>
     </div>

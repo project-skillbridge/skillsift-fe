@@ -10,6 +10,7 @@ import { ApiError } from "@/lib/api";
 
 import { EmployerTalentProfileHeader } from "../employer-talent-profile-header";
 import { EmployerTalentContactPanel } from "./employer-talent-contact-panel";
+import { EmployerUnlockPanel } from "./employer-unlock-panel";
 
 type EmployerTalentProfilePageProps = {
   userId: string;
@@ -65,6 +66,7 @@ export function EmployerTalentProfilePage({
           email={data.email}
         />
       ) : null}
+      <EmployerUnlockPanel profile={data} />
       <VerifiedReportSummary
         data={data}
         viewerMode="employer"

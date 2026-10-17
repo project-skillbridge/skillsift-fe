@@ -8,7 +8,7 @@ import { useEmployerDashboardHome } from "@/hooks/api/use-employer-dashboard";
 import { EmployerDashboardActions } from "./employer-dashboard-actions";
 import { EmployerDashboardHero } from "./employer-dashboard-hero";
 import { EmployerDashboardPipelineBanner } from "./employer-dashboard-pipeline-banner";
-import { EmployerDashboardTestimonials } from "./employer-dashboard-testimonials";
+import { EmployerNextSteps } from "./employer-next-steps";
 import { EmployerPendingFeedbackBanner } from "./employer-pending-feedback-banner";
 import { EmployerRecentActivity } from "./employer-recent-activity";
 import { EmployerStatCards } from "./employer-stat-cards";
@@ -36,12 +36,13 @@ const NewEmployerDashboardPage = () => {
         settingsHref="/e/settings"
       />
 
+      <EmployerNextSteps />
+
       {viewState === "new_user" ? (
         <>
           <div className="rounded-2xl">
             <EmployerDashboardHero />
             <EmployerDashboardPipelineBanner />
-            <EmployerDashboardTestimonials />
           </div>
           <EmployerDashboardActions />
         </>

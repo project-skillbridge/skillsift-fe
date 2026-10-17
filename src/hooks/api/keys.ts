@@ -142,3 +142,8 @@ export const certificateKeys = {
   all: ["certificates"] as const,
   mine: () => [...certificateKeys.all, "mine"] as const,
 };
+
+export const employerBillingKeys = {
+  all: ["employer-billing"] as const,
+  summary: () => [...employerBillingKeys.all, "summary"] as const,
+};

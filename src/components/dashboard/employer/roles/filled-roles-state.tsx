@@ -73,7 +73,7 @@ export function FilledRolesState({
                 className="h-20 w-20 object-contain"
               />
             }
-            label="Offers sent"
+            label="Invites sent"
             value={0}
             helperText="Candidates saved for interviews or next review."
             actionLabel="View shortlists"

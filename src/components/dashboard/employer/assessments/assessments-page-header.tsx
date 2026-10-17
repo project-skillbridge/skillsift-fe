@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { buildAssessmentDraftUrl } from "@/lib/create-assessment-url";
 import type { CreateAssessmentValues } from "@/types/create-assessment-schema";
 
 import { CreateAssessmentDialog } from "./create-assessment-dialog";
@@ -16,14 +17,7 @@ export function AssessmentsPageHeader() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   function handleContinue(values: CreateAssessmentValues) {
-    const params = new URLSearchParams({
-      title: values.title,
-      category: values.category,
-      passRate: String(values.passRate),
-      deadline: values.deadline.toISOString(),
-      type: values.type,
-    });
-    router.push(`/e/assessments/draft?${params.toString()}`);
+    router.push(buildAssessmentDraftUrl(values));
   }
 
   return (

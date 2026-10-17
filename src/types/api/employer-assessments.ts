@@ -2,10 +2,9 @@ export type EmployerAssessmentStatus = "active" | "inactive";
 
 export type EmployerAssessmentQuestionInput = {
   questionText: string;
-  questionType: "single_pick" | "multi_pick" | "required_text";
+  questionType: "multiple_choice" | "true_false" | "short_answer";
   options?: string[];
   correctAnswer?: string | string[];
-  points?: number;
 };
 
 export type CreateEmployerAssessmentInput = {
@@ -14,12 +13,30 @@ export type CreateEmployerAssessmentInput = {
   experienceLevel: "junior" | "mid" | "senior";
   timeLimitMinutes: 20 | 30 | 40 | 60;
   passingThreshold: number;
-  questionSource:
-    "credlane_bank" | "company_questions" | "manual" | "admin_upload";
+  questionSource: "credlane_bank" | "company_questions";
+  /** Required when `questionSource` is `credlane_bank`. */
+  credlaneAssessmentId?: string;
   shareViaLink: boolean;
   sendToCandidates: boolean;
   type: "internal" | "external";
+  /** Required (5 or more) when `questionSource` is `company_questions`. */
   questions?: EmployerAssessmentQuestionInput[];
+  /** Required when `sendToCandidates` is true. */
+  candidateUserIds?: string[];
+};
+
+/** Result of POST /employer/assessments/import-questions. */
+export type ImportedQuestionsResult = {
+  questions: EmployerAssessmentQuestionInput[];
+  questionCount: number;
+};
+
+/** One row of GET /employer/assessments/search-talent. */
+export type AssessmentTalentOption = {
+  userId: string;
+  fullName: string;
+  roleTrack: string | null;
+  verifiedLevel: string | null;
 };
 
 export type InviteToAssessmentInput = {
@@ -60,6 +77,7 @@ export type RawEmployerAssessment = {
   /** None of the below are on the wire yet. Kept optional so the UI can
    *  light up the moment backend adds them, without another rewrite. */
   submissions_count?: number;
+  submission_count?: number;
   talents_count?: number;
   /** 0–100. */
   pass_rate?: number;
@@ -123,15 +141,27 @@ export type ListEmployerAssessmentsResponse = {
   limit?: number;
 };
 
-export type AssessmentResultItem = {
-  candidateId: string;
-  candidateName: string;
+/** One submission on GET /employer/assessments/:id (`results.submissions`). */
+export type AssessmentSubmission = {
+  id: string;
+  candidateUserId: string | null;
+  candidateName: string | null;
   score: number;
-  passed: boolean;
-  submittedAt: string;
+  status: "pass" | "fail";
+  timeTakenSeconds: number | null;
+  dateCompleted: string;
+};
+
+export type EmployerAssessmentDetail = {
+  assessment: EmployerAssessmentItem;
+  shareUrl: string | null;
+  isExternal: boolean;
+  questions: EmployerAssessmentQuestion[];
+  submissions: AssessmentSubmission[];
+  submissionsTotal: number;
 };
 
 export type ListEmployerAssessmentResultsResponse = {
-  results: AssessmentResultItem[];
+  submissions: AssessmentSubmission[];
   total: number;
 };

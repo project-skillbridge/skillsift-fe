@@ -2,24 +2,25 @@
 
 import { Check } from "lucide-react";
 
-import { CREATE_ASSESSMENT_STEPS } from "@/constants/create-assessment-wizard";
+import type { CreateAssessmentStep } from "@/constants/create-assessment-wizard";
 import { cn } from "@/lib/utils";
 
 type CreateAssessmentSidebarProps = {
+  steps: readonly CreateAssessmentStep[];
   currentStepIndex: number;
 };
 
 export function CreateAssessmentSidebar({
+  steps,
   currentStepIndex,
 }: CreateAssessmentSidebarProps) {
   return (
     <aside className="w-80 shrink-0 rounded-xl border border-border bg-white p-5">
       <nav aria-label="Assessment creation steps">
         <ol className="flex flex-col gap-5">
-          {CREATE_ASSESSMENT_STEPS.map((step, index) => {
-            const isDone = index <= currentStepIndex;
+          {steps.map((step, index) => {
+            const isDone = index < currentStepIndex;
             const isActive = index === currentStepIndex;
-
             return (
               <li key={step.id} className="flex items-center gap-3">
                 <div
@@ -28,7 +29,9 @@ export function CreateAssessmentSidebar({
                     "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors",
                     isDone
                       ? "bg-google-green text-white"
-                      : "border border-foreground/25 text-foreground/40",
+                      : isActive
+                        ? "border border-google-green text-google-green"
+                        : "border border-foreground/25 text-foreground/40",
                   )}
                 >
                   {isDone ? (
@@ -41,8 +44,8 @@ export function CreateAssessmentSidebar({
                   className={cn(
                     "font-sans text-sm leading-snug transition-colors",
                     isActive && "font-medium text-foreground",
-                    isDone && !isActive && "text-foreground/80",
-                    !isDone && "text-foreground/40",
+                    isDone && "text-foreground/80",
+                    !isDone && !isActive && "text-foreground/40",
                   )}
                 >
                   {step.title}

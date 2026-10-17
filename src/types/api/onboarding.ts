@@ -89,6 +89,7 @@ export type TalentOnboardingProfileInput = {
   educationLevel?: string;
   linkedinUrl?: string;
   avatarUrl?: string;
+  portfolioUrl?: string;
 };
 
 export type TalentOnboardingProfileResponseData = {

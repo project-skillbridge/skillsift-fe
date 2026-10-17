@@ -19,8 +19,8 @@ export const SHORTLIST_EMPTY_STATE = {
 } as const;
 
 export const OFFERS_EMPTY_STATE = {
-  title: "No offers sent",
-  description: "Once you send offers to talents, they will appear here",
+  title: "No invites sent",
+  description: "Once you invite talents to interview, they will appear here",
   icon: "/assets/icons/icon-assessments-shared.svg",
 } as const;
 

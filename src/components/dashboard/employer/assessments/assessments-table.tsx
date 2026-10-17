@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { levelLabel, trackLabel } from "@/constants/employer-roles";
 import { useDataTable } from "@/hooks/use-data-table";
 import { formatRelativeTime } from "@/lib/format-date";
 import type { EmployerAssessmentItem } from "@/types/api/employer-assessments";
@@ -31,16 +32,10 @@ type AssessmentsTableProps = {
   isError?: boolean;
 };
 
-const EXPERIENCE_LEVEL_LABEL: Record<string, string> = {
-  junior: "Junior",
-  mid: "Mid-level",
-  senior: "Senior",
-};
-
 function jobTitleFor(assessment: EmployerAssessmentItem): string {
-  const roleTrack = assessment.roleTrack || "—";
-  const level = EXPERIENCE_LEVEL_LABEL[assessment.experienceLevel];
-  return level ? `${roleTrack} (${level})` : roleTrack;
+  const track = trackLabel(assessment.roleTrack) || "—";
+  const level = levelLabel(assessment.experienceLevel);
+  return level ? `${track} (${level})` : track;
 }
 
 const columns: ColumnDef<EmployerAssessmentItem>[] = [
@@ -174,8 +169,8 @@ export function AssessmentsTable({
     return (
       <DataEmptyState
         icon="/assets/assessments/no-assessments.svg"
-        title="No assessments match your search"
-        description="Try a different role track or status."
+        title="Nothing here yet"
+        description="No assessments match this view. Try another tab or search."
       />
     );
   }

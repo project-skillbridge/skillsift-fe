@@ -1,146 +1,127 @@
 "use client";
-import { useMemo, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
+
 import { QuestionnaireMobileActions } from "@/components/assessments/questionnaire-mobile-actions";
 import {
   CREATE_ASSESSMENT_STEP_META,
-  CREATE_ASSESSMENT_STEPS,
-  DEFAULT_SELECTED_QUESTION_IDS,
-  DEFAULT_WELCOME_MESSAGE_HTML,
-  type AssessmentGuidelineId,
-  type AssessmentQuestionOptionId,
-  type CreateAssessmentStepId,
+  getCreateAssessmentSteps,
 } from "@/constants/create-assessment-wizard";
-import { DEFAULT_ASSESSMENT_PASS_RATE } from "@/constants/employer-assessments";
+import {
+  ASSESSMENT_LEVEL_OPTIONS,
+  DEFAULT_ASSESSMENT_PASS_RATE,
+  MAX_ASSESSMENT_PASS_RATE,
+  MIN_ASSESSMENT_PASS_RATE,
+} from "@/constants/employer-assessments";
+import { levelLabel, trackLabel } from "@/constants/employer-roles";
 import { useCreateEmployerAssessment } from "@/hooks/api/use-employer-assessments";
-import { buildAssessmentHeaderSubtitle } from "@/lib/create-assessment-utils";
-import { CreateAssessmentDetailsStep } from "./create-assessment-details-step";
-import { CreateAssessmentQuestionsStep } from "./create-assessment-questions-step";
-import { CreateAssessmentPreviewStep } from "./create-assessment-preview-step";
+import {
+  areCompanyQuestionsValid,
+  createDraftQuestion,
+  toApiQuestions,
+  type DraftQuestion,
+} from "@/lib/employer-assessment-questions";
+import { appToast } from "@/lib/toast";
+import type { AssessmentTalentOption } from "@/types/api/employer-assessments";
+
+import { AssessmentShareLinkModal } from "./assessment-share-link-modal";
 import { CreateAssessmentHeader } from "./create-assessment-header";
 import { CreateAssessmentMobileProgress } from "./create-assessment-mobile-progress";
+import { CreateAssessmentPreviewStep } from "./create-assessment-preview-step";
+import { CreateAssessmentQuestionsStep } from "./create-assessment-questions-step";
+import { CreateAssessmentRecipientsStep } from "./create-assessment-recipients-step";
 import { CreateAssessmentSidebar } from "./create-assessment-sidebar";
 import { CreateAssessmentStepCard } from "./create-assessment-step-card";
-import { AssessmentShareLinkModal } from "./assessment-share-link-modal";
 
-type AssessmentWizardState = {
-  welcomeMessageHtml: string;
-  guidelines: Record<AssessmentGuidelineId, boolean>;
-  selectedQuestionIds: AssessmentQuestionOptionId[];
-};
+type TimeLimit = 20 | 30 | 40 | 60;
+const TIME_LIMITS: readonly number[] = [20, 30, 40, 60];
 
-const INITIAL_GUIDELINES: Record<AssessmentGuidelineId, boolean> = {
-  attempts: true,
-  timeout: true,
-  captcha: true,
-};
-
-const INITIAL_STATE: AssessmentWizardState = {
-  welcomeMessageHtml: DEFAULT_WELCOME_MESSAGE_HTML,
-  guidelines: INITIAL_GUIDELINES,
-  selectedQuestionIds: DEFAULT_SELECTED_QUESTION_IDS,
-};
+function parseLevel(value: string | null): "junior" | "mid" | "senior" {
+  return ASSESSMENT_LEVEL_OPTIONS.some((o) => o.value === value)
+    ? (value as "junior" | "mid" | "senior")
+    : "mid";
+}
 
 export function CreateAssessmentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const createAssessmentMutation = useCreateEmployerAssessment();
-  const createAssessment = createAssessmentMutation.mutate;
-  const isPending = createAssessmentMutation.isPending;
+  const title = searchParams.get("title") ?? "";
+  const roleTrack = searchParams.get("roleTrack") ?? "";
+  const level = parseLevel(searchParams.get("level"));
+  const timeLimitParam = Number(searchParams.get("timeLimit"));
+  const timeLimitMinutes = (
+    TIME_LIMITS.includes(timeLimitParam) ? timeLimitParam : 30
+  ) as TimeLimit;
+  const passRateParam = Number.parseInt(searchParams.get("passRate") ?? "", 10);
+  const passRate =
+    Number.isFinite(passRateParam) &&
+    passRateParam >= MIN_ASSESSMENT_PASS_RATE &&
+    passRateParam <= MAX_ASSESSMENT_PASS_RATE
+      ? passRateParam
+      : DEFAULT_ASSESSMENT_PASS_RATE;
+  const type =
+    searchParams.get("type") === "external" ? "external" : "internal";
 
-  const title = searchParams.get("title") ?? "New assessment";
-  const category = searchParams.get("category") ?? "";
-  const deadlineParam = searchParams.get("deadline");
-  const passRateParam = searchParams.get("passRate");
-  const passRate = passRateParam
-    ? Number.parseInt(passRateParam, 10)
-    : DEFAULT_ASSESSMENT_PASS_RATE;
-  const typeParam = searchParams.get("type");
-  const type = typeParam === "external" ? "external" : "internal";
+  useEffect(() => {
+    // Direct visits (no dialog) have nothing to publish.
+    if (!title || !roleTrack) router.replace("/e/assessments");
+  }, [title, roleTrack, router]);
 
-  const [currentStepId, setCurrentStepId] =
-    useState<CreateAssessmentStepId>("details");
-  const [wizardState, setWizardState] =
-    useState<AssessmentWizardState>(INITIAL_STATE);
+  const steps = useMemo(() => getCreateAssessmentSteps(type), [type]);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [questions, setQuestions] = useState<DraftQuestion[]>(() => [
+    createDraftQuestion(),
+  ]);
+  const [recipients, setRecipients] = useState<AssessmentTalentOption[]>([]);
+  const [shareLink, setShareLink] = useState("");
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [mockShareLink, setMockShareLink] = useState("");
 
-  const selectedQuestionIds =
-    wizardState.selectedQuestionIds ?? DEFAULT_SELECTED_QUESTION_IDS;
-  const currentStepIndex = CREATE_ASSESSMENT_STEPS.findIndex(
-    (step) => step.id === currentStepId,
-  );
-  const isLastStep = currentStepIndex === CREATE_ASSESSMENT_STEPS.length - 1;
-  const meta = CREATE_ASSESSMENT_STEP_META[currentStepId];
+  const { mutate: createAssessment, isPending } = useCreateEmployerAssessment();
+
+  const currentStep = steps[stepIndex];
+  const isLastStep = stepIndex === steps.length - 1;
+  const meta = CREATE_ASSESSMENT_STEP_META[currentStep.id];
+
   const nextDisabled =
-    currentStepId === "questions" && selectedQuestionIds.length === 0;
-
-  const resolvedPassRate = useMemo(
-    () =>
-      Number.isFinite(passRate) && passRate >= 50 && passRate <= 90
-        ? Math.floor(passRate)
-        : 70,
-    [passRate],
-  );
-
-  const headerSubtitle = useMemo(() => {
-    const deadline = deadlineParam ? new Date(deadlineParam) : undefined;
-    return buildAssessmentHeaderSubtitle(category, deadline);
-  }, [category, deadlineParam]);
-
-  const previewDeadline = useMemo(
-    () => (deadlineParam ? new Date(deadlineParam) : undefined),
-    [deadlineParam],
-  );
-
-  const handleGuidelineChange = (
-    guidelineId: AssessmentGuidelineId,
-    checked: boolean,
-  ) => {
-    setWizardState((state) => ({
-      ...state,
-      guidelines: { ...state.guidelines, [guidelineId]: checked },
-    }));
-  };
+    isPending ||
+    (currentStep.id === "questions" && !areCompanyQuestionsValid(questions)) ||
+    (currentStep.id === "recipients" && recipients.length === 0);
 
   const handlePublish = () => {
     if (isPending) return;
-
     createAssessment(
       {
         title,
-        roleTrack: category.slice(0, 100) || "General Track",
-        experienceLevel: "mid",
-        timeLimitMinutes: 30,
-        passingThreshold: resolvedPassRate,
-        questionSource: "manual",
+        roleTrack,
+        experienceLevel: level,
+        timeLimitMinutes,
+        passingThreshold: passRate,
+        questionSource: "company_questions",
+        questions: toApiQuestions(questions),
         shareViaLink: type === "external",
         sendToCandidates: type === "internal",
         type,
+        candidateUserIds:
+          type === "internal" ? recipients.map((r) => r.userId) : undefined,
       },
       {
         onSuccess: (data) => {
-          toast.success("Assessment published successfully.");
           if (type === "external") {
-            const domain =
-              typeof window !== "undefined"
-                ? window.location.origin
-                : "https://skillsift.online";
-            setMockShareLink(
-              `${domain}/assessment/${data.token || "mock-external-link"}`,
-            );
+            setShareLink(`${window.location.origin}/assessment/${data.token}`);
             setShareModalOpen(true);
-          } else {
-            router.push("/e/assessments");
+            return;
           }
+          appToast.success(
+            `Assessment sent to ${recipients.length} ${recipients.length === 1 ? "person" : "people"}.`,
+          );
+          router.push("/e/assessments");
         },
-        onError: (err: unknown) => {
-          const message =
-            err instanceof Error ? err.message : "Failed to publish assessment";
-          toast.error(message);
-        },
+        onError: (err: unknown) =>
+          appToast.error(
+            err instanceof Error ? err.message : "Failed to publish assessment",
+          ),
       },
     );
   };
@@ -150,66 +131,76 @@ export function CreateAssessmentPage() {
       handlePublish();
       return;
     }
-    setCurrentStepId(CREATE_ASSESSMENT_STEPS[currentStepIndex + 1].id);
+    setStepIndex((i) => i + 1);
   };
-
-  const handleBack = () => {
-    if (currentStepIndex === 0) return;
-    setCurrentStepId(CREATE_ASSESSMENT_STEPS[currentStepIndex - 1].id);
-  };
+  const handleBack = () => setStepIndex((i) => Math.max(0, i - 1));
 
   const stepContent = (() => {
-    if (currentStepId === "details") {
+    if (currentStep.id === "questions") {
       return (
-        <CreateAssessmentDetailsStep
-          welcomeMessageHtml={wizardState.welcomeMessageHtml}
-          onWelcomeMessageChange={(html) =>
-            setWizardState((s) => ({ ...s, welcomeMessageHtml: html }))
-          }
-          guidelines={wizardState.guidelines}
-          onGuidelineChange={handleGuidelineChange}
+        <CreateAssessmentQuestionsStep
+          questions={questions}
+          onQuestionsChange={setQuestions}
         />
       );
     }
-    if (currentStepId === "questions") {
+    if (currentStep.id === "recipients") {
       return (
-        <CreateAssessmentQuestionsStep
-          selectedQuestionIds={selectedQuestionIds}
-          onSelectionChange={(ids) =>
-            setWizardState((s) => ({ ...s, selectedQuestionIds: ids }))
-          }
+        <CreateAssessmentRecipientsStep
+          roleTrack={roleTrack}
+          selected={recipients}
+          onSelectedChange={setRecipients}
         />
       );
     }
     return (
       <CreateAssessmentPreviewStep
-        welcomeMessageHtml={wizardState.welcomeMessageHtml}
-        category={category}
-        passRate={resolvedPassRate}
-        deadline={previewDeadline}
-        selectedQuestionIds={selectedQuestionIds}
+        roleTrack={roleTrack}
+        level={level}
+        timeLimitMinutes={timeLimitMinutes}
+        passRate={passRate}
+        questionCount={questions.length}
+        recipientCount={type === "internal" ? recipients.length : null}
+        type={type}
       />
     );
   })();
 
+  const publishLabel = isPending
+    ? "Publishing..."
+    : type === "external"
+      ? "Create link"
+      : "Publish and invite";
+
+  if (!title || !roleTrack) return null;
+
   return (
     <div className="pb-32 lg:pb-10">
-      <CreateAssessmentHeader title={title} subtitle={headerSubtitle} />
-      <CreateAssessmentMobileProgress currentStepIndex={currentStepIndex} />
+      <CreateAssessmentHeader
+        title={title}
+        subtitle={[trackLabel(roleTrack), levelLabel(level)]
+          .filter(Boolean)
+          .join(" • ")}
+      />
+      <CreateAssessmentMobileProgress
+        steps={steps}
+        currentStepIndex={stepIndex}
+      />
       <div className="mx-auto flex max-w-300 flex-col gap-6 pb-10 lg:flex-row lg:items-start lg:gap-10">
         <div className="hidden lg:block">
-          <CreateAssessmentSidebar currentStepIndex={currentStepIndex} />
+          <CreateAssessmentSidebar steps={steps} currentStepIndex={stepIndex} />
         </div>
         <CreateAssessmentStepCard
           title={meta.title}
           description={meta.description}
-          currentStepIndex={currentStepIndex}
+          currentStepIndex={stepIndex}
+          totalSteps={steps.length}
           isLastStep={isLastStep}
           assessmentType={type}
-          showBack={currentStepIndex > 0}
+          showBack={stepIndex > 0}
           onBack={handleBack}
           onNext={handleNext}
-          nextDisabled={nextDisabled || isPending}
+          nextDisabled={nextDisabled}
           nextLoading={isPending}
         >
           {stepContent}
@@ -217,21 +208,15 @@ export function CreateAssessmentPage() {
       </div>
 
       <QuestionnaireMobileActions
-        questionNumber={currentStepIndex + 1}
-        totalQuestions={CREATE_ASSESSMENT_STEPS.length}
-        onBack={currentStepIndex > 0 ? handleBack : undefined}
+        questionNumber={stepIndex + 1}
+        totalQuestions={steps.length}
+        onBack={stepIndex > 0 ? handleBack : undefined}
         onNext={handleNext}
         isLast={isLastStep}
-        showBack={currentStepIndex > 0}
-        nextDisabled={nextDisabled || isPending}
+        showBack={stepIndex > 0}
+        nextDisabled={nextDisabled}
         nextLoading={isPending}
-        lastStepLabel={
-          isPending
-            ? "Publishing..."
-            : type === "external"
-              ? "Generate Link"
-              : "Send Assessment"
-        }
+        lastStepLabel={publishLabel}
         className="lg:hidden"
       />
 
@@ -239,11 +224,9 @@ export function CreateAssessmentPage() {
         open={shareModalOpen}
         onOpenChange={(open) => {
           setShareModalOpen(open);
-          if (!open) {
-            router.push("/e/assessments");
-          }
+          if (!open) router.push("/e/assessments");
         }}
-        link={mockShareLink}
+        link={shareLink}
       />
     </div>
   );

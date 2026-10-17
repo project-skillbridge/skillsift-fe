@@ -20,6 +20,7 @@ const logoWithText = "/assets/logo/logo-with-text-white.svg";
 const navLinks = [
   { label: "About", href: "/about-us" },
   { label: "How It Works", href: "/how-it-works" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
 

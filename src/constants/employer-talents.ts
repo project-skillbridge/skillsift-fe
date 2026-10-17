@@ -27,9 +27,14 @@ export const EMPLOYER_FILTER_OPTIONS: EmployerFilterOptions = {
     { value: "employed_flexible", label: "Employed, flexible" },
   ],
   region: [
-    { value: "remote", label: "Remote" },
-    { value: "hybrid", label: "Hybrid" },
-    { value: "on-site", label: "On-site" },
+    { value: "Nigeria", label: "Nigeria" },
+    { value: "Ghana", label: "Ghana" },
+    { value: "Kenya", label: "Kenya" },
+    { value: "South Africa", label: "South Africa" },
+    { value: "United Kingdom", label: "United Kingdom" },
+    { value: "United States", label: "United States" },
+    { value: "Canada", label: "Canada" },
+    { value: "Germany", label: "Germany" },
   ],
 };
 

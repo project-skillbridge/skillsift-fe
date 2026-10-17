@@ -7,6 +7,10 @@ import type {
   ListEmployerAssessmentResultsResponse,
   RawEmployerAssessment,
   InviteToAssessmentInput,
+  AssessmentTalentOption,
+  ImportedQuestionsResult,
+  EmployerAssessmentDetail,
+  AssessmentSubmission,
 } from "@/types/api/employer-assessments";
 import { unwrapData } from "./utils";
 
@@ -23,7 +27,7 @@ function normalizeAssessment(
     status: raw.is_active ? "active" : "inactive",
     token: raw.share_token ?? null,
     questionsCount: raw.questions?.length ?? 0,
-    submissionsCount: raw.submissions_count ?? null,
+    submissionsCount: raw.submission_count ?? raw.submissions_count ?? null,
     talentsCount: raw.talents_count ?? null,
     passRate: raw.pass_rate ?? null,
     closesAt: raw.closes_at ?? null,
@@ -50,6 +54,12 @@ export async function createEmployerAssessment(
 
   if (input.questions && input.questions.length) {
     body.questions = input.questions;
+  }
+  if (input.credlaneAssessmentId) {
+    body.credlaneAssessmentId = input.credlaneAssessmentId;
+  }
+  if (input.candidateUserIds && input.candidateUserIds.length) {
+    body.candidateUserIds = input.candidateUserIds;
   }
 
   const res = await authApi.post<ApiEnvelope<RawEmployerAssessment>>(
@@ -87,6 +97,41 @@ export async function getEmployerAssessment(
   return normalizeAssessment(unwrapData(res));
 }
 
+/** Detail view: the assessment plus its questions and submissions. */
+export async function getEmployerAssessmentDetail(
+  assessmentId: string,
+): Promise<EmployerAssessmentDetail> {
+  const res = await authApi.get<
+    ApiEnvelope<
+      RawEmployerAssessment & {
+        type?: string;
+        results?: { submissions?: AssessmentSubmission[]; total?: number };
+      }
+    >
+  >(`/employer/assessments/${assessmentId}`);
+  const raw = unwrapData(res);
+  const submissions = raw.results?.submissions ?? [];
+  const assessment = normalizeAssessment(raw);
+  return {
+    assessment: {
+      ...assessment,
+      submissionsCount: raw.results?.total ?? submissions.length,
+    },
+    shareUrl: raw.shareUrl ?? null,
+    isExternal: raw.type === "external",
+    questions: (raw.questions ?? []).map((q) => {
+      const r = q as unknown as Record<string, unknown>;
+      return {
+        ...q,
+        questionText: String(r.question_text ?? q.questionText ?? ""),
+        options: (r.options as string[] | null) ?? q.options ?? null,
+      };
+    }),
+    submissions,
+    submissionsTotal: raw.results?.total ?? submissions.length,
+  };
+}
+
 export async function deactivateEmployerAssessment(
   assessmentId: string,
 ): Promise<void> {
@@ -121,4 +166,41 @@ export async function inviteToAssessment(
   if (emails && emails.length > 0) body.emails = emails;
 
   await authApi.post(`/employer/assessments/${assessmentId}/invite`, body);
+}
+
+/** Parses a CSV/XLSX question file server-side; nothing is saved yet. */
+export async function importAssessmentQuestions(
+  file: File,
+): Promise<ImportedQuestionsResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await authApi.post<ApiEnvelope<ImportedQuestionsResult>>(
+    "/employer/assessments/import-questions",
+    formData,
+  );
+  return unwrapData(res);
+}
+
+type RawTalentSearchRow = {
+  user_id: string;
+  full_name: string;
+  /** Verified level (`junior` | `mid` | ...). */
+  role: string | null;
+  role_track: string | null;
+};
+
+export async function searchAssessmentTalent(
+  q: string,
+  track?: string,
+): Promise<AssessmentTalentOption[]> {
+  const res = await authApi.get<ApiEnvelope<{ results: RawTalentSearchRow[] }>>(
+    "/employer/assessments/search-talent",
+    { params: { q, limit: 20, track: track || undefined } },
+  );
+  return unwrapData(res).results.map((row) => ({
+    userId: row.user_id,
+    fullName: row.full_name,
+    roleTrack: row.role_track,
+    verifiedLevel: row.role,
+  }));
 }

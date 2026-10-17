@@ -52,7 +52,7 @@ export function RoleCard({ role }: { role: EmployerRoleItem }) {
           <p className="text-[48px] font-medium leading-none tracking-[-0.02em] text-[#101828]">
             {role.offersSent}
           </p>
-          <p className="pb-1 text-xs text-[#667085]">Offer sent</p>
+          <p className="pb-1 text-xs text-[#667085]">Invite sent</p>
         </div>
 
         <p className="mt-4 text-sm text-[#475467]">{role.requirements}</p>

@@ -36,6 +36,10 @@ const nextConfig: NextConfig = {
         hostname: "img.youtube.com",
         pathname: "/vi/**",
       },
+      // Placeholder faces used by the local talent seeder only.
+      ...(process.env.NODE_ENV === "production"
+        ? []
+        : [{ protocol: "https" as const, hostname: "i.pravatar.cc" }]),
     ],
   },
 };

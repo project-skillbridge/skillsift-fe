@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { FlaskConical, Package, PencilLine } from "lucide-react";
@@ -192,7 +193,7 @@ export function EmployerSendOfferPage({
                   Education
                 </p>
                 <p className="text-base font-medium tracking-[0.017em] text-[#151515]">
-                  {role.education}
+                  {educationLabel(role.education)}
                 </p>
               </div>
             ) : null}

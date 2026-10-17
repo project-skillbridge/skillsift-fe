@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -140,7 +141,10 @@ export function RoleCreatedPage() {
             <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6">
               <PreviewField label="Employment type" value={employmentType} />
               <PreviewField label="Work arrangement" value={workArrangement} />
-              <PreviewField label="Education" value={education} />
+              <PreviewField
+                label="Education"
+                value={educationLabel(education)}
+              />
               <PreviewField label="Salary range" value={salaryDisplay} />
               {keywords && keywords.length > 0 && (
                 <PreviewField

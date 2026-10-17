@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CreateRoleDialog } from "@/components/dashboard/employer/roles/create-role-dialog";
+import { buildCreateRoleUrl } from "@/lib/create-role-url";
 import type { CreateRoleValues } from "@/types/api/employer-roles";
 import { cn } from "@/lib/utils";
 
@@ -37,12 +38,7 @@ export function SendOfferTrigger({
 
   function handleCreateDialogContinue(values: CreateRoleValues) {
     setIsCreateDialogOpen(false);
-    const params = new URLSearchParams({
-      title: values.roleTitle.trim(),
-      category: values.category,
-      companyUrl: values.companyUrl.trim(),
-    });
-    router.push(`/e/roles/create?${params.toString()}`);
+    router.push(buildCreateRoleUrl(values));
   }
 
   return (

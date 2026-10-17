@@ -34,7 +34,7 @@ export function CreateAssessmentHeader({
         href="/e/assessments"
         className="inline-flex shrink-0 items-center gap-1.5 font-sans text-xs font-medium text-[#667085] transition-colors hover:text-[#101828] lg:gap-2 lg:text-sm"
       >
-        Save and Exit
+        Exit
         <LogOut className="size-3.5 lg:size-4" aria-hidden />
       </Link>
     </div>

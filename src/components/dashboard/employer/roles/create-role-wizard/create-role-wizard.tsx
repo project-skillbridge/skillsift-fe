@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -12,6 +12,7 @@ import { workPreferencesSchema } from "@/types/create-role-schema";
 import { useCreatedRoleStore } from "@/stores/created-role-store";
 import { useCreateRole } from "@/hooks/api/use-employer-roles";
 import { appToast } from "@/lib/toast";
+import { trackLabel } from "@/constants/employer-roles";
 
 import { WizardRoleHeader } from "./wizard-role-header";
 import { WizardSidebar } from "./wizard-sidebar";
@@ -55,8 +56,20 @@ export function CreateRoleWizard() {
   const searchParams = useSearchParams();
 
   const roleTitle = searchParams.get("title") ?? "";
-  const category = searchParams.get("category") ?? "";
+  const track = searchParams.get("track") ?? "";
+  const level = searchParams.get("level") ?? "";
+  const visibility =
+    searchParams.get("visibility") === "private" ? "private" : "public";
+  const capParam = Number(searchParams.get("applicantCap"));
+  const applicantCap =
+    Number.isInteger(capParam) && capParam > 0 ? capParam : null;
+  const category = trackLabel(track);
   const companyUrl = searchParams.get("companyUrl") ?? "";
+
+  useEffect(() => {
+    // Direct visits (no dialog) would otherwise fail at submit with a 400.
+    if (!roleTitle || !track || !level) router.replace("/e/roles");
+  }, [roleTitle, track, level, router]);
 
   const [currentStepId, setCurrentStepId] =
     useState<CreateRoleStepId>("upload-jd");
@@ -77,7 +90,11 @@ export function CreateRoleWizard() {
       submitRole(
         {
           title: roleTitle,
+          track,
+          level,
           category,
+          visibility,
+          applicantCap,
           jdHtml: uploadJd.jdHtml,
           jdFile: uploadJd.jdFile,
           employmentType: workPreferences.employmentType,

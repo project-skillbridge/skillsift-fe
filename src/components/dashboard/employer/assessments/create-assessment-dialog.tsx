@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,9 +43,10 @@ export function CreateAssessmentDialog({
     mode: "onChange",
     defaultValues: {
       title: "",
-      category: "",
+      roleTrack: "",
+      experienceLevel: "mid",
+      timeLimitMinutes: "30",
       passRate: DEFAULT_ASSESSMENT_PASS_RATE,
-      deadline: undefined,
       type: "internal",
     },
   });
@@ -60,11 +60,7 @@ export function CreateAssessmentDialog({
   };
 
   const onSubmit = (values: CreateAssessmentValues) => {
-    if (onContinue) {
-      onContinue(values);
-    } else {
-      toast("Assessment creation is coming soon.");
-    }
+    onContinue?.(values);
     reset();
     onOpenChange(false);
   };
@@ -77,7 +73,7 @@ export function CreateAssessmentDialog({
             Create assessment
           </DialogTitle>
           <DialogDescription className="text-xs leading-5 text-[#667085]">
-            Personalize your roles and offers sent to talents
+            Set it up in a minute, then add your questions.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,8 +82,7 @@ export function CreateAssessmentDialog({
           control={control}
           passRate={passRate}
           titleError={errors.title?.message}
-          categoryError={errors.category?.message}
-          deadlineError={errors.deadline?.message}
+          trackError={errors.roleTrack?.message}
         />
 
         <DialogFooter className="grid grid-cols-2 gap-3 sm:grid-cols-2">

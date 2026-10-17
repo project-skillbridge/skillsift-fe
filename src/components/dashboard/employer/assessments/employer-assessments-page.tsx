@@ -21,10 +21,9 @@ export function EmployerAssessmentsPage() {
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState<AssessmentsViewTab>("all");
 
-  const { data, isLoading, isError } = useEmployerAssessments({
-    page,
-    limit: PAGE_SIZE,
-  });
+  // The API returns every assessment (it ignores page/limit), so the
+  // stats are computed from the full list and paging happens here.
+  const { data, isLoading, isError } = useEmployerAssessments();
 
   const total = data?.total ?? 0;
 
@@ -44,6 +43,15 @@ export function EmployerAssessmentsPage() {
     [data?.assessments],
   );
 
+  const totals = useMemo(
+    () => ({
+      active: assessments.filter((a) => a.status === "active").length,
+      completed: assessments.reduce((n, a) => n + (a.submissionsCount ?? 0), 0),
+      candidates: assessments.reduce((n, a) => n + (a.talentsCount ?? 0), 0),
+    }),
+    [assessments],
+  );
+
   const searchTerm = searchValue.trim().toLowerCase();
   const visibleAssessments = useMemo(() => {
     let list = assessments;
@@ -57,6 +65,7 @@ export function EmployerAssessmentsPage() {
     }
 
     if (activeTab === "activity") {
+      list = list.filter((a) => a.lastActivityAt);
       list = [...list].sort((a, b) => {
         const aTime = a.lastActivityAt ? Date.parse(a.lastActivityAt) : 0;
         const bTime = b.lastActivityAt ? Date.parse(b.lastActivityAt) : 0;
@@ -66,6 +75,16 @@ export function EmployerAssessmentsPage() {
 
     return list;
   }, [assessments, searchTerm, activeTab]);
+
+  const pageCount = Math.max(
+    1,
+    Math.ceil(visibleAssessments.length / PAGE_SIZE),
+  );
+  const currentPage = Math.min(page, pageCount);
+  const pagedAssessments = visibleAssessments.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   const isEmpty =
     !isLoading && !isError && total === 0 && !hasConfirmedAssessments;
@@ -78,36 +97,43 @@ export function EmployerAssessmentsPage() {
         <>
           <AssessmentsPageHeader />
           <AssessmentStatCards
-            totalAssessments={total}
-            stats={null}
-            isStatsLoading={false}
+            total={assessments.length}
+            active={totals.active}
+            completed={totals.completed}
+            candidates={totals.candidates}
+            isLoading={isLoading}
           />
           <div className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-4">
             <AssessmentsToolbar
               searchValue={searchValue}
-              onSearchChange={setSearchValue}
+              onSearchChange={(v) => {
+                setSearchValue(v);
+                setPage(1);
+              }}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={(t) => {
+                setActiveTab(t);
+                setPage(1);
+              }}
             />
 
             {searchTerm ? (
               <p className="text-sm text-[#757575]">
-                Search applies to the current page only. Browse pages or clear
-                search to see more results.
+                Showing results for &ldquo;{searchValue.trim()}&rdquo;.
               </p>
             ) : null}
 
             <AssessmentsTable
-              assessments={visibleAssessments}
+              assessments={pagedAssessments}
               isLoading={isLoading}
               isError={isError}
             />
 
-            {!isError && total > 0 ? (
+            {!isError && visibleAssessments.length > 0 ? (
               <DataPagination
-                page={page}
-                totalPages={Math.max(1, Math.ceil(total / PAGE_SIZE))}
-                total={total}
+                page={currentPage}
+                totalPages={pageCount}
+                total={visibleAssessments.length}
                 pageSize={PAGE_SIZE}
                 itemLabel="assessments"
                 onPageChange={setPage}

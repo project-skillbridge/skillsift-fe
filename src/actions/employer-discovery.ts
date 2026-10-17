@@ -49,6 +49,7 @@ function mapDiscoveryCandidate(
     isSaved: raw.is_saved,
     offerSent: raw.offer_sent,
     offerStatus: raw.offer_status,
+    isUnlocked: raw.is_unlocked ?? false,
     averageHireRating: raw.average_hire_rating ?? null,
     hireRatingCount: raw.hire_rating_count ?? 0,
     wouldHireAgainRate: raw.would_hire_again_rate ?? null,
@@ -78,6 +79,9 @@ function mapDiscoveryProfile(
     is_saved,
     offer_sent,
     offer_status,
+    is_unlocked,
+    portfolio_url,
+    linkedin_url,
     average_hire_rating,
     hire_rating_count,
     would_hire_again_rate,
@@ -91,6 +95,9 @@ function mapDiscoveryProfile(
     isSaved: is_saved,
     offerSent: offer_sent,
     offerStatus: offer_status,
+    isUnlocked: is_unlocked ?? false,
+    portfolioUrl: portfolio_url ?? null,
+    linkedinUrl: linkedin_url ?? null,
     averageHireRating: average_hire_rating ?? null,
     hireRatingCount: hire_rating_count ?? 0,
     wouldHireAgainRate: would_hire_again_rate ?? null,
@@ -141,4 +148,18 @@ export async function removeCandidate(userId: string): Promise<void> {
   await authApi.delete(
     `/employer/discovery/candidates/${encodeURIComponent(userId)}/save`,
   );
+}
+
+/** Spends one unlock to reveal a candidate. Throws an ApiError with status 402 when none are left. */
+export async function unlockCandidate(
+  userId: string,
+): Promise<{ alreadyUnlocked: boolean; unlocksRemaining: number }> {
+  const res = await authApi.post<
+    ApiEnvelope<{ already_unlocked: boolean; unlocks_remaining: number }>
+  >(`/employer/discovery/candidates/${encodeURIComponent(userId)}/unlock`);
+  const data = unwrapData(res);
+  return {
+    alreadyUnlocked: data.already_unlocked,
+    unlocksRemaining: data.unlocks_remaining,
+  };
 }

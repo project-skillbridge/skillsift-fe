@@ -76,7 +76,7 @@ export function ShortlistToolbar({
           isActive={activeTab === "offers"}
           onClick={() => onTabChange("offers")}
         >
-          Offers sent ({offersCount})
+          Invites sent ({offersCount})
         </TabButton>
       </div>
     </div>

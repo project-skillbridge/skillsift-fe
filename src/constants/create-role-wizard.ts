@@ -30,14 +30,7 @@ export const EXPERIENCE_OPTIONS = [
   "10+ years",
 ] as const;
 
-export const EDUCATION_OPTIONS = [
-  "No requirement",
-  "High school diploma",
-  "Associate degree",
-  "Bachelor's degree",
-  "Master's degree",
-  "PhD",
-] as const;
+export { ROLE_EDUCATION_OPTIONS as EDUCATION_OPTIONS } from "./employer-roles";
 
 export const KEYWORD_OPTIONS = [
   "JavaScript",

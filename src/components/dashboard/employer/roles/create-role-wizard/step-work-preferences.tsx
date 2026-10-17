@@ -134,8 +134,8 @@ export function StepWorkPreferences({
               </SelectTrigger>
               <SelectContent>
                 {EDUCATION_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>

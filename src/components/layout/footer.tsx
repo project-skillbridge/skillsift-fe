@@ -24,6 +24,7 @@ const mainNavColumn: { title: string; links: NavLink[] } = {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about-us" },
     { label: "How it Works", href: "/how-it-works" },
+    { label: "Pricing", href: "/pricing" },
     { label: "Contact Us", href: "/contact" },
   ],
 };

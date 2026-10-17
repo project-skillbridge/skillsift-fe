@@ -61,7 +61,7 @@ const CONFIRM_COPY: Record<
       `Withdrawing will revoke the offer to ${name}. They'll be notified, and the offer can't be re-sent for the same role.`,
     actionLabel: "Withdraw offer",
     pendingLabel: "Withdrawing…",
-    successLabel: "Offer withdrawn.",
+    successLabel: "Invite withdrawn.",
     destructive: true,
   },
 };

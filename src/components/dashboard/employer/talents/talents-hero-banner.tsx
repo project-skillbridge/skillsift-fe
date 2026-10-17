@@ -12,7 +12,8 @@ export function TalentsHeroBanner() {
             Verified candidate discovery
           </h2>
           <p className="text-sm font-normal tracking-[0.017em] text-[#081536] sm:text-base">
-            Succeed faster with these frontend developer career resources.
+            Every candidate here has passed a skills assessment. Shortlist the
+            ones you want to talk to.
           </p>
         </div>
 

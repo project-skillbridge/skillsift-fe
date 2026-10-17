@@ -4,13 +4,13 @@ import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { CREATE_ASSESSMENT_STEPS } from "@/constants/create-assessment-wizard";
 import { cn } from "@/lib/utils";
 
 type CreateAssessmentStepCardProps = {
   title: string;
   description: string;
   currentStepIndex: number;
+  totalSteps: number;
   isLastStep: boolean;
   assessmentType?: "external" | "internal";
   showBack?: boolean;
@@ -26,6 +26,7 @@ export function CreateAssessmentStepCard({
   title,
   description,
   currentStepIndex,
+  totalSteps,
   isLastStep,
   assessmentType,
   showBack = false,
@@ -36,7 +37,7 @@ export function CreateAssessmentStepCard({
   children,
   className,
 }: CreateAssessmentStepCardProps) {
-  const progressWidth = `${((currentStepIndex + 1) / CREATE_ASSESSMENT_STEPS.length) * 100}%`;
+  const progressWidth = `${((currentStepIndex + 1) / totalSteps) * 100}%`;
 
   return (
     <Card
@@ -64,7 +65,7 @@ export function CreateAssessmentStepCard({
           role="progressbar"
           aria-valuenow={currentStepIndex + 1}
           aria-valuemin={1}
-          aria-valuemax={CREATE_ASSESSMENT_STEPS.length}
+          aria-valuemax={totalSteps}
           aria-label="Assessment creation progress"
         >
           <div
@@ -96,8 +97,8 @@ export function CreateAssessmentStepCard({
               ? "Saving..."
               : isLastStep
                 ? assessmentType === "external"
-                  ? "Generate Link"
-                  : "Send Assessment"
+                  ? "Create link"
+                  : "Publish and invite"
                 : "Next"}
           </Button>
         </div>
