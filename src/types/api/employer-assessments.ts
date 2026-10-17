@@ -174,7 +174,8 @@ export type AssessmentResultQuestion = {
   questionText: string;
   questionType: string;
   options: string[] | null;
-  correctAnswer: string;
+  /** Null for SkillSift library assessments: the key stays private. */
+  correctAnswer: string | null;
   givenAnswer: string | null;
   isCorrect: boolean;
 };
@@ -219,4 +220,25 @@ export type DraftAssessmentQuestionsInput = {
 export type DraftAssessmentQuestionsResult = {
   questions: EmployerAssessmentQuestionInput[];
   dropped: number;
+};
+
+/** A ready-made SkillSift assessment an employer can pick instead of writing questions. */
+export type LibraryAssessmentItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  estimatedCompletionTime: string;
+  roleTrack: string;
+  experienceLevel: string;
+  questionCount: number;
+};
+
+/** Preview of a library assessment. SkillSift never sends the answer key. */
+export type LibraryAssessmentDetail = LibraryAssessmentItem & {
+  questions: {
+    position: number;
+    questionText: string;
+    questionType: "multiple_choice" | "true_false" | "short_answer";
+    options: string[] | null;
+  }[];
 };

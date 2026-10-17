@@ -15,7 +15,10 @@ import {
   MIN_ASSESSMENT_PASS_RATE,
 } from "@/constants/employer-assessments";
 import { levelLabel, trackLabel } from "@/constants/employer-roles";
-import { useCreateEmployerAssessment } from "@/hooks/api/use-employer-assessments";
+import {
+  useCreateEmployerAssessment,
+  useLibraryAssessments,
+} from "@/hooks/api/use-employer-assessments";
 import {
   areCompanyQuestionsValid,
   createDraftQuestion,
@@ -29,7 +32,10 @@ import { AssessmentShareLinkModal } from "./assessment-share-link-modal";
 import { CreateAssessmentHeader } from "./create-assessment-header";
 import { CreateAssessmentMobileProgress } from "./create-assessment-mobile-progress";
 import { CreateAssessmentPreviewStep } from "./create-assessment-preview-step";
-import { CreateAssessmentQuestionsStep } from "./create-assessment-questions-step";
+import {
+  CreateAssessmentSourceStep,
+  type QuestionSource,
+} from "./create-assessment-source-step";
 import { CreateAssessmentRecipientsStep } from "./create-assessment-recipients-step";
 import { CreateAssessmentSidebar } from "./create-assessment-sidebar";
 import { CreateAssessmentStepCard } from "./create-assessment-step-card";
@@ -74,11 +80,21 @@ export function CreateAssessmentPage() {
   const [questions, setQuestions] = useState<DraftQuestion[]>(() => [
     createDraftQuestion(),
   ]);
+  const [sourceChoice, setSourceChoice] = useState<QuestionSource | null>(null);
+  const [libraryId, setLibraryId] = useState<string | null>(null);
   const [recipients, setRecipients] = useState<AssessmentTalentOption[]>([]);
   const [shareLink, setShareLink] = useState("");
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const { mutate: createAssessment, isPending } = useCreateEmployerAssessment();
+  const { data: libraryItems, isLoading: libraryLoading } =
+    useLibraryAssessments({ roleTrack, experienceLevel: level });
+
+  // Default to our ready-made assessments when there are some for this role.
+  const source: QuestionSource =
+    sourceChoice ?? (libraryItems?.length ? "library" : "own");
+  const selectedLibrary = libraryItems?.find((i) => i.id === libraryId);
+  const useLibrary = source === "library";
 
   const currentStep = steps[stepIndex];
   const isLastStep = stepIndex === steps.length - 1;
@@ -87,8 +103,10 @@ export function CreateAssessmentPage() {
   const nextDisabled =
     isPending ||
     (currentStep.id === "questions" &&
-      (!areCompanyQuestionsValid(questions) ||
-        questions.some((q) => q.aiDrafted))) ||
+      (useLibrary
+        ? !selectedLibrary
+        : !areCompanyQuestionsValid(questions) ||
+          questions.some((q) => q.aiDrafted))) ||
     (currentStep.id === "recipients" && recipients.length === 0);
 
   const handlePublish = () => {
@@ -100,8 +118,15 @@ export function CreateAssessmentPage() {
         experienceLevel: level,
         timeLimitMinutes,
         passingThreshold: passRate,
-        questionSource: "company_questions",
-        questions: toApiQuestions(questions),
+        ...(useLibrary && selectedLibrary
+          ? {
+              questionSource: "credlane_bank" as const,
+              credlaneAssessmentId: selectedLibrary.id,
+            }
+          : {
+              questionSource: "company_questions" as const,
+              questions: toApiQuestions(questions),
+            }),
         shareViaLink: type === "external",
         sendToCandidates: type === "internal",
         type,
@@ -140,8 +165,14 @@ export function CreateAssessmentPage() {
   const stepContent = (() => {
     if (currentStep.id === "questions") {
       return (
-        <CreateAssessmentQuestionsStep
+        <CreateAssessmentSourceStep
+          source={source}
+          onSourceChange={setSourceChoice}
           level={level}
+          libraryItems={libraryItems}
+          libraryLoading={libraryLoading}
+          libraryId={selectedLibrary?.id ?? null}
+          onLibraryChange={setLibraryId}
           questions={questions}
           onQuestionsChange={setQuestions}
         />
@@ -162,7 +193,9 @@ export function CreateAssessmentPage() {
         level={level}
         timeLimitMinutes={timeLimitMinutes}
         passRate={passRate}
-        questionCount={questions.length}
+        questionCount={
+          useLibrary ? (selectedLibrary?.questionCount ?? 0) : questions.length
+        }
         recipientCount={type === "internal" ? recipients.length : null}
         type={type}
       />

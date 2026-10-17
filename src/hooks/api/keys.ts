@@ -136,6 +136,10 @@ export const employerAssessmentsKeys = {
   detail: (id: string) => [...employerAssessmentsKeys.details(), id] as const,
   results: (id: string) =>
     [...employerAssessmentsKeys.all, "results", id] as const,
+  library: (params: { roleTrack?: string; experienceLevel?: string }) =>
+    [...employerAssessmentsKeys.all, "library", params] as const,
+  libraryEntry: (id: string) =>
+    [...employerAssessmentsKeys.all, "library", "entry", id] as const,
 };
 
 export const certificateKeys = {

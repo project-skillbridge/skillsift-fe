@@ -126,7 +126,7 @@ export function CandidateReportSheet({
                           {q.givenAnswer ?? "No answer"}
                         </dd>
                       </div>
-                      {!q.isCorrect ? (
+                      {!q.isCorrect && q.correctAnswer ? (
                         <div className="flex gap-2">
                           <dt className="text-[#757575]">Correct answer:</dt>
                           <dd className="text-[#151515]">{q.correctAnswer}</dd>

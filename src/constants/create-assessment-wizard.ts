@@ -22,9 +22,9 @@ export const CREATE_ASSESSMENT_STEP_META: Record<
   { title: string; description: string }
 > = {
   questions: {
-    title: "Add your questions",
+    title: "Choose your questions",
     description:
-      "Write your own, or import a spreadsheet. You need at least 5 questions.",
+      "Pick a ready-made SkillSift assessment, or write your own. Your own needs at least 5 questions.",
   },
   recipients: {
     title: "Choose who takes it",

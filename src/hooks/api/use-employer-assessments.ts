@@ -7,6 +7,8 @@ import {
   getEmployerAssessment,
   getEmployerAssessmentDetail,
   getEmployerAssessmentResultDetail,
+  getLibraryAssessment,
+  getLibraryAssessments,
   getEmployerAssessmentResults,
   getEmployerAssessments,
   importAssessmentQuestions,
@@ -103,6 +105,25 @@ export function useDeactivateEmployerAssessment() {
 export function useInviteToAssessment() {
   return useMutation({
     mutationFn: (input: InviteToAssessmentInput) => inviteToAssessment(input),
+  });
+}
+
+export function useLibraryAssessments(params: {
+  roleTrack?: string;
+  experienceLevel?: string;
+}) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.library(params),
+    queryFn: () => getLibraryAssessments(params),
+    enabled: !!params.roleTrack,
+  });
+}
+
+export function useLibraryAssessment(id: string | null) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.libraryEntry(id ?? ""),
+    queryFn: () => getLibraryAssessment(id as string),
+    enabled: !!id,
   });
 }
 

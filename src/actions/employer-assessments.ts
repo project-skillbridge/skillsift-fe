@@ -15,6 +15,8 @@ import type {
   DraftAssessmentQuestionsResult,
   AssessmentResultsParams,
   AssessmentSubmission,
+  LibraryAssessmentDetail,
+  LibraryAssessmentItem,
 } from "@/types/api/employer-assessments";
 import { unwrapData } from "./utils";
 
@@ -180,6 +182,56 @@ export async function inviteToAssessment(
   if (emails && emails.length > 0) body.emails = emails;
 
   await authApi.post(`/employer/assessments/${assessmentId}/invite`, body);
+}
+
+type RawLibraryItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  estimated_completion_time: string;
+  role_track: string;
+  experience_level: string;
+  question_count: number;
+};
+
+function normalizeLibraryItem(raw: RawLibraryItem): LibraryAssessmentItem {
+  return {
+    id: raw.id,
+    title: raw.title,
+    description: raw.description,
+    estimatedCompletionTime: raw.estimated_completion_time,
+    roleTrack: raw.role_track,
+    experienceLevel: raw.experience_level,
+    questionCount: raw.question_count,
+  };
+}
+
+/** Ready-made SkillSift assessments for a role track and level. */
+export async function getLibraryAssessments(params: {
+  roleTrack?: string;
+  experienceLevel?: string;
+}): Promise<LibraryAssessmentItem[]> {
+  const res = await authApi.get<ApiEnvelope<{ catalogue: RawLibraryItem[] }>>(
+    "/employer/assessments/credlane-catalogue",
+    {
+      params: { ...params, limit: 50 },
+    },
+  );
+  return (unwrapData(res).catalogue ?? []).map(normalizeLibraryItem);
+}
+
+export async function getLibraryAssessment(
+  id: string,
+): Promise<LibraryAssessmentDetail> {
+  const res = await authApi.get<
+    ApiEnvelope<
+      RawLibraryItem & {
+        questions: LibraryAssessmentDetail["questions"];
+      }
+    >
+  >(`/employer/assessments/credlane-catalogue/${id}`);
+  const raw = unwrapData(res);
+  return { ...normalizeLibraryItem(raw), questions: raw.questions };
 }
 
 /** AI starting point only; nothing is saved and the employer reviews it. */
