@@ -49,7 +49,9 @@ export function PricingPageContent({
             <thead className="bg-[#FAFAFA] text-[#52525B]">
               <tr>
                 <th className="px-4 py-3 font-medium">Feature</th>
-                <th className="px-4 py-3 text-center font-medium">Free</th>
+                <th className="px-4 py-3 text-center font-medium">
+                  Launch offer
+                </th>
                 <th className="px-4 py-3 text-center font-medium">
                   On a paid plan
                 </th>
@@ -124,7 +126,7 @@ export function PricingPageContent({
           href="/signup"
           className="inline-flex rounded-lg bg-[#05060F] px-6 py-3 text-sm font-semibold text-white"
         >
-          Start hiring free
+          Start with the launch offer
         </Link>
       </section>
     </main>

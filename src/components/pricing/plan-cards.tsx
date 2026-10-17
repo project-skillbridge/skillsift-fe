@@ -89,7 +89,7 @@ export function PlanCards({
                   href={signUpHref}
                   className="rounded-lg bg-[#05060F] py-2.5 text-center text-sm font-semibold text-white"
                 >
-                  Start free
+                  Start with the launch offer
                 </Link>
               ) : plan.id === "free" ? null : (
                 <a

@@ -25,8 +25,8 @@ export type InvitePackOffer = {
 export const PRICING_PLANS: PricingPlan[] = [
   {
     id: "free",
-    name: "Free",
-    tagline: "Try it on a real hire.",
+    name: "Launch offer",
+    tagline: "Free while we launch. Try it on a real hire.",
     priceUsd: 0,
     priceNgn: 0,
     invitesLabel: "10 candidates a month",
@@ -47,7 +47,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     invitesLabel: "100 candidates a month",
     unlocksLabel: "5 profile unlocks a month",
     features: [
-      "Everything in Free",
+      "Everything in the launch offer",
       "Full name, photo, resume and contact on unlocked talent",
       "Buy extra invite packs any time",
     ],
@@ -110,6 +110,10 @@ export const PRICING_WHY_PAY = [
 ];
 
 export const PRICING_FAQ = [
+  {
+    q: "How long is the launch offer?",
+    a: "The free plan is only here while we launch. It will become a limited free trial, so start now and add a paid plan before it ends.",
+  },
   {
     q: "What counts as a candidate?",
     a: "One person assessed, once per assessment. Inviting the same person again, or letting them resume a test, never costs twice.",
