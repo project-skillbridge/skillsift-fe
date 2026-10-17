@@ -1,9 +1,8 @@
 import { ApiError } from "@/lib/api";
 
-export const ASSESSMENT_PREPARING_TITLE =
-  "Your next assessment is being prepared";
+export const ASSESSMENT_PREPARING_TITLE = "Your next attempt isn't open yet";
 export const ASSESSMENT_PREPARING_MESSAGE =
-  "We are putting together a fresh set of questions for you, so you never see the same question twice. We will notify you as soon as it is ready.";
+  "We'll notify you the moment you can retake this assessment.";
 
 /** The API answers 503 ASSESSMENT_PREPARING when no unseen questions are left. */
 export function isAssessmentPreparingError(error: unknown): boolean {
