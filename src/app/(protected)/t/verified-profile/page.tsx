@@ -3,8 +3,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Verified Profile",
-  description: "Verified profile page for Skill bridge",
-  keywords: ["skill bridge", "verified profile skillbridge"],
+  description: "Verified profile page for SkillSift",
+  keywords: ["SkillSift", "verified profile skillsift"],
 };
 
 const Page = () => {

@@ -19,7 +19,7 @@ export default function PublicVerifiedProfileLayout({
         <Link href="/" className="flex items-center">
           <Image
             src="/assets/logo/logo-with-text.svg"
-            alt="SkillBridge"
+            alt="SkillSift"
             width={140}
             height={32}
             priority
