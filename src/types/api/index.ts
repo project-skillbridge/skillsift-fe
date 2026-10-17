@@ -103,6 +103,10 @@ export type {
   PersonalAssessmentStartResponseData,
   PersonalAssessmentSubmitInput,
   PersonalAssessmentSubmitResponseData,
+  PracticeCheckResponseData,
+  PracticeQuestion,
+  PracticeSetResponseData,
+  SkillCompetencyResult,
   SkillAssessmentApiQuestion,
   SkillAssessmentQuestionType,
   SkillAssessmentAvailabilityData,
@@ -154,3 +158,4 @@ export type {
   VerifiedProfileSkillProficiency,
 } from "./verified-profile";
 export type { PublicVerifiedProfileResponseData } from "./public-verified-profile";
+export type { Certificate, CertificateStatus } from "./certificate";

@@ -216,3 +216,50 @@ export function getAboutTags(data: VerifiedProfileResponseData): string[] {
 export function getAiReport(data: VerifiedProfileResponseData): string {
   return data.ai_report || data.ai_summary || "";
 }
+
+const QUALITATIVE_STEPS = [
+  "Foundational",
+  "Developing",
+  "Proficient",
+  "Advanced",
+  "Expert",
+] as const;
+
+/** How many of the five meter steps to fill for a qualitative label. Labels
+ *  from the API ("Mid-level", "Senior") map onto the same scale. */
+export function qualitativeStepCount(label: string, value: number): number {
+  const exact = QUALITATIVE_STEPS.findIndex(
+    (step) => step.toLowerCase() === label.toLowerCase(),
+  );
+  if (exact >= 0) return exact + 1;
+  const normalized = label.toLowerCase();
+  if (normalized.startsWith("junior")) return 2;
+  if (normalized.startsWith("mid")) return 3;
+  if (normalized.startsWith("senior")) return 4;
+  if (normalized.startsWith("expert")) return 5;
+  return (
+    QUALITATIVE_STEPS.findIndex((step) => step === getQualitativeLevel(value)) +
+    1
+  );
+}
+
+const LEVEL_MEANING: Record<string, string> = {
+  junior:
+    "Handles well-defined tasks with guidance and is building solid fundamentals.",
+  mid: "Delivers features independently, debugs real problems and works well in a team.",
+  senior:
+    "Owns features end to end, weighs trade-offs and helps the team make good decisions.",
+  expert:
+    "Shapes technical direction across teams and handles the hardest, highest-risk problems.",
+};
+
+/** One plain sentence on what the verified level means to an employer. */
+export function describeLevel(level?: string | null): string | null {
+  if (!level) return null;
+  const key = level
+    .toLowerCase()
+    .replace(/[^a-z]/g, " ")
+    .trim()
+    .split(" ")[0];
+  return LEVEL_MEANING[key] ?? null;
+}

@@ -38,7 +38,7 @@ export function ShareProfileModal({
         <DialogHeader>
           <DialogTitle>Share your verified profile</DialogTitle>
           <DialogDescription>
-            Anyone with this link can view your profile — no SkillBridge account
+            Anyone with this link can view your profile — no SkillSift account
             required. Add it to your bio, resume, or LinkedIn.
           </DialogDescription>
         </DialogHeader>

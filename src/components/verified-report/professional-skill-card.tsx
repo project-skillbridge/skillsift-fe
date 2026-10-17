@@ -1,6 +1,9 @@
 import Image from "next/image";
 
-import { getQualitativeLevel } from "./verified-report-utils";
+import {
+  getQualitativeLevel,
+  qualitativeStepCount,
+} from "./verified-report-utils";
 
 type Props = {
   title: string;
@@ -17,6 +20,7 @@ const ProfessionalSkillCard = ({
 }: Props) => {
   const clamped = Math.max(0, Math.min(100, value));
   const label = levelLabel ?? getQualitativeLevel(clamped);
+  const steps = qualitativeStepCount(label, clamped);
 
   return (
     <div className="border border-[#DBDBDB] rounded-lg bg-white p-4">
@@ -27,17 +31,17 @@ const ProfessionalSkillCard = ({
         </span>
       </div>
 
-      {/* Thin, unlabeled bar — a supporting visual, not the headline. The
-          qualitative label above and the insight below carry the meaning;
-          a bare percentage slider on its own doesn't tell anyone anything. */}
-      <div className="mt-3 flex items-center gap-2">
-        <div className="h-1.5 flex-1 rounded-full bg-[#E5E7EB]">
-          <div
-            className="bg-verified h-full rounded-full"
-            style={{ width: `${clamped}%` }}
+      <div
+        className="mt-3 flex gap-1.5"
+        role="img"
+        aria-label={`${label}: ${steps} of 5`}
+      >
+        {Array.from({ length: 5 }, (_, i) => (
+          <span
+            key={i}
+            className={`h-1.5 flex-1 rounded-full ${i < steps ? "bg-verified" : "bg-[#E5E7EB]"}`}
           />
-        </div>
-        <span className="text-xs text-[#A1A1AA]">{clamped}%</span>
+        ))}
       </div>
 
       <div className="mt-3 gap-x-4 flex flex-row py-2 px-4 rounded-lg bg-[#ECFDF5]">
