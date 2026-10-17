@@ -6,6 +6,7 @@ import { useDashboardHome } from "@/hooks/api/use-dashboard";
 import { DashboardLoading } from "./dashboard-loading";
 import { pickDashboardVariant } from "./dashboard-variant";
 import { EmergingUserDashboard } from "./emerging-user/emerging-user-dashboard";
+import { InProgressDashboard } from "./in-progress/in-progress-dashboard";
 import { JobReadyDashboard } from "./job-ready/job-ready-dashboard";
 
 export function TalentDashboard() {
@@ -17,6 +18,9 @@ export function TalentDashboard() {
 
   if (variant === "job-ready" && dashboardHome) {
     return <JobReadyDashboard dashboardHome={dashboardHome} />;
+  }
+  if (variant === "in-progress" && dashboardHome) {
+    return <InProgressDashboard dashboardHome={dashboardHome} />;
   }
   if (variant === "emerging-user" && dashboardHome) {
     return <EmergingUserDashboard dashboardHome={dashboardHome} />;

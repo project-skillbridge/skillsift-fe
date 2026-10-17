@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   useExploreJobs,
@@ -82,8 +83,13 @@ export function ExploreJobsPage() {
             No matching roles found.
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Check back later for new opportunities.
+            Roles show up here when employers post openings that fit your
+            verified level. Keep your skill result and profile up to date to be
+            matched.
           </p>
+          <Button asChild variant="outline" size="sm" className="mt-4">
+            <Link href="/t/dashboard">See your next step</Link>
+          </Button>
         </div>
       ) : (
         <div className="space-y-8">

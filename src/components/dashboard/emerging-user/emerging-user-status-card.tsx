@@ -10,7 +10,7 @@ interface HexagonScoreProps {
   color?: string;
 }
 
-function HexagonScore({ value, color = "#F59E0C" }: HexagonScoreProps) {
+function HexagonScore({ value, color = "#FE9667" }: HexagonScoreProps) {
   return (
     <div
       className="relative shrink-0 flex items-center justify-center"
@@ -101,7 +101,7 @@ export function DashboardStatusCard({
   const isEligibleNow = daysRemaining != null && daysRemaining <= 0;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-[#F2F2F2]">
+    <div className="overflow-hidden rounded-2xl border border-[#D5E5F4] bg-[#EEF7FF]">
       <div className="flex items-start justify-between gap-6 p-6">
         <div className="min-w-0 flex-1 space-y-2.5">
           <div className="flex">
