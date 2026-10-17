@@ -1,6 +1,6 @@
-# Contributing to [Skillbridge]
+# Contributing to [SkillSift]
 
-Thank you for considering contributing to Skillbridge! We welcome all kinds of contributions, including bug reports, feature requests, and code improvements.
+Thank you for considering contributing to SkillSift! We welcome all kinds of contributions, including bug reports, feature requests, and code improvements.
 
 ## Table of Contents
 
