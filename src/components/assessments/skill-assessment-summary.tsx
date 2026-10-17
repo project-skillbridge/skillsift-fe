@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import AssessmentContainer from "@/components/assessments/assessment-container";
 import { isSkillExhausted } from "@/components/assessments/dashboard-home-state";
-import { Progress } from "@/components/ui/progress";
+import { groupCompetencies } from "@/lib/competency-areas";
 import { useDashboardHome } from "@/hooks/api/use-dashboard";
 import { useMe } from "@/hooks/api";
 import { useAssessmentSummaryStore } from "@/stores/assessment-summary-store";
@@ -36,7 +35,9 @@ const SkillAssessementSummary = () => {
     result?.claimed_level ?? storedClaimedLevel ?? undefined,
     "your selected level",
   );
-  const progressValue = result?.percentage ?? 57;
+  const percentage =
+    result?.percentage ?? dashboardHome?.performance?.skill?.percentage;
+  const breakdown = groupCompetencies(result?.competency_breakdown ?? []);
   const skillPassed =
     result?.passed ?? dashboardHome?.performance?.skill?.passed === true;
   const isDowngraded = result?.downgraded ?? !skillPassed;
@@ -71,65 +72,101 @@ const SkillAssessementSummary = () => {
     </AssessmentContainer>
   ) : (
     <AssessmentContainer>
-      <Image
-        src={"/assets/icons/computer-setup-icon.svg"}
-        height={56}
-        width={56}
-        alt="Computer desktop icon"
-      />
-      <section className="flex flex-col gap-y-2 mt-4 mb-7 md:mb-12">
-        <h2 className="font-bold text-xl md:text-3xl leading-[150%]">
-          Skill Level Evaluation summary
+      <section className="mt-2 rounded-3xl border border-[#D5E5F4] bg-[#EEF7FF] p-6 text-[#1B2935] md:p-8">
+        <p className="text-sm font-semibold text-[#1B2935]/70">
+          Skill Level Evaluation
+        </p>
+        <h2 className="mt-1 text-2xl font-bold leading-tight md:text-3xl">
+          {skillPassed
+            ? `You passed at ${validatedLevel} level`
+            : "Not there yet, and you can try again"}
         </h2>
-        <p className="text-base md:text-lg font-light max-w-208.75">
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#1B2935]/80">
           {!skillPassed ? (
             <>
-              You completed the assessment, but your score didn&apos;t meet the
-              50% minimum required to move forward. You&apos;re welcome to
-              retake the assessment when you&apos;re ready.
+              Your score didn&apos;t reach the 50% minimum to verify a level.
+              The topics below show where to focus before you retake.
+            </>
+          ) : isDowngraded ? (
+            <>
+              Your validated level is{" "}
+              <span className="font-bold">{validatedLevel}</span> instead of
+              your claim of <span className="font-bold">{claimedLevel}</span>.
+              You can continue to the next assessment.
             </>
           ) : (
             <>
-              Congratulations, you completed your assessment. Based on your
-              evaluation, your validated level is{" "}
-              <span className="font-bold capitalize">{validatedLevel}</span>
-              {isDowngraded ? (
-                <>
-                  {" "}
-                  instead of your claim of{" "}
-                  <span className="font-bold capitalize">{claimedLevel}</span>.
-                  You can continue to the next assessment.
-                </>
-              ) : (
-                ". You can continue to the next assessment."
-              )}
+              Your skill certificate is ready on your dashboard. Continue to the
+              Job Readiness Evaluation to become visible to employers.
             </>
           )}
         </p>
-      </section>
-      <div className="flex flex-col">
-        <div className="flex flex-col gap-y-2">
-          {/* <p className="text-[#4FB609] font-bold text-base md:text-2xl flex flex-row items-center">
-            Validated
-            <Dot size={40} />
-            {validatedLevel} Level
-          </p> */}
-          <Progress value={progressValue} className="h-1 *:bg-[#4FB609]" />
-          {hasAttemptsInfo ? (
-            <p className="mt-2 font-sans text-sm text-muted-foreground">
-              You have used{" "}
-              <span className="font-semibold text-foreground">
-                {attemptsUsed}
-              </span>{" "}
-              of{" "}
-              <span className="font-semibold text-foreground">
-                {maxAttempts}
-              </span>{" "}
-              skill attempts.
-              {noAttemptsLeft ? " No retakes remaining." : null}
+
+        {percentage != null ? (
+          <div className="mt-6 max-w-md">
+            <p className="text-5xl font-bold leading-none">
+              {percentage}
+              <span className="text-2xl">%</span>
             </p>
-          ) : null}
-        </div>
+            <div
+              className="relative mt-3 h-3 rounded-full bg-white ring-1 ring-[#D5E5F4]"
+              role="img"
+              aria-label={`Score ${percentage}%, pass mark 50%`}
+            >
+              <div
+                className="h-full rounded-full bg-[#FE9667]"
+                style={{ width: `${Math.min(percentage, 100)}%` }}
+              />
+              <span className="absolute -top-1 left-1/2 h-5 w-0.5 bg-[#1B2935]" />
+            </div>
+            <p className="mt-1.5 text-right text-xs font-medium text-[#1B2935]/70">
+              pass mark 50%
+            </p>
+          </div>
+        ) : null}
+
+        {hasAttemptsInfo ? (
+          <p className="mt-4 text-sm text-[#1B2935]/70">
+            {attemptsUsed} of {maxAttempts} skill attempts used.
+            {noAttemptsLeft ? " No retakes remaining." : null}
+          </p>
+        ) : null}
+      </section>
+
+      {breakdown.length > 0 ? (
+        <section className="mt-8" aria-labelledby="breakdown-heading">
+          <h3 id="breakdown-heading" className="text-lg font-bold">
+            How you did by topic
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Weakest first, so you know where to start.
+          </p>
+          <ul className="mt-4 space-y-4">
+            {breakdown.map((item) => (
+              <li key={item.competency}>
+                <div className="flex items-baseline justify-between gap-4">
+                  <p className="text-sm font-semibold">{item.competency}</p>
+                  <p className="shrink-0 text-xs text-muted-foreground">
+                    {item.correct} of {item.total} correct
+                  </p>
+                </div>
+                <div className="mt-1.5 h-2.5 rounded-full bg-[#EEF7FF] ring-1 ring-[#D5E5F4]">
+                  <div
+                    className={
+                      item.percentage >= 50
+                        ? "h-full rounded-full bg-[#CCB0EB]"
+                        : "h-full rounded-full bg-[#FE9667]"
+                    }
+                    style={{ width: `${item.percentage}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <div className="flex flex-col">
         {/* {isDowngraded && (
           <div className="border mt-6 w-fit border-[#FF7854] bg-[#FFF1EE] flex flex-row gap-x-4 items-center py-2.5 px-3 rounded-lg">
             <Image
@@ -141,7 +178,7 @@ const SkillAssessementSummary = () => {
             <p className="text-[#757575] text-[14px]">{feedback}</p>
           </div>
         )} */}
-        <div className="flex flex-col gap-y-4 sm:flex-row items-center self-center mt-15.5 gap-x-2">
+        <div className="flex flex-col gap-y-4 sm:flex-row items-center self-center mt-10 gap-x-2">
           {showRetakeButton && (
             <Button
               asChild
@@ -174,7 +211,7 @@ const SkillAssessementSummary = () => {
       </div>
       <NextUpCard
         assessement="skill"
-        duration="30 minutes"
+        duration="60 minutes"
         title="Job Readiness Evaluation"
       />
     </AssessmentContainer>

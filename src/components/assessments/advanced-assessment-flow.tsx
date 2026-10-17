@@ -187,16 +187,17 @@ export function AdvancedAssessmentFlow() {
       answers: toAdvancedSubmitAnswers(questions, answersByKey, timeSpentByKey),
     }).then(() => {});
 
-  const recordViolation = (count: number) => {
-    if (count >= 3 && !flagViolation.isPending && !flagViolation.isSuccess)
-      flagViolation.mutate({ eventType: "tab_switch" });
+  // Every violation goes to the server, which keeps the count and ends the
+  // session at the limit, so the rule holds even if this page is tampered with.
+  const recordViolation = () => {
+    flagViolation.mutate({ eventType: "tab_switch" });
   };
 
   return (
     <ViolationDetector
       enabled={startState === "ready"}
       onViolation={recordViolation}
-      submissionConfirmed={flagViolation.isSuccess}
+      submissionConfirmed={flagViolation.data?.sessionVoided === true}
     >
       <QuestionnaireFlow
         questions={questions}
@@ -204,6 +205,7 @@ export function AdvancedAssessmentFlow() {
         isSubmitting={isSubmitting}
         initialSeconds={remainingSeconds}
         totalQuestions={apiQuestions.length}
+        persistKey={sessionId || undefined}
         onSubmit={submit}
       />
     </ViolationDetector>

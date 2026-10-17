@@ -1,5 +1,7 @@
 import { ApiError, authApi } from "@/lib/api";
 import type {
+  PracticeCheckResponseData,
+  PracticeSetResponseData,
   AdvancedAssessmentStartResponseData,
   AdvancedAssessmentSubmitInput,
   AdvancedAssessmentSubmitResponseData,
@@ -77,6 +79,26 @@ export async function getSkillAssessmentSession(
 ): Promise<SkillAssessmentStartResponseData> {
   const res = await authApi.get<ApiEnvelope<SkillAssessmentStartResponseData>>(
     `/talent/assessment/skill/session/${sessionId}`,
+  );
+  return unwrapData(res);
+}
+
+// ─── Practice ─────────────────────────────────────────────────────────────────
+
+export async function getPracticeSet(): Promise<PracticeSetResponseData> {
+  const res = await authApi.get<ApiEnvelope<PracticeSetResponseData>>(
+    "/talent/assessment/practice/questions",
+  );
+  return unwrapData(res);
+}
+
+export async function checkPracticeAnswer(body: {
+  questionId: string;
+  answer: string;
+}): Promise<PracticeCheckResponseData> {
+  const res = await authApi.post<ApiEnvelope<PracticeCheckResponseData>>(
+    "/talent/assessment/practice/check",
+    body,
   );
   return unwrapData(res);
 }

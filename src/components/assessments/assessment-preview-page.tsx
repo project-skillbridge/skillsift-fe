@@ -1,5 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
 import { AssessmentPreviewCard } from "@/components/assessments/assessment-preview-card";
 import { isSkillExhausted } from "@/components/assessments/dashboard-home-state";
 import {
@@ -9,7 +13,7 @@ import {
 } from "@/constants/assessment-previews";
 import { useSkillAvailability } from "@/hooks/api/use-assessment";
 import { useDashboardHome } from "@/hooks/api/use-dashboard";
-import { ASSESSMENT_PREPARING_MESSAGE } from "@/lib/assessment-start";
+import { assessmentPreparingCopy } from "@/lib/assessment-start";
 
 type AssessmentPreviewPageProps = {
   assessmentName: AssessmentSlug;
@@ -104,12 +108,24 @@ function AssessmentPreviewPage({ assessmentName }: AssessmentPreviewPageProps) {
           startLabel={startLabel}
           startDisabled={startDisabled}
         />
+        {assessmentName === "skill" && !skillPreparing ? (
+          <div className="mt-4 flex flex-col items-center gap-2 rounded-2xl border border-[#D5E5F4] bg-[#EEF7FF] p-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="font-sans text-sm text-[#1B2935]">
+              <span className="font-semibold">New to this format?</span> Try 10
+              practice questions with instant explanations. They don&apos;t use
+              up an attempt.
+            </p>
+            <Button asChild variant="outline" className="shrink-0 rounded-full">
+              <Link href="/t/assessments/practice">Practice first</Link>
+            </Button>
+          </div>
+        ) : null}
         {skillPreparing && (
           <p
             role="status"
             className="mt-4 text-center font-sans text-sm text-muted-foreground"
           >
-            {ASSESSMENT_PREPARING_MESSAGE}
+            {assessmentPreparingCopy(skillIsRetake).message}
           </p>
         )}
       </div>

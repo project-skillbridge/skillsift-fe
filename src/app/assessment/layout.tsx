@@ -7,7 +7,7 @@ function ExternalNavbar() {
         <div className="relative h-9 w-32 shrink-0 md:h-10 md:w-40">
           <Image
             src="/assets/logo/logo-with-text-white.svg"
-            alt="SkillBridge"
+            alt="SkillSift"
             fill
             className="object-contain object-left"
             priority

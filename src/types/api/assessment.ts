@@ -54,6 +54,9 @@ export type SkillAssessmentStartResponseData = {
   status: string;
   session_id: string;
   verified_level: string;
+  /** Server-side deadline. Null for sessions that began before the limit existed. */
+  expires_at?: string | null;
+  remaining_seconds?: number | null;
   questions: SkillAssessmentApiQuestion[];
 };
 
@@ -120,6 +123,16 @@ export type SkillAssessmentSubmitResponseData = {
   guidance_report?: GuidanceReport;
   /** Only present when downgraded === true. */
   personalised_message?: string;
+  /** Correct answers per competency, weakest first. Absent on older results. */
+  competency_breakdown?: SkillCompetencyResult[];
+};
+
+export type SkillCompetencyResult = {
+  competency: string;
+  correct: number;
+  total: number;
+  /** 0-100. */
+  percentage: number;
 };
 
 // ─── Advanced Assessment ──────────────────────────────────────────────────────
@@ -224,4 +237,25 @@ export type SkillAssessmentAvailabilityData = {
   /** False while a fresh set of questions is still being prepared. */
   can_start: boolean;
   waitlisted: boolean;
+};
+
+// ─── Practice ─────────────────────────────────────────────────────────────────
+
+export type PracticeQuestion = {
+  question_id: string;
+  question_number: number;
+  question_text: string;
+  options: string[];
+};
+
+export type PracticeSetResponseData = {
+  level: SkillLevel;
+  track: string;
+  questions: PracticeQuestion[];
+};
+
+export type PracticeCheckResponseData = {
+  correct: boolean;
+  correct_answer: string;
+  explanation: string | null;
 };

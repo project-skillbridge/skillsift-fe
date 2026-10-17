@@ -55,7 +55,7 @@ const ViolationDetectedModal = ({
           <p className="text-center text-sm text-[#757575] w-full">
             Please note that by clicking continue, you agree to{" "}
             <span className="font-semibold text-foreground underline cursor-pointer">
-              Skillbridge&apos;s assessment terms and guidelines
+              SkillSift&apos;s assessment terms and guidelines
             </span>
             .
           </p>
