@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Talent are identity-verified on SkillSift; link takers are not until they join. */
+/** Talent are SkillSift accounts; link takers only left an email, even if they later joined. */
 export function CandidateSourceBadge({
   source,
   joined = false,

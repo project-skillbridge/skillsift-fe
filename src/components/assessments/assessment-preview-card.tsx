@@ -4,6 +4,7 @@ import { AssessmentPreviewHeader } from "@/components/assessments/assessment-pre
 import { AssessmentPreviewMeta } from "@/components/assessments/assessment-preview-meta";
 import { AssessmentPreviewRules } from "@/components/assessments/assessment-preview-rules";
 import { AssessmentPreviewWarning } from "@/components/assessments/assessment-preview-warning";
+import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AssessmentPreview } from "@/constants/assessment-previews";
 
@@ -15,6 +16,10 @@ type AssessmentPreviewCardProps = {
   startLabel?: string;
   /** When true, the footer CTA renders as disabled (no navigation). */
   startDisabled?: boolean;
+  /** Turns the CTA into a button, for flows that start without navigating. */
+  onStart?: () => void;
+  /** Extra content shown above the footer, such as an email field. */
+  children?: ReactNode;
 };
 
 function AssessmentPreviewCard({
@@ -22,6 +27,8 @@ function AssessmentPreviewCard({
   startHref,
   startLabel,
   startDisabled,
+  onStart,
+  children,
 }: AssessmentPreviewCardProps) {
   return (
     <Card className="w-full rounded-xl border border-[#D9D9D9] bg-white py-0 shadow-none 2xl:rounded-[24px]">
@@ -34,7 +41,9 @@ function AssessmentPreviewCard({
           points={assessment.points}
         />
         <AssessmentPreviewWarning warning={assessment.warning} />
+        {children}
         <AssessmentPreviewFooter
+          onStart={onStart}
           assessmentSlug={assessment.slug}
           consent={assessment.consent}
           startHref={startHref}

@@ -4,10 +4,13 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { SIGNUP_EMAIL_KEY } from "@/lib/signup-prefill";
 
-/** Shown after a link taker submits; invites them to keep the result on a SkillSift profile. */
-export function ExternalConfirmationStep({ email }: { email: string }) {
+type Props = { email: string; employerName?: string | null };
+
+/** Shown after a link taker submits. */
+export function ExternalConfirmationStep({ email, employerName }: Props) {
   // Kept out of the URL so the address never lands in logs or history.
   const rememberEmail = () => {
     try {
@@ -18,31 +21,40 @@ export function ExternalConfirmationStep({ email }: { email: string }) {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col items-center justify-center space-y-6 rounded-2xl border border-[#E4E7EC] bg-white p-8 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-green-100">
-        <CheckCircle2 className="size-6 text-green-600" />
-      </div>
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight text-[#151515]">
-          Assessment submitted
-        </h2>
-        <p className="max-w-md text-sm text-[#475467]">
-          Your answers were sent to the employer. You can close this window now.
-        </p>
-      </div>
+    <div className="flex min-h-[calc(100dvh-72px)] items-start justify-center px-0 pt-8 pb-14 sm:pt-12 lg:pt-14">
+      <Card className="w-full max-w-160 rounded-xl border border-[#D9D9D9] bg-white py-0 shadow-none">
+        <CardContent className="flex flex-col items-center gap-6 px-6 py-10 text-center">
+          <span className="flex size-14 items-center justify-center rounded-full bg-success/10">
+            <CheckCircle2 className="size-7 text-success" aria-hidden />
+          </span>
+          <div className="flex flex-col gap-2">
+            <h1 className="font-sans text-2xl font-bold text-foreground">
+              Assessment submitted
+            </h1>
+            <p className="font-sans text-sm text-muted-foreground">
+              Your answers were sent to {employerName ?? "the employer"}. You
+              can close this window now.
+            </p>
+          </div>
 
-      <div className="flex w-full flex-col gap-3 rounded-xl bg-[#F9FAFB] p-5 text-left">
-        <p className="text-sm font-semibold text-[#151515]">
-          Get verified and get discovered
-        </p>
-        <p className="text-sm text-[#475467]">
-          Join SkillSift with {email} and the employer will see you as verified.
-          You can also take skills assessments that other employers search by.
-        </p>
-        <Button asChild onClick={rememberEmail}>
-          <Link href="/signup">Create my SkillSift profile</Link>
-        </Button>
-      </div>
+          <div className="flex w-full flex-col gap-3 rounded-xl border border-[#D5E5F4] bg-[#EEF7FF] p-5 text-left">
+            <p className="font-sans text-sm font-bold text-[#1B2935]">
+              Want to be found by other employers?
+            </p>
+            <p className="font-sans text-sm leading-relaxed text-[#1B2935]/75">
+              This test is only shared with {employerName ?? "the employer"}. To
+              appear to other employers on SkillSift, create a profile and
+              complete our own skills and job readiness evaluations. That is how
+              talent get verified.
+            </p>
+            <Button asChild variant="outline" className="w-fit rounded-lg">
+              <Link href="/signup" onClick={rememberEmail}>
+                Create a SkillSift profile
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

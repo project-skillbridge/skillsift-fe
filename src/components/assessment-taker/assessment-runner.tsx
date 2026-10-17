@@ -1,23 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { QuestionnaireMobileActions } from "@/components/assessments/questionnaire-mobile-actions";
+import { QuestionnaireMobileHeader } from "@/components/assessments/questionnaire-mobile-header";
+import { QuestionnaireQuestionCard } from "@/components/assessments/questionnaire-question-card";
+import { QuestionnaireSidebar } from "@/components/assessments/questionnaire-sidebar";
+import { QuestionnaireToolbar } from "@/components/assessments/questionnaire-toolbar";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useIntegrityTracker } from "@/hooks/use-integrity-tracker";
-import { cn } from "@/lib/utils";
+import { toQuestionnaireQuestion } from "@/lib/employer-assessment-preview";
+import { isAnswerValid } from "@/lib/questionnaire";
 import type {
   IntegrityEvents,
   TakerQuestion,
@@ -40,21 +33,22 @@ type Props = {
   }) => void;
 };
 
-function formatClock(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
+type Draft = { answers: Record<string, string>; index: number };
 
-function readSaved(key: string): Record<string, string> {
+function readDraft(key: string): Draft {
   try {
     const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    if (raw) return JSON.parse(raw) as Draft;
   } catch {
-    return {};
+    // Fall through to a fresh start.
   }
+  return { answers: {}, index: 0 };
 }
 
+/**
+ * The timed question screen for employer assessments. It is built from the
+ * same pieces as the talent questionnaire so both look and behave alike.
+ */
 export function AssessmentRunner({
   title,
   questions,
@@ -65,26 +59,39 @@ export function AssessmentRunner({
   failureCount = 0,
   onSubmit,
 }: Props) {
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>(() =>
-    readSaved(storageKey),
+  const [draft] = useState(() => readDraft(storageKey));
+  const [answers, setAnswers] = useState(draft.answers);
+  const [index, setIndex] = useState(
+    Math.min(Math.max(draft.index, 0), Math.max(questions.length - 1, 0)),
   );
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const secondsLeft = useCountdown(remainingSeconds, !isSubmitting);
   const snapshotIntegrity = useIntegrityTracker(!isSubmitting);
   const submitted = useRef(false);
 
-  const question = questions[index];
-  const answeredCount = questions.filter((q) => answers[q.id]?.trim()).length;
-  const unanswered = questions.length - answeredCount;
+  // The intro is long; start the test from the top of the page.
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  const mapped = useMemo(
+    () => questions.map((q) => toQuestionnaireQuestion(q, title)),
+    [questions, title],
+  );
+  const question = mapped[index];
+  const value = question ? answers[question.id] : undefined;
+  const canProceed = question ? isAnswerValid(question, value) : false;
+  const isLast = index === mapped.length - 1;
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify(answers));
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({ answers, index } satisfies Draft),
+      );
     } catch {
       // Saving is a convenience; the test still works without it.
     }
-  }, [answers, storageKey]);
+  }, [answers, index, storageKey]);
 
   const submit = useCallback(() => {
     if (submitted.current) return;
@@ -100,134 +107,71 @@ export function AssessmentRunner({
     submitted.current = false;
   }, [failureCount]);
 
+  // Time's up: send whatever has been answered, as the talent flow does.
   useEffect(() => {
     if (secondsLeft === 0) submit();
   }, [secondsLeft, submit]);
 
   if (!question) return null;
 
-  const setAnswer = (value: string) =>
-    setAnswers((current) => ({ ...current, [question.id]: value }));
-  const isLast = index === questions.length - 1;
-  const lowTime = secondsLeft <= 60;
+  const handleNext = () => {
+    if (!canProceed || isSubmitting) return;
+    if (isLast) submit();
+    else setIndex((i) => i + 1);
+  };
+  const handleBack = () => setIndex((i) => Math.max(0, i - 1));
+  const total = mapped.length;
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-[#E4E7EC] bg-white px-4 py-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-[#151515]">{title}</p>
-          <p className="text-xs text-[#757575]">
-            {answeredCount} of {questions.length} answered
-          </p>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-2 rounded-lg px-3 py-1.5 font-mono text-sm font-semibold",
-            lowTime ? "bg-red-50 text-red-600" : "bg-[#F2F4F7] text-[#151515]",
-          )}
-          aria-live="off"
-        >
-          <Clock className="size-4" />
-          {formatClock(secondsLeft)}
-        </div>
+    <div className="pb-32 lg:pb-0">
+      <QuestionnaireMobileHeader
+        sectionTitle={title}
+        progress={(index + 1) / total}
+        secondsLeft={secondsLeft}
+        className="-mx-4 sm:-mx-6 lg:hidden"
+      />
+      <div className="hidden lg:block">
+        <QuestionnaireToolbar secondsLeft={secondsLeft} />
       </div>
-
-      <Progress value={((index + 1) / questions.length) * 100} />
-
-      <section className="flex flex-col gap-5 rounded-2xl border border-[#E4E7EC] bg-white p-6 select-none">
-        <p className="text-xs font-medium text-[#757575]">
-          Question {index + 1} of {questions.length}
-        </p>
-        <h2 className="text-lg font-semibold text-[#151515]">
-          {question.question_text}
-        </h2>
-
-        {question.question_type === "short_answer" ? (
-          <Input
-            value={answers[question.id] ?? ""}
-            onChange={(event) => setAnswer(event.target.value)}
-            placeholder="Type your answer"
-            autoComplete="off"
-            className="select-text"
+      <div className="mx-auto flex max-w-300 flex-col gap-6 pb-10 lg:flex-row lg:items-start lg:gap-10">
+        <div className="hidden lg:block">
+          <QuestionnaireSidebar
+            sections={[{ number: 1, title }]}
+            activeSectionNumber={1}
           />
-        ) : (
-          <RadioGroup
-            value={answers[question.id] ?? ""}
-            onValueChange={setAnswer}
-          >
-            {(question.options ?? ["True", "False"]).map((option, i) => {
-              const id = `${question.id}-${i}`;
-              return (
-                <label
-                  key={option}
-                  htmlFor={id}
-                  className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm",
-                    answers[question.id] === option
-                      ? "border-[#111827] bg-[#F9FAFB]"
-                      : "border-[#E4E7EC]",
-                  )}
-                >
-                  <RadioGroupItem id={id} value={option} />
-                  <span>{option}</span>
-                </label>
-              );
-            })}
-          </RadioGroup>
-        )}
-      </section>
-
-      <div className="flex items-center justify-between gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={index === 0}
-          onClick={() => setIndex((i) => i - 1)}
-        >
-          <ChevronLeft className="size-4" />
-          Previous
-        </Button>
-        {isLast ? (
-          <Button
-            type="button"
-            disabled={isSubmitting}
-            onClick={() => (unanswered > 0 ? setConfirmOpen(true) : submit())}
-          >
-            {isSubmitting ? "Submitting..." : "Submit"}
-          </Button>
-        ) : (
-          <Button type="button" onClick={() => setIndex((i) => i + 1)}>
-            Next
-            <ChevronRight className="size-4" />
-          </Button>
-        )}
+        </div>
+        <QuestionnaireQuestionCard
+          question={question}
+          value={value}
+          otherValue=""
+          onChange={(next) =>
+            setAnswers((prev) => ({
+              ...prev,
+              [question.id]: Array.isArray(next) ? next.join(", ") : next,
+            }))
+          }
+          onOtherChange={() => {}}
+          onNext={handleNext}
+          onBack={handleBack}
+          questionNumber={index + 1}
+          totalQuestions={total}
+          isLast={isLast}
+          showBack={index > 0}
+          nextDisabled={!canProceed}
+          nextLoading={isSubmitting}
+        />
       </div>
-
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Submit with unanswered questions?</DialogTitle>
-            <DialogDescription>
-              You have {unanswered} unanswered{" "}
-              {unanswered === 1 ? "question" : "questions"}. You can&apos;t
-              change your answers after submitting.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              Keep going
-            </Button>
-            <Button
-              onClick={() => {
-                setConfirmOpen(false);
-                submit();
-              }}
-            >
-              Submit anyway
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <QuestionnaireMobileActions
+        questionNumber={index + 1}
+        totalQuestions={total}
+        onBack={handleBack}
+        onNext={handleNext}
+        isLast={isLast}
+        showBack={index > 0}
+        nextDisabled={!canProceed}
+        nextLoading={isSubmitting}
+        className="lg:hidden"
+      />
     </div>
   );
 }

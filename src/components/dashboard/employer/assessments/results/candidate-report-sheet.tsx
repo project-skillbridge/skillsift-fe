@@ -80,8 +80,8 @@ export function CandidateReportSheet({
                 {data.source === "external" ? (
                   <span className="text-xs text-[#757575]">
                     {data.joinedSkillsiftUserId
-                      ? "Took the test by link and has since joined SkillSift with a verified email."
-                      : "Took the test by link, identity not verified. We invite them to join SkillSift after the test."}
+                      ? "Took the test by link and has since created a SkillSift account. Their SkillSift evaluations are separate from this test."
+                      : "Took the test by link. We invite them to create a SkillSift profile, but that does not verify them."}
                   </span>
                 ) : null}
               </div>

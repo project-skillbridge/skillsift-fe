@@ -52,7 +52,12 @@ export function ExternalAssessmentPage({ token, assessment }: Props) {
     );
 
   if (done)
-    return <ExternalConfirmationStep email={registration?.email ?? email} />;
+    return (
+      <ExternalConfirmationStep
+        email={registration?.email ?? email}
+        employerName={assessment.employer_name}
+      />
+    );
 
   if (!registration) {
     return (
