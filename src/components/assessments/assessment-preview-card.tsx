@@ -2,6 +2,7 @@ import { AssessmentPreviewExpectations } from "@/components/assessments/assessme
 import { AssessmentPreviewFooter } from "@/components/assessments/assessment-preview-footer";
 import { AssessmentPreviewHeader } from "@/components/assessments/assessment-preview-header";
 import { AssessmentPreviewMeta } from "@/components/assessments/assessment-preview-meta";
+import { AssessmentPreviewRules } from "@/components/assessments/assessment-preview-rules";
 import { AssessmentPreviewWarning } from "@/components/assessments/assessment-preview-warning";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AssessmentPreview } from "@/constants/assessment-previews";
@@ -27,6 +28,7 @@ function AssessmentPreviewCard({
       <CardContent className="px-4 py-4 sm:px-5 lg:px-6 2xl:p-8">
         <AssessmentPreviewHeader assessment={assessment} />
         <AssessmentPreviewMeta assessment={assessment} />
+        <AssessmentPreviewRules rules={assessment.rules} />
         <AssessmentPreviewExpectations
           sectionTitle={assessment.sectionTitle}
           points={assessment.points}

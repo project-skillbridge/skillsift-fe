@@ -3,7 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  checkPracticeAnswer,
   flagAssessmentEvent,
+  getPracticeSet,
   getAssessmentSession,
   getPersonalAssessmentSession,
   getSkillAssessmentAvailability,
@@ -105,6 +107,24 @@ export function useAssessmentSession(
     queryKey: assessmentKeys.session(id),
     queryFn: () => getAssessmentSession(id),
     enabled: options?.enabled ?? false,
+  });
+}
+
+/** Fresh shuffle every visit, so practising again feels different. */
+export function usePracticeSet() {
+  return useQuery({
+    queryKey: assessmentKeys.practice(),
+    queryFn: () => getPracticeSet(),
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+  });
+}
+
+export function useCheckPracticeAnswer() {
+  return useMutation({
+    mutationFn: (body: { questionId: string; answer: string }) =>
+      checkPracticeAnswer(body),
   });
 }
 

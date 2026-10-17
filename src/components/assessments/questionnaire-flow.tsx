@@ -14,7 +14,14 @@ import {
 import { QuestionnaireToolbar } from "@/components/assessments/questionnaire-toolbar";
 import { isAssessmentSlug } from "@/constants/assessment-previews";
 import { ASSESSMENT_DEFAULT_DURATION_SECONDS } from "@/constants/question-bank";
-import { authFailureMessage } from "@/lib/api";
+import { ApiError, authFailureMessage } from "@/lib/api";
+import {
+  clearAssessmentDraft,
+  deadlineIn,
+  loadAssessmentDraft,
+  saveAssessmentDraft,
+  secondsUntil,
+} from "@/lib/assessment-draft";
 import { buildAnswers, isAnswerValid } from "@/lib/questionnaire";
 import { appToast } from "@/lib/toast";
 import { useMe } from "@/hooks/api";
@@ -38,6 +45,8 @@ export type QuestionnaireFlowProps = {
   initialSeconds?: number;
   prefillAnswers?: Record<string, string | string[]>;
   totalQuestions?: number;
+  /** Server session id. When set, answers are saved locally and restored on reload. */
+  persistKey?: string;
   onSubmit: (
     answers: Record<string, string | string[]>,
     timeSpentByKey?: Record<string, number>,
@@ -51,6 +60,7 @@ export function QuestionnaireFlow({
   initialSeconds,
   prefillAnswers,
   totalQuestions,
+  persistKey,
   onSubmit,
 }: QuestionnaireFlowProps) {
   const router = useRouter();
@@ -70,11 +80,59 @@ export function QuestionnaireFlow({
   const [otherAnswers, setOtherAnswers] = useState<Record<string, string>>({});
 
   const showTimer = name !== "personal";
+  // Timers the server doesn't own are anchored to a stored deadline so a
+  // reload resumes the clock instead of restarting it.
+  const [restoredSeconds, setRestoredSeconds] = useState<number | undefined>();
+  // The key can arrive after mount (session id comes from the server), so
+  // readiness is tracked per key rather than as a one-off flag.
+  const [restoredFor, setRestoredFor] = useState<string | undefined>();
+  const draftReady = !persistKey || restoredFor === persistKey;
+  const [deadline, setDeadline] = useState<number | undefined>();
   const tickingSeconds = useCountdown(
-    initialSeconds ?? ASSESSMENT_DEFAULT_DURATION_SECONDS,
+    initialSeconds ?? restoredSeconds ?? ASSESSMENT_DEFAULT_DURATION_SECONDS,
     showTimer && !isLoading,
   );
   const secondsLeft = showTimer ? tickingSeconds : undefined;
+
+  // Restore a saved draft once the questions have loaded. Set during render
+  // (React's "adjust state on prop change" pattern), same as useCountdown.
+  if (persistKey && !isLoading && !draftReady) {
+    const draft = loadAssessmentDraft(persistKey);
+    if (draft) {
+      setUserAnswers(draft.answers ?? {});
+      setOtherAnswers(draft.other ?? {});
+      setCurrentIndex(
+        Math.min(
+          Math.max(draft.index ?? 0, 0),
+          Math.max(questions.length - 1, 0),
+        ),
+      );
+    }
+    if (showTimer && initialSeconds == null) {
+      const end =
+        draft?.deadline ?? deadlineIn(ASSESSMENT_DEFAULT_DURATION_SECONDS);
+      setDeadline(end);
+      setRestoredSeconds(secondsUntil(end));
+    }
+    setRestoredFor(persistKey);
+  }
+
+  useEffect(() => {
+    if (!persistKey || !draftReady) return;
+    saveAssessmentDraft(persistKey, {
+      answers: userAnswers,
+      other: otherAnswers,
+      index: currentIndex,
+      deadline,
+    });
+  }, [
+    persistKey,
+    draftReady,
+    userAnswers,
+    otherAnswers,
+    currentIndex,
+    deadline,
+  ]);
 
   const answers = { ...prefillAnswers, ...userAnswers };
 
@@ -119,6 +177,21 @@ export function QuestionnaireFlow({
     setCurrentIndex((i) => Math.max(0, i - 1));
   };
 
+  // The server rejects a submit that arrives long after the deadline and uses
+  // up the attempt. Nothing is left to resume, so drop the draft and leave.
+  const handleTimeExpired = (e: unknown) => {
+    const data = e instanceof ApiError ? e.data : undefined;
+    const code =
+      data && typeof data === "object" && "error" in data
+        ? (data as { error?: unknown }).error
+        : undefined;
+    if (code !== "SKILL_TIME_EXPIRED") return false;
+    if (persistKey) clearAssessmentDraft(persistKey);
+    appToast.error(authFailureMessage(e));
+    router.replace("/t/assessments");
+    return true;
+  };
+
   const handleNext = async () => {
     if (!question || !canProceed || isSubmitting) return;
 
@@ -134,6 +207,7 @@ export function QuestionnaireFlow({
 
     try {
       const result = await onSubmit(builtAnswers, builtTimeByKey);
+      if (persistKey) clearAssessmentDraft(persistKey);
       if (isAssessmentSlug(name) && name !== "advanced" && user?.id) {
         if (result != null) {
           setSummaryResult(user.id, name, result);
@@ -148,6 +222,7 @@ export function QuestionnaireFlow({
       // retake-locked assessment appear re-enterable when it isn't.
       router.replace(`/t/assessments/${name}/summary`);
     } catch (e) {
+      if (handleTimeExpired(e)) return;
       appToast.error(authFailureMessage(e));
     }
   };
@@ -168,6 +243,7 @@ export function QuestionnaireFlow({
 
     onSubmit(builtAnswers, builtTimeByKey)
       .then((result) => {
+        if (persistKey) clearAssessmentDraft(persistKey);
         if (isAssessmentSlug(name) && name !== "advanced" && user?.id) {
           if (result != null) {
             setSummaryResult(user.id, name, result);
@@ -182,6 +258,8 @@ export function QuestionnaireFlow({
         router.replace(`/t/assessments/${name}/summary`);
       })
       .catch((e) => {
+        // Retrying a rejected late submit would loop, so leave it set.
+        if (handleTimeExpired(e)) return;
         autoSubmittedRef.current = false;
         appToast.error(authFailureMessage(e));
       });

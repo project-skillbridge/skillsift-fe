@@ -1,5 +1,5 @@
 /** Default countdown duration for timed assessments (seconds). */
-export const ASSESSMENT_DEFAULT_DURATION_SECONDS = 29 * 60 + 9;
+export const ASSESSMENT_DEFAULT_DURATION_SECONDS = 30 * 60;
 
 export const QUESTION_BANK = {
   meta: {

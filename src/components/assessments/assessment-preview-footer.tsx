@@ -24,7 +24,7 @@ const CONSENT_LINK_CLASS =
 /** Canonical href + display label for each consent-template token. Centralised
  *  here so a future "Help Center" route swap is a one-line change. */
 const CONSENT_LINKS: Record<string, { href: string; label: string }> = {
-  terms: { href: "/terms-of-use", label: "SkillBridge Terms and Conditions" },
+  terms: { href: "/terms-of-use", label: "SkillSift Terms and Conditions" },
   helpCenter: { href: "/contact", label: "Help Center" },
 };
 
