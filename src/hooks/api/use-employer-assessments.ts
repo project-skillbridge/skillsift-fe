@@ -21,7 +21,7 @@ import type {
   DraftAssessmentQuestionsInput,
   InviteToAssessmentInput,
 } from "@/types/api/employer-assessments";
-import { employerAssessmentsKeys } from "./keys";
+import { employerAssessmentsKeys, employerBillingKeys } from "./keys";
 
 export function useEmployerAssessments(params?: {
   page?: number;
@@ -103,8 +103,12 @@ export function useDeactivateEmployerAssessment() {
 }
 
 export function useInviteToAssessment() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: InviteToAssessmentInput) => inviteToAssessment(input),
+    // Inviting spends from the employer's allowance.
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: employerBillingKeys.all }),
   });
 }
 

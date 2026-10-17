@@ -8,6 +8,7 @@ import {
   formatPlanPrice,
   PRICING_CONTACT_EMAIL,
   PRICING_PLANS,
+  type PricingCurrency,
 } from "@/constants/employer-pricing";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ type PlanCardsProps = {
 };
 
 export function PlanCards({ currentPlanId, signUpHref }: PlanCardsProps) {
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
+  const [currency, setCurrency] = useState<PricingCurrency>("NGN");
 
   return (
     <div className="flex flex-col gap-6">
@@ -28,7 +29,7 @@ export function PlanCards({ currentPlanId, signUpHref }: PlanCardsProps) {
         aria-label="Currency"
         className="mx-auto inline-flex rounded-full border border-[#E4E7EC] bg-white p-1"
       >
-        {(["USD", "NGN"] as const).map((c) => (
+        {(["NGN", "USD"] as const).map((c) => (
           <button
             key={c}
             type="button"
@@ -78,9 +79,12 @@ export function PlanCards({ currentPlanId, signUpHref }: PlanCardsProps) {
                   <span className="text-sm text-[#757575]">/ month</span>
                 ) : null}
               </p>
-              <p className="rounded-lg bg-[#F2F4F7] px-3 py-2 text-sm font-medium text-[#151515]">
-                {plan.unlocksLabel}
-              </p>
+              <div className="rounded-lg bg-[#F2F4F7] px-3 py-2 text-sm">
+                <p className="font-medium text-[#151515]">
+                  {plan.invitesLabel}
+                </p>
+                <p className="text-[#667085]">{plan.unlocksLabel}</p>
+              </div>
               <ul className="flex flex-1 flex-col gap-2">
                 {plan.features.map((f) => (
                   <li

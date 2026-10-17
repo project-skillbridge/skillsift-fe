@@ -3,6 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployerBillingSummary } from "@/hooks/api/use-employer-billing";
 import { formatAbsoluteDate } from "@/lib/format-date";
+import { InvitePacks } from "@/components/pricing/invite-packs";
 import { PlanCards } from "@/components/pricing/plan-cards";
 
 export function EmployerBillingPage() {
@@ -25,28 +26,32 @@ export function EmployerBillingPage() {
     );
   }
 
-  const planTotal = data.monthlyUnlocks;
-  const planLeft = Math.max(planTotal - data.usedThisPeriod, 0);
-  const pct = planTotal ? Math.min(100, (planLeft / planTotal) * 100) : 0;
+  const inviteTotal = data.monthlyInvites;
+  const inviteLeft = Math.max(inviteTotal - data.invitesUsedThisPeriod, 0);
+  const invitePct = inviteTotal
+    ? Math.min(100, (inviteLeft / inviteTotal) * 100)
+    : 0;
+  const unlockTotal = data.monthlyUnlocks;
+  const unlockLeft = Math.max(unlockTotal - data.usedThisPeriod, 0);
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8">
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold text-[#151515]">
-          Plan and unlocks
+          Plan and invites
         </h1>
         <p className="text-sm text-[#757575]">
-          An unlock reveals one talent&apos;s full name, photo, resume,
-          portfolio and contact.
+          Each candidate you invite or admit to an assessment uses one invite.
+          Results, compare and export are free on every plan.
         </p>
       </div>
 
       <section className="flex flex-col gap-5 rounded-2xl border border-[#E4E7EC] bg-white p-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-[#757575]">Unlocks available</p>
+            <p className="text-sm text-[#757575]">Invites available</p>
             <p className="text-4xl font-semibold text-[#151515]">
-              {data.unlocksRemaining}
+              {data.invitesRemaining}
             </p>
           </div>
           <div className="text-right text-sm text-[#757575]">
@@ -56,38 +61,48 @@ export function EmployerBillingPage() {
                 {data.planName}
               </span>
             </p>
-            <p>{data.totalUnlocked} talent unlocked so far</p>
+            {data.periodResetsAt ? (
+              <p>Resets {formatAbsoluteDate(data.periodResetsAt)}</p>
+            ) : null}
           </div>
         </div>
 
-        {planTotal > 0 ? (
+        {inviteTotal > 0 ? (
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-sm text-[#475467]">
               <span>
-                {planLeft} of {planTotal} monthly unlocks left
+                {inviteLeft} of {inviteTotal} monthly invites left
               </span>
-              {data.periodResetsAt ? (
-                <span>Resets {formatAbsoluteDate(data.periodResetsAt)}</span>
-              ) : null}
             </div>
             <div className="h-2 w-full rounded-full bg-[#E5E7EB]">
               <div
                 className="h-full rounded-full bg-[#19A878]"
-                style={{ width: `${pct}%` }}
+                style={{ width: `${invitePct}%` }}
               />
             </div>
           </div>
         ) : null}
 
-        {data.bonusCredits > 0 ? (
+        {data.inviteBonusCredits > 0 ? (
           <p className="text-sm text-[#475467]">
-            Plus {data.bonusCredits} extra unlock
-            {data.bonusCredits === 1 ? "" : "s"} that never expire.
+            Plus {data.inviteBonusCredits} pack invite
+            {data.inviteBonusCredits === 1 ? "" : "s"} that never expire.
           </p>
         ) : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#EEF0F3] pt-4 text-sm text-[#475467]">
+          <span>
+            Profile unlocks: {data.unlocksRemaining} available
+            {unlockTotal > 0
+              ? ` (${unlockLeft} of ${unlockTotal} monthly left)`
+              : ""}
+          </span>
+          <span>{data.totalUnlocked} talent unlocked so far</span>
+        </div>
       </section>
 
       <PlanCards currentPlanId={data.plan} />
+      <InvitePacks />
     </div>
   );
 }

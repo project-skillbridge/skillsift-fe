@@ -7,6 +7,7 @@ import {
   PRICING_WHY_PAY,
 } from "@/constants/employer-pricing";
 
+import { InvitePacks } from "./invite-packs";
 import { PlanCards } from "./plan-cards";
 
 export function PricingPageContent() {
@@ -17,13 +18,17 @@ export function PricingPageContent() {
           Hire people who&apos;ve already proven their skills
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 md:text-lg">
-          Browsing and shortlisting are free. You only pay to unlock the people
-          you want to talk to.
+          Every feature is on every plan. You pay for how many candidates you
+          assess, in naira or dollars, with no annual contract.
         </p>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-6 py-12">
         <PlanCards signUpHref="/signup" />
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-6 py-4">
+        <InvitePacks />
       </section>
 
       <section className="mx-auto w-full max-w-4xl px-6 py-8">
@@ -37,7 +42,7 @@ export function PricingPageContent() {
                 <th className="px-4 py-3 font-medium">Feature</th>
                 <th className="px-4 py-3 text-center font-medium">Free</th>
                 <th className="px-4 py-3 text-center font-medium">
-                  With unlocks
+                  On a paid plan
                 </th>
               </tr>
             </thead>

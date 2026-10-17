@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 import { useInviteToAssessment } from "@/hooks/api/use-employer-assessments";
+import { useEmployerBillingSummary } from "@/hooks/api/use-employer-billing";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +29,8 @@ export function AssessmentInviteModal({
 }: AssessmentInviteModalProps) {
   const [email, setEmail] = useState("");
   const { mutate: inviteToAssessment, isPending } = useInviteToAssessment();
+  const { data: billing } = useEmployerBillingSummary();
+  const outOfInvites = billing?.invitesRemaining === 0;
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) setEmail("");
@@ -51,8 +55,12 @@ export function AssessmentInviteModal({
           setEmail("");
           onOpenChange(false);
         },
-        onError: () => {
-          toast.error("Failed to send invite");
+        onError: (error) => {
+          toast.error(
+            error instanceof Error && error.message
+              ? error.message
+              : "Failed to send invite",
+          );
         },
       },
     );
@@ -77,6 +85,20 @@ export function AssessmentInviteModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {billing ? (
+              <p className="text-xs text-[#667085]">
+                {outOfInvites ? (
+                  <>
+                    You&apos;re out of invites this month.{" "}
+                    <Link href="/e/billing" className="underline">
+                      Get more
+                    </Link>
+                  </>
+                ) : (
+                  `${billing.invitesRemaining} invite${billing.invitesRemaining === 1 ? "" : "s"} left. Each candidate uses one.`
+                )}
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="mt-6 flex justify-end space-x-2">
@@ -87,7 +109,10 @@ export function AssessmentInviteModal({
           >
             Cancel
           </Button>
-          <Button onClick={handleInvite} disabled={isPending || !email}>
+          <Button
+            onClick={handleInvite}
+            disabled={isPending || !email || outOfInvites}
+          >
             {isPending ? "Sending..." : "Send Invite"}
           </Button>
         </div>

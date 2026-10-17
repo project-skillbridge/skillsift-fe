@@ -21,6 +21,10 @@ export async function getEmployerBillingSummary(): Promise<EmployerBillingSummar
     unlocksRemaining: raw.unlocks_remaining,
     periodResetsAt: raw.period_resets_at,
     totalUnlocked: raw.total_unlocked,
+    monthlyInvites: raw.monthly_invites,
+    invitesUsedThisPeriod: raw.invites_used_this_period,
+    inviteBonusCredits: raw.invite_bonus_credits,
+    invitesRemaining: raw.invites_remaining,
     plans: raw.plans,
   };
 }
