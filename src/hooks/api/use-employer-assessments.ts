@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createEmployerAssessment,
   deactivateEmployerAssessment,
+  draftAssessmentQuestions,
   getEmployerAssessment,
   getEmployerAssessmentDetail,
   getEmployerAssessmentResultDetail,
@@ -15,6 +16,7 @@ import {
 import type {
   AssessmentResultsParams,
   CreateEmployerAssessmentInput,
+  DraftAssessmentQuestionsInput,
   InviteToAssessmentInput,
 } from "@/types/api/employer-assessments";
 import { employerAssessmentsKeys } from "./keys";
@@ -101,6 +103,13 @@ export function useDeactivateEmployerAssessment() {
 export function useInviteToAssessment() {
   return useMutation({
     mutationFn: (input: InviteToAssessmentInput) => inviteToAssessment(input),
+  });
+}
+
+export function useDraftAssessmentQuestions() {
+  return useMutation({
+    mutationFn: (input: DraftAssessmentQuestionsInput) =>
+      draftAssessmentQuestions(input),
   });
 }
 

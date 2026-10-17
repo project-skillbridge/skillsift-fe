@@ -4,6 +4,8 @@ import type { EmployerAssessmentQuestionInput } from "@/types/api/employer-asses
 export type DraftQuestionType = EmployerAssessmentQuestionInput["questionType"];
 
 export type DraftQuestion = {
+  /** Set on AI-drafted questions until the employer confirms the answer. */
+  aiDrafted?: boolean;
   /** Local key only; never sent to the API. */
   id: string;
   questionText: string;

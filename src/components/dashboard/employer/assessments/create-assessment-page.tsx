@@ -86,7 +86,9 @@ export function CreateAssessmentPage() {
 
   const nextDisabled =
     isPending ||
-    (currentStep.id === "questions" && !areCompanyQuestionsValid(questions)) ||
+    (currentStep.id === "questions" &&
+      (!areCompanyQuestionsValid(questions) ||
+        questions.some((q) => q.aiDrafted))) ||
     (currentStep.id === "recipients" && recipients.length === 0);
 
   const handlePublish = () => {
@@ -139,6 +141,7 @@ export function CreateAssessmentPage() {
     if (currentStep.id === "questions") {
       return (
         <CreateAssessmentQuestionsStep
+          level={level}
           questions={questions}
           onQuestionsChange={setQuestions}
         />

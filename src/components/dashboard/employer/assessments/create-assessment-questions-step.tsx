@@ -28,7 +28,10 @@ import {
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import { AssessmentAiDraftPanel } from "./assessment-ai-draft-panel";
+
 type CreateAssessmentQuestionsStepProps = {
+  level: "junior" | "mid" | "senior";
   questions: DraftQuestion[];
   onQuestionsChange: (questions: DraftQuestion[]) => void;
 };
@@ -78,6 +81,18 @@ function QuestionCard({
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+      {question.aiDrafted ? (
+        <div className="mb-3 flex items-center justify-between gap-2 rounded-md bg-[#FFF7E6] px-3 py-2 text-xs text-[#8A5A00]">
+          <span>AI draft. Check the question and the marked answer.</span>
+          <button
+            type="button"
+            onClick={() => onChange({ ...question, aiDrafted: false })}
+            className="font-semibold underline underline-offset-2"
+          >
+            Looks right
+          </button>
+        </div>
+      ) : null}
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="font-sans text-sm font-semibold text-[#101828]">
           Question {index + 1}
@@ -194,6 +209,7 @@ function QuestionCard({
 }
 
 export function CreateAssessmentQuestionsStep({
+  level,
   questions,
   onQuestionsChange,
 }: CreateAssessmentQuestionsStepProps) {
@@ -202,6 +218,7 @@ export function CreateAssessmentQuestionsStep({
 
   const validCount = questions.filter(isDraftQuestionValid).length;
   const remaining = Math.max(0, MIN_COMPANY_QUESTIONS - validCount);
+  const unreviewed = questions.filter((q) => q.aiDrafted).length;
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
@@ -225,8 +242,17 @@ export function CreateAssessmentQuestionsStep({
     if (fileInput.current) fileInput.current.value = "";
   };
 
+  const withoutBlanks = () =>
+    questions.filter((q) => q.questionText.trim() || q.correctAnswer.trim());
+
   return (
     <div className="flex flex-col gap-4">
+      <AssessmentAiDraftPanel
+        level={level}
+        onDrafted={(drafted) =>
+          onQuestionsChange([...withoutBlanks(), ...drafted])
+        }
+      />
       <div className="flex flex-col gap-3 rounded-xl border border-dashed border-[#D0D5DD] bg-[#FAFAFA] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-sans text-sm font-semibold text-[#101828]">
@@ -297,12 +323,16 @@ export function CreateAssessmentQuestionsStep({
         <p
           className={cn(
             "font-sans text-xs",
-            remaining === 0 ? "text-[#19A878]" : "text-[#667085]",
+            remaining === 0 && unreviewed === 0
+              ? "text-[#19A878]"
+              : "text-[#667085]",
           )}
         >
-          {remaining === 0
-            ? `${validCount} questions ready`
-            : `${validCount} ready · ${remaining} more needed`}
+          {unreviewed > 0
+            ? `${unreviewed} AI ${unreviewed === 1 ? "draft needs" : "drafts need"} a check before you continue`
+            : remaining === 0
+              ? `${validCount} questions ready`
+              : `${validCount} ready · ${remaining} more needed`}
         </p>
       </div>
     </div>

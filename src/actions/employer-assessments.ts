@@ -11,6 +11,8 @@ import type {
   ImportedQuestionsResult,
   EmployerAssessmentDetail,
   AssessmentResultDetail,
+  DraftAssessmentQuestionsInput,
+  DraftAssessmentQuestionsResult,
   AssessmentResultsParams,
   AssessmentSubmission,
 } from "@/types/api/employer-assessments";
@@ -178,6 +180,17 @@ export async function inviteToAssessment(
   if (emails && emails.length > 0) body.emails = emails;
 
   await authApi.post(`/employer/assessments/${assessmentId}/invite`, body);
+}
+
+/** AI starting point only; nothing is saved and the employer reviews it. */
+export async function draftAssessmentQuestions(
+  input: DraftAssessmentQuestionsInput,
+): Promise<DraftAssessmentQuestionsResult> {
+  const res = await authApi.post<ApiEnvelope<DraftAssessmentQuestionsResult>>(
+    "/employer/assessments/draft-questions",
+    input,
+  );
+  return unwrapData(res);
 }
 
 /** Parses a CSV/XLSX question file server-side; nothing is saved yet. */

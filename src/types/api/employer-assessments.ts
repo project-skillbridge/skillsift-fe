@@ -209,3 +209,14 @@ export type ListEmployerAssessmentResultsResponse = {
   total: number;
   emptyState?: string | null;
 };
+
+export type DraftAssessmentQuestionsInput = {
+  jobDescription: string;
+  experienceLevel?: "junior" | "mid" | "senior";
+  count?: number;
+};
+
+export type DraftAssessmentQuestionsResult = {
+  questions: EmployerAssessmentQuestionInput[];
+  dropped: number;
+};
