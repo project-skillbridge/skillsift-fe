@@ -1,3 +1,4 @@
+import { CertificatesSection } from "@/components/certificates/certificates-section";
 import { DashboardRecommended } from "@/components/dashboard/dashboard-recommended";
 import { DashboardWelcome } from "@/components/dashboard/dashboard-welcome";
 import { apiGoalToLabel } from "@/constants/talent-onboarding";
@@ -38,6 +39,7 @@ export function EmergingUserDashboard({
         />
         <DashboardJobRoadmap journeyOverview={dashboardHome.journeyOverview} />
       </div>
+      <CertificatesSection />
       <JobReadyTrackRecord />
       <DashboardRecommended />
     </div>

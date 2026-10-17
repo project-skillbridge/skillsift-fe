@@ -26,7 +26,7 @@ const ResourcesSection = (section: ResourceSection) => {
   };
 
   return (
-    <div className="flex flex-col gap-y-6">
+    <div id={section.id} className="flex scroll-mt-24 flex-col gap-y-6">
       <div className="flex flex-row justify-between items-center">
         <h2 className="section-h4 font-semibold text-foreground">
           {section.title}

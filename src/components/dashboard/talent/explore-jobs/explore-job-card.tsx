@@ -19,8 +19,7 @@ export function ExploreJobCard({ role }: { role: ExploreJobRole }) {
       onError: (err: unknown) => {
         const errorObj = err as Record<string, unknown>;
         const responseObj = errorObj?.response as
-          | Record<string, unknown>
-          | undefined;
+          Record<string, unknown> | undefined;
         if (errorObj?.status === 403 || responseObj?.status === 403) {
           setShowModal(true);
         } else {

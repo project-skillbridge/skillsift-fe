@@ -29,9 +29,9 @@ export function DashboardWelcome({
   const showCta = profileCompletion == null || profileCompletion < 100;
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-3xl border border-[#D5E5F4] bg-[#EEF7FF] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
       <div className="min-w-0">
-        <h1 className="text-[22px] font-bold leading-tight tracking-tight text-foreground">
+        <h1 className="text-2xl font-bold leading-tight tracking-tight text-foreground">
           Welcome, {resolvedFirstName}!
         </h1>
         <p className="body mt-1 text-muted-foreground">
@@ -52,9 +52,9 @@ export function DashboardWelcome({
             Complete your profile
           </Link>
           <div className="flex items-center gap-2">
-            <div className="h-1.5 w-44 overflow-hidden rounded-full bg-gray-200">
+            <div className="h-1.5 w-44 overflow-hidden rounded-full bg-white ring-1 ring-[#D5E5F4]">
               <div
-                className="h-full rounded-full bg-green-500 transition-all duration-500"
+                className="h-full rounded-full bg-[#FE9667] transition-all duration-500"
                 style={{ width: `${profileCompletion ?? 0}%` }}
               />
             </div>
