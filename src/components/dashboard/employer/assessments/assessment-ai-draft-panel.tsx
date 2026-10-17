@@ -88,7 +88,7 @@ export function AssessmentAiDraftPanel({ level, onDrafted }: Props) {
           onClick={handleDraft}
         >
           <Sparkles className="size-4" />
-          {draft.isPending ? "Drafting..." : "Draft questions"}
+          {draft.isPending ? "Drafting, up to 30s..." : "Draft questions"}
         </Button>
       </div>
     </div>
