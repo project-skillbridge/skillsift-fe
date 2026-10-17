@@ -51,7 +51,8 @@ export function ExternalAssessmentPage({ token, assessment }: Props) {
       },
     );
 
-  if (done) return <ExternalConfirmationStep />;
+  if (done)
+    return <ExternalConfirmationStep email={registration?.email ?? email} />;
 
   if (!registration) {
     return (

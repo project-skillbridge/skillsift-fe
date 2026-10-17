@@ -76,7 +76,10 @@ export function ResultsTable({
                   <span className="max-w-64 truncate font-medium text-[#151515]">
                     {candidateLabel(s)}
                   </span>
-                  <CandidateSourceBadge source={s.source} />
+                  <CandidateSourceBadge
+                    source={s.source}
+                    joined={!!s.joinedSkillsiftUserId}
+                  />
                 </div>
               </td>
               <td className={CELL}>

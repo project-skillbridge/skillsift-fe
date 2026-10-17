@@ -73,11 +73,15 @@ export function CandidateReportSheet({
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <CandidateSourceBadge source={data.source} />
+                <CandidateSourceBadge
+                  source={data.source}
+                  joined={!!data.joinedSkillsiftUserId}
+                />
                 {data.source === "external" ? (
                   <span className="text-xs text-[#757575]">
-                    Took the test by link, identity not verified. Ask them to
-                    join SkillSift to get verified.
+                    {data.joinedSkillsiftUserId
+                      ? "Took the test by link and has since joined SkillSift with a verified email."
+                      : "Took the test by link, identity not verified. We invite them to join SkillSift after the test."}
                   </span>
                 ) : null}
               </div>

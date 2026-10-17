@@ -54,7 +54,10 @@ export function ResultsCards({
               <span className="w-full truncate font-medium text-[#151515]">
                 {candidateLabel(s)}
               </span>
-              <CandidateSourceBadge source={s.source} />
+              <CandidateSourceBadge
+                source={s.source}
+                joined={!!s.joinedSkillsiftUserId}
+              />
             </div>
             <ResultPill passed={s.status === "pass"} />
           </div>

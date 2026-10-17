@@ -163,6 +163,8 @@ export type AssessmentSubmission = {
   /** Advisory only. Null for results from before integrity checks existed. */
   integrityLevel: "clean" | "review" | "flagged" | null;
   integrityReasons: string[];
+  /** Set when a link taker later joined SkillSift with a verified account. */
+  joinedSkillsiftUserId: string | null;
 };
 
 export type AssessmentResultsSummary = {
