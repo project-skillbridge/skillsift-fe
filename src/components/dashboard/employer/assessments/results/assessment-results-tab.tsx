@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Download, GitCompareArrows } from "lucide-react";
+import {
+  Download,
+  Gauge,
+  GitCompareArrows,
+  Trophy,
+  Users,
+  CheckCircle2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,9 +16,11 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { useEmployerAssessmentResults } from "@/hooks/api/use-employer-assessments";
 import type { AssessmentResultsParams } from "@/types/api/employer-assessments";
 
+import { StatTile } from "../../shared/stat-tile";
 import { CandidateCompareDialog } from "./candidate-compare-dialog";
 import { CandidateReportSheet } from "./candidate-report-sheet";
 import { ResultsCards } from "./results-cards";
@@ -20,20 +29,78 @@ import { exportResultsCsv } from "./results-utils";
 
 const MAX_COMPARE = 4;
 
-type Props = { assessmentId: string; title: string };
+type Props = {
+  assessmentId: string;
+  title: string;
+  passingThreshold?: number;
+};
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+const BUCKETS = [
+  { label: "0-19", min: 0, max: 19 },
+  { label: "20-39", min: 20, max: 39 },
+  { label: "40-59", min: 40, max: 59 },
+  { label: "60-79", min: 60, max: 79 },
+  { label: "80-100", min: 80, max: 100 },
+];
+
+function ScoreSpread({
+  scores,
+  passingThreshold,
+}: {
+  scores: number[];
+  passingThreshold?: number;
+}) {
+  const counts = BUCKETS.map(
+    (b) => scores.filter((x) => x >= b.min && x <= b.max).length,
+  );
+  const tallest = Math.max(1, ...counts);
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-[#E4E7EC] p-4">
-      <span className="text-sm text-[#757575]">{label}</span>
-      <span className="text-lg font-semibold text-[#151515]">{value}</span>
-    </div>
+    <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-base font-semibold text-[#151515]">
+          How scores are spread
+        </h3>
+        {passingThreshold != null ? (
+          <span className="text-xs text-[#667085]">
+            Pass mark {passingThreshold}%
+          </span>
+        ) : null}
+      </div>
+      <div className="grid grid-cols-5 items-end gap-3">
+        {BUCKETS.map((b, i) => {
+          const passing = passingThreshold != null && b.max >= passingThreshold;
+          return (
+            <div key={b.label} className="flex flex-col items-center gap-2">
+              <span className="text-sm font-semibold text-[#151515]">
+                {counts[i]}
+              </span>
+              <div className="flex h-24 w-full items-end rounded-lg bg-[#F2F2F2]">
+                <div
+                  className={cn(
+                    "w-full rounded-lg transition-all",
+                    passing ? "bg-[#009f6a]" : "bg-[#C9CDD2]",
+                  )}
+                  style={{
+                    height: `${counts[i] ? Math.max(8, (counts[i] / tallest) * 100) : 0}%`,
+                  }}
+                />
+              </div>
+              <span className="text-xs text-[#667085]">{b.label}%</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
 const pct = (n: number | null | undefined) => (n == null ? "—" : `${n}%`);
 
-export function AssessmentResultsTab({ assessmentId, title }: Props) {
+export function AssessmentResultsTab({
+  assessmentId,
+  title,
+  passingThreshold,
+}: Props) {
   const [status, setStatus] = useState<"" | "pass" | "fail">("");
   const [source, setSource] = useState<"" | "talent" | "external">("");
   const [sort, setSort] = useState<"score" | "date">("score");
@@ -77,14 +144,43 @@ export function AssessmentResultsTab({ assessmentId, title }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <SummaryCard label="Completed" value={String(summary.total)} />
-        <SummaryCard label="Average score" value={pct(summary.averageScore)} />
-        <SummaryCard label="Top score" value={pct(summary.topScore)} />
-        <SummaryCard label="Pass rate" value={pct(summary.passRate)} />
+      <div className="grid gap-4 rounded-2xl bg-[#F2F2F2] p-4 sm:grid-cols-2">
+        <StatTile
+          icon={Users}
+          tone="green"
+          label="Completed"
+          value={String(summary.total)}
+          hint="Finished the test."
+        />
+        <StatTile
+          icon={Gauge}
+          tone="sand"
+          label="Average score"
+          value={pct(summary.averageScore)}
+          hint="Across everyone."
+        />
+        <StatTile
+          icon={Trophy}
+          tone="violet"
+          label="Top score"
+          value={pct(summary.topScore)}
+          hint="Best result so far."
+        />
+        <StatTile
+          icon={CheckCircle2}
+          tone="grey"
+          label="Pass rate"
+          value={pct(summary.passRate)}
+          hint="Met the pass mark."
+        />
       </div>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6">
+      <ScoreSpread
+        scores={rows.map((r) => r.score)}
+        passingThreshold={passingThreshold}
+      />
+
+      <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5">
         <div className="flex flex-wrap items-center gap-2">
           <NativeSelect
             size="sm"
@@ -104,10 +200,10 @@ export function AssessmentResultsTab({ assessmentId, title }: Props) {
           >
             <NativeSelectOption value="">All candidates</NativeSelectOption>
             <NativeSelectOption value="talent">
-              Verified talent
+              SkillSift talent
             </NativeSelectOption>
             <NativeSelectOption value="external">
-              Link takers (unverified)
+              Link takers
             </NativeSelectOption>
           </NativeSelect>
           <NativeSelect
@@ -165,6 +261,33 @@ export function AssessmentResultsTab({ assessmentId, title }: Props) {
           </p>
         ) : null}
       </section>
+
+      {selected.length > 0 ? (
+        <div className="sticky bottom-4 z-10 mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-full bg-[#0d2025] py-2 pr-2 pl-5 text-white shadow-lg">
+          <span className="text-sm font-medium">
+            {selected.length} selected
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setSelected([])}
+              className="rounded-full px-3 py-1.5 text-sm text-white/80 hover:text-white"
+            >
+              Clear
+            </button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={selected.length < 2}
+              onClick={() => setCompareOpen(true)}
+              className="rounded-full bg-white text-[#151515] hover:bg-white/90"
+            >
+              <GitCompareArrows className="size-4" />
+              {selected.length < 2 ? "Pick one more" : "Compare"}
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       <CandidateReportSheet
         assessmentId={assessmentId}

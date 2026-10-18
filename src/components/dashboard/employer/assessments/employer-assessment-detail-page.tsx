@@ -129,6 +129,7 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
           <AssessmentResultsTab
             assessmentId={assessment.id}
             title={assessment.title}
+            passingThreshold={assessment.passingThreshold}
           />
         </TabsContent>
         <TabsContent value="questions" className="mt-4">

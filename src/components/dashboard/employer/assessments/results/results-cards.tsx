@@ -1,5 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/format-date";
 import type { AssessmentSubmission } from "@/types/api/employer-assessments";
 
@@ -37,7 +38,10 @@ export function ResultsCards({
       {rows.map((s) => (
         <li
           key={s.id}
-          className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] p-4"
+          className={cn(
+            "flex flex-col gap-3 rounded-xl border border-[#E4E7EC] p-4",
+            selected.includes(s.id) && "border-[#009f6a] bg-[#F3F8F6]",
+          )}
         >
           <div className="flex items-start gap-3">
             <Checkbox
@@ -63,7 +67,7 @@ export function ResultsCards({
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <ScoreBar score={s.score} />
+            <ScoreBar score={s.score} passed={s.status === "pass"} />
             <span className="text-xs text-[#667085]">
               {percentileLabel(s.percentile)}
             </span>

@@ -2,6 +2,7 @@
 
 import { CheckCircle2, XCircle } from "lucide-react";
 
+import { ProgressRing } from "../../shared/progress-ring";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sheet,
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
 import type { AssessmentResultDetail } from "@/types/api/employer-assessments";
 
 import { CandidateSourceBadge } from "./candidate-source-badge";
-import { IntegrityBadge } from "./results-shared";
+import { CandidateAvatar, IntegrityBadge, ResultPill } from "./results-shared";
 import {
   candidateLabel,
   formatDuration,
@@ -31,7 +32,7 @@ type Props = {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[#E4E7EC] p-3">
+    <div className="rounded-xl bg-[#F2F2F2] p-3">
       <p className="text-xs text-[#757575]">{label}</p>
       <p className="text-base font-semibold text-[#151515]">{value}</p>
     </div>
@@ -85,20 +86,37 @@ export function CandidateReportSheet({
                   </span>
                 ) : null}
               </div>
+              <div className="flex items-center gap-5 rounded-2xl bg-[#dfe4e2] p-5">
+                <ProgressRing
+                  fraction={data.score / 100}
+                  size={92}
+                  trackClassName="stroke-white"
+                  barClassName={
+                    data.status === "pass"
+                      ? "stroke-[#009f6a]"
+                      : "stroke-[#E5484D]"
+                  }
+                >
+                  <span className="text-xl font-bold text-[#151515]">
+                    {data.score}%
+                  </span>
+                </ProgressRing>
+                <div className="flex min-w-0 flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <CandidateAvatar
+                      name={candidateLabel(data)}
+                      className="size-8 bg-white text-xs"
+                    />
+                    <ResultPill passed={data.status === "pass"} />
+                  </div>
+                  <p className="text-sm text-[#344054]">
+                    {data.correctCount} of {data.questionCount} correct.{" "}
+                    {percentileLabel(data.percentile)} of the others.
+                  </p>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
-                <Stat label="Score" value={`${data.score}%`} />
-                <Stat
-                  label="Result"
-                  value={data.status === "pass" ? "Passed" : "Not passed"}
-                />
-                <Stat
-                  label="Correct answers"
-                  value={`${data.correctCount} of ${data.questionCount}`}
-                />
-                <Stat
-                  label="Versus others"
-                  value={percentileLabel(data.percentile)}
-                />
+                <Stat label="Rank" value={`#${data.rank}`} />
                 <Stat
                   label="Time taken"
                   value={formatDuration(data.timeTakenSeconds)}

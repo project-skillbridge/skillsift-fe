@@ -1,10 +1,12 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/format-date";
 import type { AssessmentSubmission } from "@/types/api/employer-assessments";
 
 import { CandidateSourceBadge } from "./candidate-source-badge";
 import {
+  CandidateAvatar,
   IntegrityBadge,
   RankChip,
   ResultPill,
@@ -38,25 +40,28 @@ export function ResultsTable({
 }: Props) {
   return (
     <div className="hidden overflow-x-auto md:block">
-      <table className="w-full min-w-190 text-left text-sm">
+      <table className="w-full min-w-170 text-left text-sm">
         <thead className="border-b border-[#EEF0F3]">
           <tr>
             <th className="w-10 px-3 py-3" />
             <th className={`${HEAD} w-14`}>Rank</th>
             <th className={HEAD}>Candidate</th>
-            <th className={`${HEAD} w-44`}>Score</th>
+            <th className={`${HEAD} w-40`}>Score</th>
             <th className={`${HEAD} w-32`}>Result</th>
             <th className={`${HEAD} w-32`}>Integrity</th>
             <th className={`${HEAD} w-28`}>Time taken</th>
-            <th className={`${HEAD} w-32`}>Completed</th>
-            <th className="w-32 px-3 py-3" />
+            <th className={`${HEAD} w-28`}>Completed</th>
+            <th className="w-20 px-3 py-3" />
           </tr>
         </thead>
         <tbody>
           {rows.map((s) => (
             <tr
               key={s.id}
-              className="border-b border-[#F2F4F7] last:border-0 hover:bg-[#FAFAFA]"
+              className={cn(
+                "border-b border-[#F2F4F7] transition-colors last:border-0 hover:bg-[#FAFAFA]",
+                selected.includes(s.id) && "bg-[#F3F8F6] hover:bg-[#F3F8F6]",
+              )}
             >
               <td className={CELL}>
                 <Checkbox
@@ -72,19 +77,22 @@ export function ResultsTable({
                 <RankChip rank={s.rank} />
               </td>
               <td className={CELL}>
-                <div className="flex min-w-0 flex-col items-start gap-1">
-                  <span className="max-w-64 truncate font-medium text-[#151515]">
-                    {candidateLabel(s)}
-                  </span>
-                  <CandidateSourceBadge
-                    source={s.source}
-                    joined={!!s.joinedSkillsiftUserId}
-                  />
+                <div className="flex min-w-0 items-center gap-3">
+                  <CandidateAvatar name={candidateLabel(s)} />
+                  <div className="flex min-w-0 flex-col items-start gap-1">
+                    <span className="max-w-40 truncate font-medium text-[#151515]">
+                      {candidateLabel(s)}
+                    </span>
+                    <CandidateSourceBadge
+                      source={s.source}
+                      joined={!!s.joinedSkillsiftUserId}
+                    />
+                  </div>
                 </div>
               </td>
               <td className={CELL}>
                 <div className="flex flex-col gap-1">
-                  <ScoreBar score={s.score} />
+                  <ScoreBar score={s.score} passed={s.status === "pass"} />
                   <span className="text-xs text-[#667085]">
                     {percentileLabel(s.percentile)}
                   </span>
@@ -109,7 +117,7 @@ export function ResultsTable({
                   size="sm"
                   onClick={() => onView(s.id)}
                 >
-                  View report
+                  View
                 </Button>
               </td>
             </tr>

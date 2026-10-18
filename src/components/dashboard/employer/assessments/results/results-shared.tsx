@@ -13,12 +13,21 @@ export function ResultPill({ passed }: { passed: boolean }) {
   );
 }
 
-export function ScoreBar({ score }: { score: number }) {
+export function ScoreBar({
+  score,
+  passed = true,
+}: {
+  score: number;
+  passed?: boolean;
+}) {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-[#EEF0F3]">
+      <div className="h-2 w-20 shrink-0 overflow-hidden rounded-full bg-[#EDEEF2]">
         <div
-          className="h-full rounded-full bg-[#059669]"
+          className={cn(
+            "h-full rounded-full",
+            passed ? "bg-[#009f6a]" : "bg-[#E5484D]",
+          )}
           style={{ width: `${score}%` }}
         />
       </div>
@@ -62,6 +71,39 @@ export function IntegrityBadge({
       )}
     >
       {label}
+    </span>
+  );
+}
+
+function initials(name: string): string {
+  const parts = name
+    .replace(/@.*/, "")
+    .split(/[\s._-]+/)
+    .filter(Boolean);
+  return (
+    parts
+      .slice(0, 2)
+      .map((p) => p[0]?.toUpperCase())
+      .join("") || "?"
+  );
+}
+
+export function CandidateAvatar({
+  name,
+  className,
+}: {
+  name: string;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-full bg-[#D3E6DF] text-sm font-semibold text-[#0d2025]",
+        className,
+      )}
+    >
+      {initials(name)}
     </span>
   );
 }
