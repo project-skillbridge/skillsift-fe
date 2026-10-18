@@ -7,6 +7,7 @@ import type {
   EmployerDiscoveryCandidate,
   EmployerDiscoveryCandidateProfile,
   EmployerDiscoveryCandidatesListData,
+  EmployerHiringBriefResponse,
   EmployerSavedCandidatesListParams,
   RawEmployerDiscoveryCandidate,
   RawEmployerDiscoveryCandidateProfile,
@@ -126,6 +127,15 @@ export async function getDiscoveryCandidateProfile(
     ApiEnvelope<RawEmployerDiscoveryCandidateProfile>
   >(`/employer/discovery/candidates/${encodeURIComponent(userId)}/profile`);
   return mapDiscoveryProfile(unwrapData(res));
+}
+
+export async function getHiringBrief(
+  userId: string,
+): Promise<EmployerHiringBriefResponse> {
+  const res = await authApi.get<ApiEnvelope<EmployerHiringBriefResponse>>(
+    `/employer/discovery/candidates/${encodeURIComponent(userId)}/hiring-brief`,
+  );
+  return unwrapData(res);
 }
 
 export async function getSavedCandidates(

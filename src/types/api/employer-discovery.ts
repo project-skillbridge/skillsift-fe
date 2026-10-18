@@ -156,3 +156,48 @@ export type RawEmployerDiscoveryCandidateProfile =
     hire_rating_count?: number;
     would_hire_again_rate?: number | null;
   };
+
+export type HiringBriefSource = "skills" | "job_ready" | "open_ended";
+
+export type EmployerHiringBrief = {
+  headline: string;
+  hire_case: string;
+  strengths: { title: string; evidence: string; source: HiringBriefSource }[];
+  gaps: {
+    title: string;
+    evidence: string;
+    source: HiringBriefSource;
+    severity: "minor" | "moderate" | "significant";
+  }[];
+  open_ended: {
+    topic: string;
+    quality: "strong" | "solid" | "basic" | "weak";
+    takeaway: string;
+  }[];
+  interview_questions: string[];
+  confidence: "high" | "medium" | "low";
+  confidence_note: string;
+};
+
+export type EmployerHiringBriefStats = {
+  skill_percentage: number | null;
+  job_ready_percentage: number | null;
+  job_ready_tier: string | null;
+  competencies: {
+    assessment: "skill" | "job_ready";
+    name: string;
+    score: number;
+    questions: number;
+  }[];
+  open_answers_reviewed: number;
+  questions_missed: number;
+};
+
+/** GET /employer/discovery/candidates/:userId/hiring-brief */
+export type EmployerHiringBriefResponse =
+  | {
+      status: "ready";
+      brief: EmployerHiringBrief;
+      stats: EmployerHiringBriefStats;
+    }
+  | { status: "generating" | "unavailable" | "no_assessment" };

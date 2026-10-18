@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   discoverCandidates,
   getDiscoveryCandidateProfile,
+  getHiringBrief,
   getSavedCandidates,
   removeCandidate,
   saveCandidate,
@@ -42,6 +43,17 @@ export function useDiscoveryCandidateProfile(
     queryKey: employerDiscoveryKeys.profile(userId),
     queryFn: () => getDiscoveryCandidateProfile(userId),
     enabled: (options?.enabled ?? true) && Boolean(userId),
+  });
+}
+
+/** The brief is written on first request, so poll until the server says ready. */
+export function useHiringBrief(userId: string) {
+  return useQuery({
+    queryKey: employerDiscoveryKeys.hiringBrief(userId),
+    queryFn: () => getHiringBrief(userId),
+    enabled: Boolean(userId),
+    refetchInterval: (query) =>
+      query.state.data?.status === "generating" ? 3000 : false,
   });
 }
 

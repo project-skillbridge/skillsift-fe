@@ -10,6 +10,7 @@ import { ApiError } from "@/lib/api";
 
 import { EmployerTalentProfileHeader } from "../employer-talent-profile-header";
 import { EmployerTalentContactPanel } from "./employer-talent-contact-panel";
+import { EmployerHiringBrief } from "./employer-hiring-brief";
 import { EmployerUnlockPanel } from "./employer-unlock-panel";
 
 type EmployerTalentProfilePageProps = {
@@ -77,6 +78,7 @@ export function EmployerTalentProfilePage({
         }}
         isShortlisted={data.isSaved}
       />
+      <EmployerHiringBrief userId={data.userId} />
       <section className="flex flex-col gap-y-5">
         <VerifiedReportSkillsSection skills={getSkillBreakdownTabs(data)} />
       </section>

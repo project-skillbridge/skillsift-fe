@@ -45,6 +45,8 @@ export const employerDiscoveryKeys = {
   profiles: () => [...employerDiscoveryKeys.all, "profile"] as const,
   profile: (userId: string) =>
     [...employerDiscoveryKeys.profiles(), userId] as const,
+  hiringBrief: (userId: string) =>
+    [...employerDiscoveryKeys.all, "hiring-brief", userId] as const,
   savedLists: () => [...employerDiscoveryKeys.all, "saved"] as const,
   savedList: (params?: { page?: number; limit?: number }) =>
     [...employerDiscoveryKeys.savedLists(), params ?? {}] as const,
