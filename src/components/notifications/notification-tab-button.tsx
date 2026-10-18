@@ -1,35 +1,41 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { NotificationTab } from "@/constants/notifications";
 import { cn } from "@/lib/utils";
-import { Dispatch, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
 
 const NotificationTabButton = ({
   activeTab,
   tab,
   setTab,
+  count,
 }: {
   activeTab: NotificationTab;
   tab: NotificationTab;
   setTab: Dispatch<SetStateAction<NotificationTab>>;
+  count?: number;
 }) => {
   const isActive = tab === activeTab;
   return (
-    <Button
+    <button
       type="button"
       role="tab"
       aria-selected={isActive}
       tabIndex={isActive ? 0 : -1}
       className={cn(
-        "h-9 rounded-lg px-5 text-sm transition-all duration-300",
+        "flex h-9 items-center gap-2 rounded-lg px-4 text-sm transition-colors",
         isActive
-          ? "bg-[#EBEBEB] font-medium text-black hover:bg-[#EBEBEB]/70"
-          : "border border-[#DBDBDB] bg-transparent font-normal text-[#757575] hover:bg-[#EBEBEB]",
+          ? "bg-white font-semibold text-[#151515] shadow-sm"
+          : "font-medium text-[#667085] hover:text-[#151515]",
       )}
-      key={tab}
       onClick={() => setTab(tab)}
     >
       {tab}
-    </Button>
+      {count ? (
+        <span className="rounded-full bg-[#009f6a] px-1.5 text-xs leading-5 font-semibold text-white">
+          {count}
+        </span>
+      ) : null}
+    </button>
   );
 };
 

@@ -1,7 +1,15 @@
-import { Notification } from "@/constants/notifications";
-import Image from "next/image";
+import {
+  Bell,
+  BriefcaseBusiness,
+  ClipboardCheck,
+  Eye,
+  Star,
+  type LucideIcon,
+} from "lucide-react";
 
+import { Notification } from "@/constants/notifications";
 import { formatRelativeTime } from "@/lib/format-date";
+import { cn } from "@/lib/utils";
 
 type NotificationItemProps = {
   notification: Notification;
@@ -12,6 +20,17 @@ type NotificationItemProps = {
   onActivate?: () => void;
 };
 
+function visualFor(type?: string): { Icon: LucideIcon; bg: string } {
+  const t = type?.toLowerCase() ?? "";
+  if (t.includes("assessment") || t.includes("skill"))
+    return { Icon: ClipboardCheck, bg: "#D3E6DF" };
+  if (t.includes("offer") || t.includes("interview") || t.includes("hire_"))
+    return { Icon: BriefcaseBusiness, bg: "#CBB0EB" };
+  if (t.includes("feedback")) return { Icon: Star, bg: "#F9E796" };
+  if (t.includes("viewed")) return { Icon: Eye, bg: "#EDEEF2" };
+  return { Icon: Bell, bg: "#EDEEF2" };
+}
+
 const NotificationItem = ({
   notification,
   isRead = false,
@@ -19,6 +38,7 @@ const NotificationItem = ({
   onActivate,
 }: NotificationItemProps) => {
   const isInteractive = Boolean(onActivate) || (!isRead && onMarkRead);
+  const { Icon, bg } = visualFor(notification.type);
 
   const handleActivate = () => {
     if (!isRead && onMarkRead) onMarkRead();
@@ -45,36 +65,48 @@ const NotificationItem = ({
             : "Open notification"
           : undefined
       }
-      className={`flex flex-row items-start gap-x-4 rounded-xl border px-4 py-4 md:rounded-xl md:px-5 md:py-5 transition-colors ${
-        isRead ? "border-[#D9D9D9] bg-[#FAFAFA]" : "border-[#34A853] bg-white"
-      } ${
-        isInteractive ? "cursor-pointer hover:bg-green-50" : "cursor-default"
-      }`}
+      className={cn(
+        "relative flex items-start gap-4 rounded-xl border p-4 transition-colors md:p-5",
+        isRead ? "border-[#E4E7EC] bg-white" : "border-[#D3E6DF] bg-[#F3F8F6]",
+        isInteractive
+          ? "cursor-pointer hover:border-[#B9D3C8]"
+          : "cursor-default",
+      )}
     >
-      <Image
-        src="/assets/icons/notification-bell-active.svg"
-        height={48}
-        width={48}
-        alt="Notification bell icon"
-        className={`shrink-0 ${isRead ? "opacity-40" : "opacity-100"}`}
-      />
-      <div className="flex flex-col gap-y-4 pt-1 flex-1">
-        <p className="text-sm leading-5 font-normal text-foreground">
-          {notification.boldText ? (
-            <>
-              <span className="font-bold">{notification.boldText}</span>{" "}
-            </>
-          ) : null}
-          {notification.normalText}
-        </p>
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-normal text-[#757575]">
-            {formatRelativeTime(notification.time)}
+      <span
+        className={cn(
+          "flex size-11 shrink-0 items-center justify-center rounded-lg text-[#151515]",
+          isRead && "opacity-60",
+        )}
+        style={{ backgroundColor: bg }}
+      >
+        <Icon className="size-5" aria-hidden />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex items-start justify-between gap-3">
+          <p
+            className={cn(
+              "text-sm leading-5 text-[#151515]",
+              isRead ? "font-medium" : "font-semibold",
+            )}
+          >
+            {notification.boldText || notification.normalText}
           </p>
-          {!isRead && (
-            <span className="size-2 rounded-full bg-[#34A853] shrink-0" />
-          )}
+          <span className="flex shrink-0 items-center gap-2 text-xs text-[#667085]">
+            {formatRelativeTime(notification.time)}
+            {!isRead && (
+              <span
+                className="size-2 rounded-full bg-[#009f6a]"
+                aria-label="Unread"
+              />
+            )}
+          </span>
         </div>
+        {notification.boldText && notification.normalText ? (
+          <p className="text-sm leading-5 text-[#475467]">
+            {notification.normalText}
+          </p>
+        ) : null}
       </div>
     </li>
   );

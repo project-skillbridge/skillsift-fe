@@ -1,7 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { BellOff } from "lucide-react";
 import { useState } from "react";
 import { notificationTabs, NotificationTab } from "@/constants/notifications";
+import { Skeleton } from "@/components/ui/skeleton";
 import NotificationItem from "./notification-item";
 import NotificationTabButton from "./notification-tab-button";
 import {
@@ -74,6 +76,13 @@ function notificationHref(
     return "/t/dashboard";
   }
 
+  if (role === "employer" && notification.type?.includes("assessment")) {
+    const assessmentId = notification.data?.assessmentId;
+    return typeof assessmentId === "string" && assessmentId
+      ? `/e/assessments/${encodeURIComponent(assessmentId)}`
+      : "/e/assessments";
+  }
+
   if (!looksOfferRelated) return null;
 
   if (role === "talent") {
@@ -84,6 +93,13 @@ function notificationHref(
   // Employer side has no per-offer detail page yet — drop into the offers
   // tab of /e/shortlist so the user can still find what changed.
   return "/e/shortlist";
+}
+
+function groupLabel(iso: string): string {
+  const days = (Date.now() - new Date(iso).getTime()) / 86_400_000;
+  if (days < 1) return "Today";
+  if (days < 7) return "This week";
+  return "Earlier";
 }
 
 const NotificationView = ({ role }: NotificationViewProps) => {
@@ -117,23 +133,34 @@ const NotificationView = ({ role }: NotificationViewProps) => {
         ? "No read notifications yet."
         : "No notifications yet.";
 
+  const groups = ["Today", "This week", "Earlier"]
+    .map((label) => ({
+      label,
+      items: filtered.filter((n) => groupLabel(n.createdAt) === label),
+    }))
+    .filter((g) => g.items.length > 0);
+
   return (
-    <div className="flex flex-col gap-y-8 rounded-xl border border-[#D9D9D9] bg-[#FAFAFA] p-4 md:rounded-2xl md:p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-row gap-x-3">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div
+          role="tablist"
+          className="flex w-fit gap-1 rounded-xl bg-[#F2F2F2] p-1"
+        >
           {notificationTabs.map((tab) => (
             <NotificationTabButton
               key={tab}
               tab={tab}
               activeTab={activeTab}
               setTab={setActiveTab}
+              count={tab === "Unread" ? unreadCount : undefined}
             />
           ))}
         </div>
         {unreadCount > 0 && (
           <button
             onClick={() => markAllAsRead()}
-            className="text-sm font-medium text-[#34A853] underline underline-offset-2 hover:opacity-75 transition-opacity"
+            className="text-sm font-semibold text-[#151515] underline underline-offset-4 transition-opacity hover:opacity-70"
           >
             Mark all as read
           </button>
@@ -141,41 +168,59 @@ const NotificationView = ({ role }: NotificationViewProps) => {
       </div>
 
       {isLoading ? (
-        <p className="body text-muted-foreground">Loading notifications...</p>
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
       ) : isError ? (
-        <div className="flex flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2 rounded-xl border border-[#E4E7EC] bg-white p-6">
           <p className="body text-destructive">
             Couldn&apos;t load notifications. Please try again.
           </p>
           <button
             onClick={() => refetch()}
-            className="body text-muted-foreground underline w-fit"
+            className="body w-fit text-muted-foreground underline"
           >
             Retry
           </button>
         </div>
       ) : filtered.length === 0 ? (
-        <p className="body text-muted-foreground">{emptyMessage}</p>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-[#D0D5DD] bg-white px-6 py-14 text-center">
+          <span className="flex size-12 items-center justify-center rounded-xl bg-[#EDEEF2] text-[#151515]">
+            <BellOff className="size-6" aria-hidden />
+          </span>
+          <p className="text-sm text-[#475467]">{emptyMessage}</p>
+        </div>
       ) : (
-        <ul className="mb-4 flex flex-col gap-y-3">
-          {filtered.map((notification) => {
-            const href = notificationHref(notification, role);
-            return (
-              <NotificationItem
-                key={notification.id}
-                notification={{
-                  boldText: notification.title,
-                  normalText: notification.body,
-                  time: notification.createdAt,
-                  type: notification.type,
-                }}
-                isRead={notification.isRead}
-                onMarkRead={() => markAsRead(notification.id)}
-                onActivate={href ? () => router.push(href) : undefined}
-              />
-            );
-          })}
-        </ul>
+        <div className="flex flex-col gap-6">
+          {groups.map((group) => (
+            <section key={group.label} className="flex flex-col gap-3">
+              <h2 className="text-xs font-semibold tracking-wide text-[#667085] uppercase">
+                {group.label}
+              </h2>
+              <ul className="flex flex-col gap-3">
+                {group.items.map((notification) => {
+                  const href = notificationHref(notification, role);
+                  return (
+                    <NotificationItem
+                      key={notification.id}
+                      notification={{
+                        boldText: notification.title,
+                        normalText: notification.body,
+                        time: notification.createdAt,
+                        type: notification.type,
+                      }}
+                      isRead={notification.isRead}
+                      onMarkRead={() => markAsRead(notification.id)}
+                      onActivate={href ? () => router.push(href) : undefined}
+                    />
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
       )}
     </div>
   );
