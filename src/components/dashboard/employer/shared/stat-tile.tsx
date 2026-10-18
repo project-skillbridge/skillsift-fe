@@ -33,23 +33,23 @@ export function StatTile({
   linkHref,
 }: Props) {
   return (
-    <div className="flex flex-col gap-6 rounded-[10px] border border-[#D9D9D9] bg-white p-4">
+    <div className="flex flex-col gap-4 rounded-[10px] border border-[#D9D9D9] bg-white p-4">
       <div className="flex items-start gap-4">
         <div
-          className="flex size-14 shrink-0 items-center justify-center rounded-lg text-[#151515]"
+          className="flex size-11 shrink-0 items-center justify-center rounded-lg text-[#151515]"
           style={{ backgroundColor: TONES[tone] }}
         >
-          <Icon className="size-7" aria-hidden />
+          <Icon className="size-5" aria-hidden />
         </div>
         <div className="flex flex-col gap-1">
-          <p className="font-sans text-base leading-[150%] font-semibold tracking-[0.017em] text-[#151515]">
+          <p className="font-sans text-sm leading-[150%] font-semibold text-[#151515]">
             {label}
           </p>
-          <p className="font-sans text-[32px] leading-[150%] font-semibold text-[#151515]">
+          <p className="font-sans text-2xl leading-[140%] font-semibold text-[#151515]">
             {value}
           </p>
           {hint ? (
-            <p className="font-sans text-base leading-[150%] font-normal text-[#151515]">
+            <p className="font-sans text-xs leading-[150%] font-normal text-[#667085]">
               {hint}
             </p>
           ) : null}
@@ -58,7 +58,7 @@ export function StatTile({
       {linkLabel && linkHref ? (
         <Link
           href={linkHref}
-          className="flex items-center gap-0.5 font-sans text-base leading-[150%] font-semibold tracking-[0.016em] text-[#05060F] underline"
+          className="flex items-center gap-0.5 font-sans text-sm leading-[150%] font-semibold text-[#05060F] underline"
         >
           {linkLabel}
           <ArrowRight className="size-4" />
