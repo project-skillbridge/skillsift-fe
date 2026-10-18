@@ -76,6 +76,15 @@ function notificationHref(
     return "/t/dashboard";
   }
 
+  // Job-ready talent matching an open role (or the weekly digest).
+  if (role === "employer" && notification.type === "new_matching_talent") {
+    const link = notification.data?.link as
+      { entity_id?: string | null; entity_type?: string } | undefined;
+    return link?.entity_type === "candidate" && link.entity_id
+      ? `/e/talents/${encodeURIComponent(link.entity_id)}`
+      : "/e/talents";
+  }
+
   if (role === "employer" && notification.type?.includes("assessment")) {
     const assessmentId = notification.data?.assessmentId;
     return typeof assessmentId === "string" && assessmentId
