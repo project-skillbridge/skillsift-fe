@@ -22,6 +22,7 @@ import { DataPagination } from "../shared/data-pagination";
 import { TalentCard } from "./talent-card";
 import { TalentsFilterChips } from "./talents-filter-chips";
 import { TalentsFilterSidebar } from "./talents-filter-sidebar";
+import { TalentsRoleQuickFilter } from "./talents-role-quick-filter";
 import { TalentsHeroBanner } from "./talents-hero-banner";
 import { TalentsViewToggle } from "./talents-view-toggle";
 
@@ -132,6 +133,16 @@ export function EmployerTalentsPage() {
         </h2>
         <TalentsViewToggle view={view} onChange={setView} />
       </div>
+
+      <TalentsRoleQuickFilter
+        filters={appliedFilters}
+        onPick={(next) => {
+          const updated = { ...appliedFilters, ...next };
+          setAppliedFilters(updated);
+          setPendingFilters(updated);
+          setPage(1);
+        }}
+      />
 
       <TalentsFilterChips
         chips={activeChips}
