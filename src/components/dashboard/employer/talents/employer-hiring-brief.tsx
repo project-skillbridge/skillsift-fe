@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -43,7 +44,17 @@ function SourceChip({ source }: { source: HiringBriefSource }) {
   );
 }
 
+const PREVIEW_ROWS = 6;
+
+/** Shows the strongest and weakest few; the full list is one click away. */
+function previewRows<T extends { score: number }>(rows: T[]): T[] {
+  if (rows.length <= PREVIEW_ROWS) return rows;
+  const half = PREVIEW_ROWS / 2;
+  return [...rows.slice(0, half), ...rows.slice(-half)];
+}
+
 function CompetencyBars({ stats }: { stats: EmployerHiringBriefStats }) {
+  const [showAll, setShowAll] = useState(false);
   const groups = [
     { key: "skill", title: "Skills test" },
     { key: "job_ready", title: "Job readiness" },
@@ -67,7 +78,7 @@ function CompetencyBars({ stats }: { stats: EmployerHiringBriefStats }) {
               {g.title}
             </p>
             <div className="grid gap-x-8 gap-y-3 md:grid-cols-2">
-              {g.rows.map((c) => (
+              {(showAll ? g.rows : previewRows(g.rows)).map((c) => (
                 <div key={c.name} className="flex flex-col gap-1.5">
                   <div className="flex items-baseline justify-between gap-3 text-sm">
                     <span className="truncate text-[#151515] first-letter:uppercase">
@@ -96,6 +107,15 @@ function CompetencyBars({ stats }: { stats: EmployerHiringBriefStats }) {
           </div>
         ))}
       </div>
+      {shown.some((g) => g.rows.length > PREVIEW_ROWS) ? (
+        <button
+          type="button"
+          onClick={() => setShowAll((v) => !v)}
+          className="w-fit text-sm font-semibold text-[#151515] underline underline-offset-4"
+        >
+          {showAll ? "Show fewer" : "Show all scores"}
+        </button>
+      ) : null}
     </section>
   );
 }

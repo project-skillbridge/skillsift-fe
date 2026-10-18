@@ -73,22 +73,32 @@ export function EmployerTalentProfilePage({
       <EmployerUnlockPanel profile={data} />
       <EmployerRoleFit profile={data} />
       <EmployerHiringBrief userId={data.userId} />
-      <h2 className="pt-4 text-xl font-semibold text-[#151515]">
-        Full profile
-      </h2>
-      <VerifiedReportSummary
-        data={data}
-        viewerMode="employer"
-        trackRecord={{
-          averageRating: data.averageHireRating,
-          ratingCount: data.hireRatingCount,
-          wouldHireAgainRate: data.wouldHireAgainRate,
-        }}
-        isShortlisted={data.isSaved}
-      />
-      <section className="flex flex-col gap-y-5">
-        <VerifiedReportSkillsSection skills={getSkillBreakdownTabs(data)} />
-      </section>
+      <details className="group rounded-2xl border border-[#E4E7EC] bg-white">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-base font-semibold text-[#151515]">
+          Full profile
+          <span className="text-sm font-medium text-[#667085] group-open:hidden">
+            Show
+          </span>
+          <span className="hidden text-sm font-medium text-[#667085] group-open:inline">
+            Hide
+          </span>
+        </summary>
+        <div className="flex flex-col gap-y-6 border-t border-[#EEF0F3] p-5">
+          <VerifiedReportSummary
+            data={data}
+            viewerMode="employer"
+            trackRecord={{
+              averageRating: data.averageHireRating,
+              ratingCount: data.hireRatingCount,
+              wouldHireAgainRate: data.wouldHireAgainRate,
+            }}
+            isShortlisted={data.isSaved}
+          />
+          <section className="flex flex-col gap-y-5">
+            <VerifiedReportSkillsSection skills={getSkillBreakdownTabs(data)} />
+          </section>
+        </div>
+      </details>
     </div>
   );
 }

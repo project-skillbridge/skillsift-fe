@@ -25,6 +25,22 @@ function initials(name: string): string {
   );
 }
 
+function Chips({ items }: { items: string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <li
+          key={item}
+          className="rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-[#344054]"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5 rounded-xl bg-white/70 px-4 py-3">
@@ -97,6 +113,12 @@ export function EmployerCandidateDecisionCard({
           </div>
         </div>
       </div>
+
+      <Chips
+        items={profile.about_tags.filter(
+          (t) => t !== profile.seniority_badge && t !== profile.tier_label,
+        )}
+      />
 
       {ready ? (
         <>
