@@ -1,7 +1,7 @@
 "use client";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
 import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -43,14 +43,7 @@ function AuthShell({
         <header className="sticky top-0 z-40 flex h-18 w-full flex-col justify-center border-b border-border bg-background px-4 sm:px-15">
           <div className="max-w-360  mx-auto flex w-full items-center justify-between">
             <Link href={logoHref} className="inline-flex shrink-0">
-              <Image
-                src="/assets/logo/logo-with-text.svg"
-                alt="SkillSift"
-                width={220}
-                height={55}
-                className="h-9 w-auto"
-                priority
-              />
+              <BrandLogo tone="dark" />
             </Link>
 
             {headerTrailing && (

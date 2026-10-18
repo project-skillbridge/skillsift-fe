@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -14,8 +14,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-const logoWithText = "/assets/logo/logo-with-text-white.svg";
 
 const navLinks = [
   { label: "About", href: "/about-us" },
@@ -75,14 +73,7 @@ export function Navbar() {
     >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
         <Link href="/" className="relative h-9 w-32 shrink-0 md:h-10 md:w-40">
-          <Image
-            src={logoWithText}
-            alt="SkillSift"
-            fill
-            className="object-contain object-left"
-            priority
-            sizes="(max-width: 768px) 128px, 160px"
-          />
+          <BrandLogo tone="light" />
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">

@@ -90,7 +90,12 @@ export function EmployerSendOfferPage({
   }
 
   function handleViewAssessment() {
-    appToast.success("Viewing assessments is coming soon.");
+    if (!role?.assessment_id) return;
+    window.open(
+      `/e/assessments/${encodeURIComponent(role.assessment_id)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   const compensation = formatCompensation(

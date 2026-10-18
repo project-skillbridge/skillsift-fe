@@ -7,7 +7,6 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployerRole } from "@/hooks/api";
 import { useDiscoveryCandidateProfile } from "@/hooks/api/use-employer-discovery";
-import { appToast } from "@/lib/toast";
 
 import { ConfirmSendOfferDialog } from "./edit-role-wizard/confirm-send-offer-dialog";
 import {
@@ -137,7 +136,12 @@ export function EmployerEditRolePage({
   }
 
   function handleViewAssessment() {
-    appToast.success("Viewing assessments is coming soon.");
+    if (!selectedAssessmentId) return;
+    window.open(
+      `/e/assessments/${encodeURIComponent(selectedAssessmentId)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   return (

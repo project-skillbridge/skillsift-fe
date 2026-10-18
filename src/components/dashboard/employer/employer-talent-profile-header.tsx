@@ -38,10 +38,6 @@ export function EmployerTalentProfileHeader({
     });
   }
 
-  function handleReportIssue() {
-    appToast.success("Reporting an issue is coming soon.");
-  }
-
   if (offerSent) {
     return (
       <div className="flex w-full flex-row items-center justify-between border-b border-[#EBEBEB] pb-4">
@@ -55,16 +51,6 @@ export function EmployerTalentProfileHeader({
         </button>
 
         <div className="flex flex-row gap-x-4">
-          <button
-            type="button"
-            onClick={handleReportIssue}
-            className={cn(
-              "flex h-10 items-center justify-center rounded-lg border border-[#05060F] px-4",
-              "text-base font-semibold leading-5 tracking-[0.016em] text-[#151515] transition-colors hover:bg-black/5",
-            )}
-          >
-            Report an issue
-          </button>
           <Link
             href="/e/shortlist"
             className="flex h-10 items-center justify-center rounded-lg bg-[#05060F] px-4 text-base font-semibold leading-5 tracking-[0.016em] text-white transition-colors hover:bg-[#151515]/90"

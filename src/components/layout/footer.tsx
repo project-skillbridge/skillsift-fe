@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -13,8 +13,6 @@ import {
   XIcon,
   YouTubeIcon,
 } from "@/components/layout/footer-social-icons";
-
-const logoWithText = "/assets/logo/logo-with-text-white.svg";
 
 type NavLink = { label: string; href: string; hash?: string };
 
@@ -125,13 +123,7 @@ export function Footer({ className }: { className?: string }) {
         <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between md:gap-12 lg:gap-16">
           <div className="flex max-w-xs flex-col gap-6">
             <Link href="/" className="relative block h-10 w-42 shrink-0">
-              <Image
-                src={logoWithText}
-                alt="SkillSift"
-                fill
-                className="object-contain object-left"
-                sizes="168px"
-              />
+              <BrandLogo tone="light" />
             </Link>
             <div className="flex flex-wrap gap-3">
               {socialLinks.map(({ label, href, icon }) => (

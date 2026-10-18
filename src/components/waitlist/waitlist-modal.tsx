@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -47,13 +47,7 @@ const WaitlistModal = ({ open, onOpenChange }: Props) => {
           </DialogPrimitive.Title>
 
           <div className="flex items-center border-b border-black/5 px-6 py-5 sm:hidden">
-            <Image
-              src="/assets/logo/logo-with-text.svg"
-              alt="SkillSift"
-              width={140}
-              height={32}
-              className="h-7 w-auto"
-            />
+            <BrandLogo tone="dark" />
           </div>
 
           <DialogPrimitive.Close

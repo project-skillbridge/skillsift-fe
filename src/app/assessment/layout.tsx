@@ -1,18 +1,11 @@
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/brand-logo";
 
 function ExternalNavbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#05060F]">
       <div className="mx-auto flex w-full max-w-360 items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <div className="relative h-9 w-32 shrink-0 md:h-10 md:w-40">
-          <Image
-            src="/assets/logo/logo-with-text-white.svg"
-            alt="SkillSift"
-            fill
-            className="object-contain object-left"
-            priority
-            sizes="(max-width: 768px) 128px, 160px"
-          />
+          <BrandLogo tone="light" />
         </div>
       </div>
     </header>
