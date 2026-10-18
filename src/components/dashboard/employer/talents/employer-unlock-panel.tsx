@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  useNeedsVerification,
+  VerificationNotice,
+} from "../shared/verification-notice";
 import { useUnlockCandidate } from "@/hooks/api/use-employer-discovery";
 import { useEmployerBillingSummary } from "@/hooks/api/use-employer-billing";
 import { ApiError, authFailureMessage } from "@/lib/api";
@@ -37,6 +41,7 @@ function firstName(fullName: string): string {
 export function EmployerUnlockPanel({ profile }: EmployerUnlockPanelProps) {
   const { data: billing } = useEmployerBillingSummary();
   const { mutate: unlock, isPending } = useUnlockCandidate();
+  const needsVerification = useNeedsVerification();
 
   if (profile.isUnlocked) {
     const name = firstName(profile.full_name);
@@ -111,6 +116,10 @@ export function EmployerUnlockPanel({ profile }: EmployerUnlockPanelProps) {
         </div>
       </section>
     );
+  }
+
+  if (needsVerification) {
+    return <VerificationNotice action="unlock profiles and contact talent" />;
   }
 
   const remaining = billing?.unlocksRemaining;

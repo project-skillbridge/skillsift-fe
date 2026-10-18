@@ -14,6 +14,8 @@ import { CreateRoleDialog } from "@/components/dashboard/employer/roles/create-r
 import { buildCreateRoleUrl } from "@/lib/create-role-url";
 import type { CreateRoleValues } from "@/types/api/employer-roles";
 import { cn } from "@/lib/utils";
+import { appToast } from "@/lib/toast";
+import { useNeedsVerification } from "../shared/verification-notice";
 
 import { SendOfferDialog } from "./send-offer-dialog";
 
@@ -33,6 +35,7 @@ export function SendOfferTrigger({
   className,
 }: SendOfferTriggerProps) {
   const router = useRouter();
+  const needsVerification = useNeedsVerification();
   const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -51,7 +54,16 @@ export function SendOfferTrigger({
       >
         <button
           type="button"
-          onClick={() => setIsSelectDialogOpen(true)}
+          onClick={() => {
+            if (needsVerification) {
+              appToast.error(
+                "Verify your company in settings before inviting talent.",
+              );
+              router.push("/e/settings");
+              return;
+            }
+            setIsSelectDialogOpen(true);
+          }}
           className="px-4 text-base font-semibold leading-5 tracking-[0.016em] transition-colors hover:bg-[#151515]/90"
         >
           {label}

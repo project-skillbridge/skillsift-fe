@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { IntegrityBadge } from "../assessments/results/results-shared";
 import { ProgressRing } from "../shared/progress-ring";
 import { StatTile } from "../shared/stat-tile";
+import { VerificationNotice } from "../shared/verification-notice";
 
 type Props = {
   companyName?: string;
@@ -125,6 +126,7 @@ export function EmployerCommandCenter({
 
   return (
     <div className="flex flex-col gap-8">
+      <VerificationNotice action="invite talent, unlock profiles and share assessments" />
       <section className="relative overflow-hidden rounded-2xl bg-[#dfe4e2] p-6 text-[#151515] sm:p-8">
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex max-w-xl flex-col gap-4">
