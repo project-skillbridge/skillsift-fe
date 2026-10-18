@@ -74,8 +74,7 @@ export function TalentOfferContactPanel({
               Contact {employer.fullName}
             </p>
             <p className="text-xs text-[#667085]">
-              Chat is coming soon — for now, reach out by email to coordinate
-              next steps.
+              Reach out by email to coordinate next steps.
             </p>
           </div>
         </div>

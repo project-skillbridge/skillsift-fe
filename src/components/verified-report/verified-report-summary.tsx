@@ -31,7 +31,7 @@ type VerifiedReportSummaryProps = {
    *  link. Employers browsing generally don't get a candidate's resume;
    *  once shortlisted, they do (mirrors the existing pattern where contact
    *  details unlock progressively as the relationship with a candidate
-   *  advances, see `EmployerTalentContactPanel`). */
+   *  advances). */
   isShortlisted?: boolean;
 };
 
