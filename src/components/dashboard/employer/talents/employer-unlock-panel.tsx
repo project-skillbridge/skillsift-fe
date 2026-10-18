@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   Briefcase,
   Camera,
+  Copy,
   ExternalLink,
   FileText,
   Lock,
@@ -38,60 +39,76 @@ export function EmployerUnlockPanel({ profile }: EmployerUnlockPanelProps) {
   const { mutate: unlock, isPending } = useUnlockCandidate();
 
   if (profile.isUnlocked) {
+    const name = firstName(profile.full_name);
+    const links = [
+      { label: "Resume", href: profile.resume_url, icon: FileText },
+      { label: "Portfolio", href: profile.portfolioUrl, icon: Briefcase },
+      { label: "LinkedIn", href: profile.linkedinUrl, icon: ExternalLink },
+    ].filter((l): l is typeof l & { href: string } => Boolean(l.href));
+
     return (
-      <section className="flex flex-col gap-3 rounded-xl border border-[#BFE8D6] bg-[#F0FBF6] p-5">
-        <h2 className="text-base font-semibold text-[#151515]">
-          Contact and documents
-        </h2>
-        <ul className="flex flex-col gap-2 text-sm text-[#151515]">
+      <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 className="text-base font-semibold text-[#151515]">
+            Contact {name}
+          </h2>
+          <p className="text-sm text-[#667085]">
+            {profile.offerStatus === "accepted"
+              ? `${name} accepted your offer. Reach out to coordinate next steps.`
+              : "Unlocked. Their details are yours to reach out with."}
+          </p>
           {profile.email ? (
-            <li className="flex items-center gap-2">
-              <Mail className="size-4 text-[#19A878]" aria-hidden />
-              <a className="underline" href={`mailto:${profile.email}`}>
-                {profile.email}
-              </a>
-            </li>
+            <a
+              className="truncate text-sm font-medium text-[#151515] underline underline-offset-2"
+              href={`mailto:${profile.email}`}
+            >
+              {profile.email}
+            </a>
           ) : null}
-          {profile.resume_url ? (
-            <li className="flex items-center gap-2">
-              <FileText className="size-4 text-[#19A878]" aria-hidden />
-              <a
-                className="inline-flex items-center gap-1 underline"
-                href={profile.resume_url}
-                target="_blank"
-                rel="noopener noreferrer"
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {profile.email ? (
+            <>
+              <Button asChild className="h-10 rounded-lg">
+                <a href={`mailto:${profile.email}`}>
+                  <Mail className="mr-2 size-4" aria-hidden />
+                  Email
+                </a>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 rounded-lg"
+                onClick={() => {
+                  navigator.clipboard
+                    .writeText(profile.email ?? "")
+                    .then(() => appToast.success("Email copied."))
+                    .catch(() =>
+                      appToast.error(
+                        "Couldn't copy. Select and copy manually.",
+                      ),
+                    );
+                }}
               >
-                View resume <ExternalLink className="size-3" aria-hidden />
-              </a>
-            </li>
+                <Copy className="mr-2 size-4" aria-hidden />
+                Copy
+              </Button>
+            </>
           ) : null}
-          {profile.portfolioUrl ? (
-            <li className="flex items-center gap-2">
-              <Briefcase className="size-4 text-[#19A878]" aria-hidden />
-              <a
-                className="inline-flex items-center gap-1 underline"
-                href={profile.portfolioUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Portfolio <ExternalLink className="size-3" aria-hidden />
+          {links.map(({ label, href, icon: Icon }) => (
+            <Button
+              key={label}
+              asChild
+              variant="outline"
+              className="h-10 rounded-lg"
+            >
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                <Icon className="mr-2 size-4" aria-hidden />
+                {label}
               </a>
-            </li>
-          ) : null}
-          {profile.linkedinUrl ? (
-            <li className="flex items-center gap-2">
-              <ExternalLink className="size-4 text-[#19A878]" aria-hidden />
-              <a
-                className="underline"
-                href={profile.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LinkedIn
-              </a>
-            </li>
-          ) : null}
-        </ul>
+            </Button>
+          ))}
+        </div>
       </section>
     );
   }
