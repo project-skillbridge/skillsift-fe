@@ -83,6 +83,8 @@ export type EmployerDiscoveryCandidateProfile = VerifiedProfileResponseData & {
   offerSent: boolean;
   offerStatus: "pending" | "accepted" | null;
   isUnlocked: boolean;
+  roleTrack: string | null;
+  validatedLevel: string | null;
   portfolioUrl: string | null;
   linkedinUrl: string | null;
   averageHireRating: number | null;
@@ -150,6 +152,8 @@ export type RawEmployerDiscoveryCandidateProfile =
     offer_sent: boolean;
     offer_status: "pending" | "accepted" | null;
     is_unlocked?: boolean;
+    role_track?: string | null;
+    validated_level?: string | null;
     portfolio_url?: string | null;
     linkedin_url?: string | null;
     average_hire_rating?: number | null;

@@ -8,6 +8,8 @@ export type EmployerRoleItem = {
   requirements: string;
   isFull: boolean;
   createdAt: string;
+  track: string | null;
+  level: string | null;
 };
 
 import { z } from "zod";

@@ -32,6 +32,8 @@ function normalizeRole(raw: RawEmployerRole): EmployerRoleItem {
     isFull:
       raw.applicant_cap !== null && raw.interested_count >= raw.applicant_cap,
     createdAt: raw.created_at,
+    track: raw.track ?? null,
+    level: raw.level ?? null,
   };
 }
 

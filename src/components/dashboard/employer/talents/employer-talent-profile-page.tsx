@@ -10,6 +10,8 @@ import { ApiError } from "@/lib/api";
 
 import { EmployerTalentProfileHeader } from "../employer-talent-profile-header";
 import { EmployerTalentContactPanel } from "./employer-talent-contact-panel";
+import { EmployerCandidateDecisionCard } from "./employer-candidate-decision-card";
+import { EmployerRoleFit } from "./employer-role-fit";
 import { EmployerHiringBrief } from "./employer-hiring-brief";
 import { EmployerUnlockPanel } from "./employer-unlock-panel";
 
@@ -67,7 +69,13 @@ export function EmployerTalentProfilePage({
           email={data.email}
         />
       ) : null}
+      <EmployerCandidateDecisionCard profile={data} />
       <EmployerUnlockPanel profile={data} />
+      <EmployerRoleFit profile={data} />
+      <EmployerHiringBrief userId={data.userId} />
+      <h2 className="pt-4 text-xl font-semibold text-[#151515]">
+        Full profile
+      </h2>
       <VerifiedReportSummary
         data={data}
         viewerMode="employer"
@@ -78,7 +86,6 @@ export function EmployerTalentProfilePage({
         }}
         isShortlisted={data.isSaved}
       />
-      <EmployerHiringBrief userId={data.userId} />
       <section className="flex flex-col gap-y-5">
         <VerifiedReportSkillsSection skills={getSkillBreakdownTabs(data)} />
       </section>

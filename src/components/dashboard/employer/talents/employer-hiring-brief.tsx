@@ -35,28 +35,11 @@ const QUALITY_STYLE = {
   weak: "bg-[#FDE2E7] text-[#BE123C]",
 } as const;
 
-const CONFIDENCE_LABEL = {
-  high: "High confidence",
-  medium: "Medium confidence",
-  low: "Low confidence",
-} as const;
-
 function SourceChip({ source }: { source: HiringBriefSource }) {
   return (
     <span className="rounded-full bg-[#F2F2F2] px-2 py-0.5 text-xs font-medium text-[#475467]">
       {SOURCE_LABEL[source]}
     </span>
-  );
-}
-
-function ScoreTile({ label, value }: { label: string; value: number | null }) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl bg-white/70 px-4 py-3">
-      <span className="text-xs font-medium text-[#475467]">{label}</span>
-      <span className="text-2xl font-semibold text-[#151515]">
-        {value == null ? "Not taken" : `${value}%`}
-      </span>
-    </div>
   );
 }
 
@@ -137,25 +120,8 @@ function BriefBody({
             assessments
           </span>
         </div>
-        <h2 className="max-w-3xl text-xl font-bold tracking-tight text-[#151515] sm:text-2xl">
-          {brief.headline}
-        </h2>
-        <p className="max-w-3xl text-base text-[#344054]">{brief.hire_case}</p>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <ScoreTile label="Skills test" value={stats.skill_percentage} />
-          <ScoreTile label="Job readiness" value={stats.job_ready_percentage} />
-          <div className="flex flex-col gap-1 rounded-xl bg-white/70 px-4 py-3">
-            <span className="text-xs font-medium text-[#475467]">
-              How sure is this brief
-            </span>
-            <span className="text-base font-semibold text-[#151515]">
-              {CONFIDENCE_LABEL[brief.confidence]}
-            </span>
-            <span className="text-xs text-[#475467]">
-              {brief.confidence_note}
-            </span>
-          </div>
-        </div>
+        <p className="max-w-3xl text-base text-[#151515]">{brief.hire_case}</p>
+        <p className="text-xs text-[#475467]">{brief.confidence_note}</p>
       </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
