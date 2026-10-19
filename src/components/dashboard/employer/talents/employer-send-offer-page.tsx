@@ -71,6 +71,17 @@ export function EmployerSendOfferPage({
       {
         onSuccess: (result) => {
           setIsConfirmOpen(false);
+          // The API answers 200 even when nothing was sent (e.g. the role has
+          // no pay set), so don't tell the employer it went out.
+          if (result.sentCount === 0) {
+            const first = result.warnings[0] as { reason?: string } | undefined;
+            appToast.error(
+              first?.reason
+                ? `Invite not sent: ${first.reason}. Update the role and try again.`
+                : "Invite not sent. Check the role details and try again.",
+            );
+            return;
+          }
           if (result.warnings.length > 0) {
             appToast.success(
               `Interview invite sent with ${result.warnings.length} warning${
