@@ -7,6 +7,7 @@ import {
   ASSESSMENT_PROFILE_COMPLETION,
   ASSESSMENT_ROADMAP_STEPS,
 } from "@/constants/assessment-roadmap";
+import { PracticeCard } from "@/components/dashboard/practice-card";
 import { useDashboardHome } from "@/hooks/api/use-dashboard";
 import { isAssessmentDemoMode, useDemoRoadmapSteps } from "@/mock/assessment";
 
@@ -38,6 +39,7 @@ export function Overview() {
     <div className="mx-auto max-w-260.5 animate-in fade-in slide-in-from-bottom-1 px-1 pb-10 duration-500 sm:px-0">
       <OverviewHeader profileCompletion={profileCompletion} />
       <ExpectationsPanel items={ASSESSMENT_EXPECTATIONS} />
+      <PracticeCard className="mt-6" />
       <RoadmapSection steps={roadmapSteps} />
     </div>
   );

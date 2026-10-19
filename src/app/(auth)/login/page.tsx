@@ -22,7 +22,7 @@ export default function LoginPage() {
     >
       <div className="mx-auto flex w-full min-w-0 max-w-md flex-col items-center px-0">
         <h1 className="section-h2 font-bold! text-center text-foreground">
-          Login to Skillbridge
+          Login to SkillSift
         </h1>
 
         <p className="body mt-4 text-center text-muted-foreground">

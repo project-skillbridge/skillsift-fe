@@ -57,6 +57,23 @@ function notificationHref(
     return role === "employer" ? "/e/shortlist?tab=offers" : null;
   }
 
+  // Skill results live on the talent dashboard (certificate) or the retake page.
+  if (role === "talent" && notification.type === "skill_assessment_passed") {
+    return "/t/dashboard";
+  }
+  if (role === "talent" && notification.type === "skill_assessment_failed") {
+    return "/t/assessments/skill";
+  }
+  if (role === "talent" && notification.type === "skill_assessment_ready") {
+    return "/t/assessments/skill";
+  }
+  if (
+    role === "talent" &&
+    notification.type === "advanced_assessment_score_ready"
+  ) {
+    return "/t/dashboard";
+  }
+
   if (!looksOfferRelated) return null;
 
   if (role === "talent") {

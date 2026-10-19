@@ -9,7 +9,7 @@ type HexagonScoreMarkProps = {
   className?: string;
 };
 
-/** SkillBridge's one recurring verification mark: a hexagon carrying the
+/** SkillSift's one recurring verification mark: a hexagon carrying the
  *  score percentage. Single source of truth for the shape/color so it
  *  doesn't keep drifting per call site (previously duplicated with
  *  different colors/stroke widths in the score badge and the verified

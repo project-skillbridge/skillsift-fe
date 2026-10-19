@@ -127,7 +127,7 @@ export function CreateAssessmentPage() {
             const domain =
               typeof window !== "undefined"
                 ? window.location.origin
-                : "https://skillbridge.com";
+                : "https://skillsift.online";
             setMockShareLink(
               `${domain}/assessment/${data.token || "mock-external-link"}`,
             );

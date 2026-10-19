@@ -62,6 +62,8 @@ export function SettingsDeleteAccountDialog({
       const result = await signOut({ callbackUrl: "/login", redirect: false });
       router.replace(result.url ?? "/login");
     } catch {
+      // Sign-out failed: a full reload is the reliable way to reset client state.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/login");
     }
   };
@@ -96,7 +98,7 @@ export function SettingsDeleteAccountDialog({
             <span className="font-semibold text-foreground">
               &quot;{DELETE_CONFIRMATION_PHRASE}&quot;
             </span>{" "}
-            to confirm that you want to delete your SkillBridge account.
+            to confirm that you want to delete your SkillSift account.
           </span>
           <input
             value={confirmation}

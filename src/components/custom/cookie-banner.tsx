@@ -45,7 +45,7 @@ export function CookieBanner() {
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
           <p className="text-sm text-muted-foreground">
-            We use cookies to improve your experience on SkillBridge
+            We use cookies to improve your experience on SkillSift
           </p>
           <div className="flex items-center gap-3">
             <Button size="sm" onClick={handleAccept}>

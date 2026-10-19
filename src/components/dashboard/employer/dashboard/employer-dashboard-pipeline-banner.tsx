@@ -15,7 +15,7 @@ export function EmployerDashboardPipelineBanner() {
           aria-hidden
         />
         <p className="text-base leading-normal tracking-[0.017em] text-[#151515]">
-          <span className="font-semibold">SkillBridge Talent pipeline </span>
+          <span className="font-semibold">SkillSift Talent pipeline </span>
           <span className="font-normal">based on 200+ employer reviews</span>
         </p>
       </div>

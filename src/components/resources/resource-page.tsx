@@ -10,6 +10,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { useTalentResources } from "@/hooks/api/use-resources";
+import { CAREER_RESOURCE_SECTIONS } from "@/constants/career-resources";
 import type { ResourceSection } from "@/types/resources";
 
 import ResourcesHeroBanner from "./resources-hero-banner";
@@ -50,6 +51,16 @@ const ResourcesPage = () => {
     return () => window.clearTimeout(timeoutId);
   }, [searchQuery]);
 
+  // Sections render after the data loads, so the browser can't honour a
+  // #hash on its own; jump to it once they exist.
+  const loaded = !isPending && Boolean(data);
+  useEffect(() => {
+    if (!loaded || !window.location.hash) return;
+    document
+      .getElementById(decodeURIComponent(window.location.hash.slice(1)))
+      ?.scrollIntoView({ block: "start" });
+  }, [loaded]);
+
   const sections: ResourceSection[] = useMemo(
     () =>
       data
@@ -82,7 +93,7 @@ const ResourcesPage = () => {
   const normalizedSearchQuery = normalizeSearchValue(debouncedSearchQuery);
   const filteredSections = useMemo(
     () =>
-      sections
+      [...sections, ...CAREER_RESOURCE_SECTIONS]
         .map((section) => sectionMatchesSearch(section, normalizedSearchQuery))
         .filter((section): section is ResourceSection => Boolean(section)),
     [sections, normalizedSearchQuery],

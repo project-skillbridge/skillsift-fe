@@ -9,7 +9,9 @@ import { HexagonScoreMark } from "./hexagon-score-mark";
 import { VerifiedProfileTrackRecord } from "./verified-profile-track-record";
 import {
   getAboutTags,
+  describeLevel,
   getAiReport,
+  formatValidatedLevel,
   getTopStrengths,
 } from "./verified-report-utils";
 
@@ -59,6 +61,12 @@ export function VerifiedReportSummary({
   const topStrengths = getTopStrengths(data);
   const aboutTags = getAboutTags(data);
   const overview = getAiReport(data);
+  const levelMeaning = describeLevel(
+    data.skill_proficiency?.validated_level ?? data.seniority_badge,
+  );
+  const levelName = formatValidatedLevel(
+    data.skill_proficiency?.validated_level ?? data.seniority_badge ?? "",
+  );
   const canDownloadCv =
     viewerMode === "employer" && isShortlisted && Boolean(data.resume_url);
 
@@ -141,6 +149,13 @@ export function VerifiedReportSummary({
         />
       </div>
 
+      {levelMeaning ? (
+        <p className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-3 text-sm text-[#151515]">
+          <span className="font-semibold">What {levelName} means: </span>
+          {levelMeaning}
+        </p>
+      ) : null}
+
       {topStrengths.length > 0 ? (
         <section className="flex flex-col gap-3">
           <h3 className="text-lg font-semibold text-[#151515]">
@@ -209,7 +224,7 @@ export function VerifiedReportSummary({
             Want to hire verified talent like {data.full_name.split(" ")[0]}?
           </span>
           <span className="text-sm text-white/80">
-            SkillBridge for Employers →
+            SkillSift for Employers →
           </span>
         </a>
       ) : null}

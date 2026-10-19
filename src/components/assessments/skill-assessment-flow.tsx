@@ -12,15 +12,18 @@ import {
   useStartSkillAssessment,
   useSubmitSkillAssessment,
 } from "@/hooks/api";
-import { dashboardKeys } from "@/hooks/api/keys";
+import { assessmentKeys, dashboardKeys } from "@/hooks/api/keys";
 import { useFlagAssessmentEvent } from "@/hooks/api/use-assessment";
+import { useDashboardHome } from "@/hooks/api/use-dashboard";
 import {
   mapSkillQuestions,
   toSkillSubmitAnswers,
 } from "@/lib/assessment-questions";
 import {
+  assessmentPreparingCopy,
   ASSESSMENT_START_FAILED_MESSAGE,
   ASSESSMENT_START_TIMEOUT_MESSAGE,
+  isAssessmentPreparingError,
   isAssessmentStartTimeoutError,
   withAssessmentStartTimeout,
 } from "@/lib/assessment-start";
@@ -35,7 +38,8 @@ import type {
   SkillAssessmentStartResponseData,
 } from "@/types/api";
 
-type SkillStartState = "loading" | "ready" | "unavailable" | "failed";
+type SkillStartState =
+  "loading" | "ready" | "preparing" | "unavailable" | "failed";
 
 const SKILL_PREVIEW_PATH = "/t/assessments/skill";
 
@@ -45,6 +49,9 @@ export function SkillAssessmentFlow() {
     SkillAssessmentApiQuestion[]
   >([]);
   const [claimedLevel, setClaimedLevel] = useState<string | null>(null);
+  const [remainingSeconds, setRemainingSeconds] = useState<
+    number | undefined
+  >();
   const [startState, setStartState] = useState<SkillStartState>("loading");
   const [failedMessage, setFailedMessage] = useState(
     ASSESSMENT_START_FAILED_MESSAGE,
@@ -53,6 +60,7 @@ export function SkillAssessmentFlow() {
 
   const queryClient = useQueryClient();
   const { data: user } = useMe({ enabled: true });
+  const { data: dashboardHome } = useDashboardHome();
   const setSkillClaimedLevel = useAssessmentSummaryStore(
     (state) => state.setSkillClaimedLevel,
   );
@@ -75,6 +83,7 @@ export function SkillAssessmentFlow() {
       setSessionId(data.session_id);
       setApiQuestions(data.questions ?? []);
       setClaimedLevel(data.verified_level);
+      setRemainingSeconds(data.remaining_seconds ?? undefined);
       setStartState("ready");
     };
 
@@ -124,7 +133,12 @@ export function SkillAssessmentFlow() {
           return;
         }
 
-        if (isServiceUnavailableError(e)) {
+        if (isAssessmentPreparingError(e)) {
+          void queryClient.invalidateQueries({
+            queryKey: assessmentKeys.skillAvailability(),
+          });
+          setStartState("preparing");
+        } else if (isServiceUnavailableError(e)) {
           setStartState("unavailable");
         } else {
           void queryClient.invalidateQueries({
@@ -149,6 +163,22 @@ export function SkillAssessmentFlow() {
     () => mapSkillQuestions(apiQuestions),
     [apiQuestions],
   );
+
+  if (startState === "preparing") {
+    const used =
+      dashboardHome?.performance?.skill?.attemptsUsed ??
+      dashboardHome?.skillAttemptsUsed ??
+      0;
+    const copy = assessmentPreparingCopy(used > 0);
+    return (
+      <AssessmentStartBlocked
+        title={copy.title}
+        message={copy.message}
+        backHref={SKILL_PREVIEW_PATH}
+        backLabel="Back to assessments"
+      />
+    );
+  }
 
   if (startState === "unavailable") {
     return (
@@ -177,21 +207,24 @@ export function SkillAssessmentFlow() {
       answers: toSkillSubmitAnswers(questions, answersByKey),
     });
 
-  const recordViolation = (count: number) => {
-    if (count >= 3 && !flagViolation.isPending && !flagViolation.isSuccess)
-      flagViolation.mutate({ eventType: "tab_switch" });
+  // Every violation goes to the server, which keeps the count and ends the
+  // session at the limit, so the rule holds even if this page is tampered with.
+  const recordViolation = () => {
+    flagViolation.mutate({ eventType: "tab_switch" });
   };
 
   return (
     <ViolationDetector
       enabled={startState === "ready"}
       onViolation={recordViolation}
-      submissionConfirmed={flagViolation.isSuccess}
+      submissionConfirmed={flagViolation.data?.sessionVoided === true}
     >
       <QuestionnaireFlow
         questions={questions}
         isLoading={startState === "loading"}
         isSubmitting={isSubmitting}
+        initialSeconds={remainingSeconds}
+        persistKey={sessionId || undefined}
         onSubmit={submit}
       />
     </ViolationDetector>

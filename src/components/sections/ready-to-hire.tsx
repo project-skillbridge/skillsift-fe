@@ -41,7 +41,7 @@ export function ReadyForHireSection() {
               Ready for hiring built on proof, not promises?
             </h2>
             <p className="max-w-[18rem] text-center text-[15px] leading-relaxed text-white/90 sm:max-w-none sm:text-base">
-              Join SkillBridge and discover a smarter way to hire and get hired
+              Join SkillSift and discover a smarter way to hire and get hired
             </p>
 
             <Button

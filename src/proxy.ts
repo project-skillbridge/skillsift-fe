@@ -47,8 +47,7 @@ function continueWithSecurityHeaders(request: Request): NextResponse {
 export const proxy = auth((request) => {
   const { pathname } = request.nextUrl;
   const user = request.auth?.user as
-    | { id?: string; role?: UserRole }
-    | undefined;
+    { id?: string; role?: UserRole } | undefined;
 
   // Keep signed-in users out of the auth pages.
   const isAuthRoute = AUTH_ROUTES.some(
@@ -83,6 +82,6 @@ export const proxy = auth((request) => {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$).*)",
+    "/((?!backend|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$).*)",
   ],
 };

@@ -93,7 +93,7 @@ export function QuestionnaireQuestionFieldBody({
                 key={option}
                 htmlFor={id}
                 className={cn(
-                  "flex cursor-pointer capitalize items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3 font-sans text-sm transition-colors",
+                  "flex cursor-pointer items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3 font-sans text-sm transition-colors",
                   isSelected
                     ? "border-foreground/30 bg-muted/70"
                     : "border-transparent hover:bg-muted/60",
@@ -135,7 +135,7 @@ export function QuestionnaireQuestionFieldBody({
                 key={option}
                 htmlFor={id}
                 className={cn(
-                  "flex cursor-pointer capitalize items-center gap-2.5 border bg-muted/40 font-sans text-sm transition-colors",
+                  "flex cursor-pointer items-center gap-2.5 border bg-muted/40 font-sans text-sm transition-colors",
                   asPills ? "rounded-full px-4 py-2" : "rounded-lg px-4 py-3",
                   isSelected
                     ? "border-foreground/30 bg-muted/70"

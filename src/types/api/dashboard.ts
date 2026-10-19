@@ -8,10 +8,7 @@ import type {
 export type DashboardJourneyStatus = "available" | "completed" | "locked";
 
 export type DashboardJourneyKey =
-  | "onboarding"
-  | "personal"
-  | "skill"
-  | "advanced";
+  "onboarding" | "personal" | "skill" | "advanced";
 
 export type DashboardJourneyOverviewItem = {
   key: DashboardJourneyKey | string;

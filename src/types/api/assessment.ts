@@ -35,9 +35,7 @@ export type PersonalAssessmentSessionResponseData = {
 // ─── Skill Assessment ─────────────────────────────────────────────────────────
 
 export type SkillAssessmentQuestionType =
-  | "single_pick"
-  | "multi_pick"
-  | "required_text";
+  "single_pick" | "multi_pick" | "required_text";
 
 /** Raw question shape returned by the skill assessment API. */
 export type SkillAssessmentApiQuestion = {
@@ -56,6 +54,9 @@ export type SkillAssessmentStartResponseData = {
   status: string;
   session_id: string;
   verified_level: string;
+  /** Server-side deadline. Null for sessions that began before the limit existed. */
+  expires_at?: string | null;
+  remaining_seconds?: number | null;
   questions: SkillAssessmentApiQuestion[];
 };
 
@@ -122,21 +123,26 @@ export type SkillAssessmentSubmitResponseData = {
   guidance_report?: GuidanceReport;
   /** Only present when downgraded === true. */
   personalised_message?: string;
+  /** Correct answers per competency, weakest first. Absent on older results. */
+  competency_breakdown?: SkillCompetencyResult[];
+};
+
+export type SkillCompetencyResult = {
+  competency: string;
+  correct: number;
+  total: number;
+  /** 0-100. */
+  percentage: number;
 };
 
 // ─── Advanced Assessment ──────────────────────────────────────────────────────
 
 /** Question grouping / rendering block. */
 export type AdvancedAssessmentQuestionBlock =
-  | "mcq"
-  | "short_text"
-  | "long_text";
+  "mcq" | "short_text" | "long_text";
 
 export type AdvancedAssessmentQuestionType =
-  | "single_pick"
-  | "multi_pick"
-  | "required_text"
-  | "optional_text";
+  "single_pick" | "multi_pick" | "required_text" | "optional_text";
 
 export type AdvancedAssessmentSlotType = "work_task" | "situational";
 
@@ -225,4 +231,31 @@ export type AssessmentFlagInput = {
 export type AssessmentFlagResponseData = {
   message?: string;
   sessionVoided?: boolean;
+};
+
+export type SkillAssessmentAvailabilityData = {
+  /** False while a fresh set of questions is still being prepared. */
+  can_start: boolean;
+  waitlisted: boolean;
+};
+
+// ─── Practice ─────────────────────────────────────────────────────────────────
+
+export type PracticeQuestion = {
+  question_id: string;
+  question_number: number;
+  question_text: string;
+  options: string[];
+};
+
+export type PracticeSetResponseData = {
+  level: SkillLevel;
+  track: string;
+  questions: PracticeQuestion[];
+};
+
+export type PracticeCheckResponseData = {
+  correct: boolean;
+  correct_answer: string;
+  explanation: string | null;
 };

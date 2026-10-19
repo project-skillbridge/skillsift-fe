@@ -1,5 +1,6 @@
 import type { VerifiedProfileResponseData } from "@/types/api";
 
+import { CertificatesSection } from "@/components/certificates/certificates-section";
 import { getSkillBreakdownTabs } from "./verified-report-utils";
 import { VerifiedReportHeader } from "./verified-report-header";
 import { VerifiedReportSkillsSection } from "./verified-report-skills-section";
@@ -37,6 +38,7 @@ export function VerifiedReportContent({
           viewerMode={viewerMode}
           trackRecord={trackRecord}
         />
+        {viewerMode === "owner" && !preview ? <CertificatesSection /> : null}
         <VerifiedReportSkillsSection skills={getSkillBreakdownTabs(data)} />
       </section>
     </>

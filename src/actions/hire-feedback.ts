@@ -1,4 +1,4 @@
-import { authApi } from "@/lib/api";
+import { ApiError, authApi } from "@/lib/api";
 import type { ApiEnvelope } from "@/types/api/common";
 import type {
   HireFeedbackListData,
@@ -33,13 +33,23 @@ function mapTrackRecord(raw: RawTalentTrackRecord): TalentTrackRecord {
   };
 }
 
+/** The API doesn't expose hire-feedback endpoints yet; a 404 means "no data". */
+function isNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404;
+}
+
 export async function getPendingHireFeedback(): Promise<HireFeedbackListData> {
-  const res = await authApi.get<ApiEnvelope<RawHireFeedbackListResponse>>(
-    "/employer/hire-feedback",
-    { params: { status: "pending" } },
-  );
-  const raw = unwrapData(res);
-  return { requests: (raw.requests ?? []).map(mapHireFeedbackRequest) };
+  try {
+    const res = await authApi.get<ApiEnvelope<RawHireFeedbackListResponse>>(
+      "/employer/hire-feedback",
+      { params: { status: "pending" } },
+    );
+    const raw = unwrapData(res);
+    return { requests: (raw.requests ?? []).map(mapHireFeedbackRequest) };
+  } catch (error) {
+    if (isNotFound(error)) return { requests: [] };
+    throw error;
+  }
 }
 
 export async function submitHireFeedback(
@@ -53,8 +63,15 @@ export async function submitHireFeedback(
 }
 
 export async function getTalentTrackRecord(): Promise<TalentTrackRecord> {
-  const res = await authApi.get<ApiEnvelope<RawTalentTrackRecord>>(
-    "/talent/track-record",
-  );
-  return mapTrackRecord(unwrapData(res));
+  try {
+    const res = await authApi.get<ApiEnvelope<RawTalentTrackRecord>>(
+      "/talent/track-record",
+    );
+    return mapTrackRecord(unwrapData(res));
+  } catch (error) {
+    if (isNotFound(error)) {
+      return { averageRating: null, ratingCount: 0, wouldHireAgainRate: null };
+    }
+    throw error;
+  }
 }

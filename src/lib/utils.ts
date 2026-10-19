@@ -27,8 +27,9 @@ export function getOnboardingStepProgress(currentStepId: OnboardingStepId) {
 }
 
 export function formatOptionLabel(option: string): string {
-  // Already human-readable (no underscores) — pass through unchanged
-  if (!option.includes("_")) return option;
+  // Already human-readable (no underscores): only ensure a leading capital
+  if (!option.includes("_"))
+    return option.charAt(0).toUpperCase() + option.slice(1);
   const formatted = option
     .replace(/(\d)_(\d)/g, "$1–$2") // 0_1 → 0–1
     .replace(/_plus/g, "+") // _plus → +

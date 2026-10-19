@@ -1,5 +1,6 @@
 "use client";
 
+import { CertificatesSection } from "@/components/certificates/certificates-section";
 import { DashboardRecommended } from "@/components/dashboard/dashboard-recommended";
 import { DashboardWelcome } from "@/components/dashboard/dashboard-welcome";
 import {
@@ -49,6 +50,7 @@ export function JobReadyDashboard({ dashboardHome }: JobReadyDashboardProps) {
           role={roleLabel}
         />
       </div>
+      <CertificatesSection />
       <JobReadyTrackRecord />
       <DashboardRecommended />
     </div>

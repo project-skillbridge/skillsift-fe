@@ -126,7 +126,7 @@
   --error: #b01e1e;
   --error-foreground: #e35151;
   --success: #047857;
-  /* Distinct from --success: this is SkillBridge's verification brand
+  /* Distinct from --success: this is SkillSift's verification brand
    * mark color (hexagon score badge, verified checkmark), not the
    * generic semantic-success color used in toasts/forms. */
   --verified: #009f6a;

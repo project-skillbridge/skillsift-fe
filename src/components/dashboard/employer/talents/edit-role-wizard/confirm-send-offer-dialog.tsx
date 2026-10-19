@@ -56,7 +56,7 @@ export function ConfirmSendOfferDialog({
             }
           />
           <span className="text-sm font-normal tracking-[0.016em] text-[#757575]">
-            I would like SkillBridge to send email updates of job ready talents
+            I would like SkillSift to send email updates of job ready talents
             that have similar score of this role.
           </span>
         </label>

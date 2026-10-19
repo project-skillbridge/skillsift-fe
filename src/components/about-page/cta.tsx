@@ -13,8 +13,8 @@ export function AboutCTASection() {
               Ready To Get Started?
             </h2>
             <p className="text-center text-base leading-relaxed text-white/80">
-              Join SkillBridge and discover a smarter, faster way to prove
-              skills, connect with opportunities, and hire verified talent.
+              Join SkillSift and discover a smarter, faster way to prove skills,
+              connect with opportunities, and hire verified talent.
             </p>
             <Button
               asChild

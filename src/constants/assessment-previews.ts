@@ -3,6 +3,11 @@ export type AssessmentPreviewWarning = {
   description: string;
 };
 
+export type AssessmentPreviewRule = {
+  title: string;
+  detail: string;
+};
+
 export type AssessmentPreview = {
   slug: string;
   title: string;
@@ -13,6 +18,8 @@ export type AssessmentPreview = {
   attempts: string;
   retakeText?: string;
   warning?: AssessmentPreviewWarning;
+  /** "What to expect" rules shown before the start button. */
+  rules?: AssessmentPreviewRule[];
   /** Heading shown above the bulleted expectations on the preview card. */
   sectionTitle: string;
   /** Per-assessment expectation/guideline bullets. */
@@ -34,12 +41,11 @@ const SKILL_POINTS = [
   "This assessment measures your current knowledge and practical understanding of your chosen role.",
   "Your performance helps determine whether your skills align with beginner, intermediate, or advanced expectations.",
   "Once started, do not switch tabs, open other windows, or leave the assessment page.",
-  "Three violations will trigger automatic submission of your assessment.",
 ];
 
 const ADVANCED_POINTS = [
   "This assessment measures your ability to apply your skills in realistic professional scenarios.",
-  "Your results determine your final employability status on SkillBridge.",
+  "Your results determine your final employability status on SkillSift.",
   "Leaving the assessment page, switching tabs, or taking screenshots will trigger warnings.",
   "After three warnings, your assessment will automatically end and be submitted.",
 ];
@@ -74,6 +80,28 @@ export const ASSESSMENT_PREVIEWS = {
     questionCount: "20 Questions",
     duration: "30 minutes",
     attempts: "3 attempts (allowed within time limit)",
+    rules: [
+      {
+        title: "Timed",
+        detail:
+          "A 30-minute countdown stays on screen and runs on our server, so reloading or reopening the page does not reset it. Your answers are submitted automatically at zero.",
+      },
+      {
+        title: "Reloading won't lose your answers",
+        detail:
+          "Your answers are saved on this device as you go. If the page reloads or your connection drops, reopen the assessment on the same browser to pick up where you stopped.",
+      },
+      {
+        title: "Pass mark",
+        detail:
+          "Score 50% or more to verify your level and earn your skill certificate.",
+      },
+      {
+        title: "Stay on this page",
+        detail:
+          "Leaving the tab counts as a violation. Three violations submit your assessment.",
+      },
+    ],
     sectionTitle: "Important Information",
     points: SKILL_POINTS,
     consent: ASSESSMENT_CONSENT,
@@ -85,8 +113,30 @@ export const ASSESSMENT_PREVIEWS = {
       "Demonstrate your ability to perform at the level expected by employers.",
     iconSrc: "/assets/assessments/advanced-assessment-icon.svg",
     questionCount: "15 Questions (8 MCQ · 7 Open-ended)",
-    duration: "30 minutes",
+    duration: "60 minutes",
     attempts: "1 attempt (allowed within time limit)",
+    rules: [
+      {
+        title: "Timed",
+        detail:
+          "You have 60 minutes. The clock keeps running if you lose connection or close the page, but your answers are saved on this device so you can pick up on the same browser.",
+      },
+      {
+        title: "How it is scored",
+        detail:
+          "The 8 multiple-choice questions count for 30% and the 7 written answers for 70%. Take your time on the written ones.",
+      },
+      {
+        title: "Stay on this page",
+        detail:
+          "Leaving the tab or taking screenshots triggers a warning. Three warnings end and submit your assessment.",
+      },
+      {
+        title: "Retakes",
+        detail:
+          "If you do not reach job-ready, you can retake after 14 days. Use that time to practice.",
+      },
+    ],
     retakeText: "Retake valid after 14 days",
     sectionTitle: "Assessment Guidelines",
     points: ADVANCED_POINTS,

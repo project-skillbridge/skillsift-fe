@@ -22,6 +22,9 @@ export const assessmentKeys = {
   personalSession: () =>
     [...assessmentKeys.all, "personal", "session"] as const,
   session: (id: string) => [...assessmentKeys.all, "session", id] as const,
+  practice: () => [...assessmentKeys.all, "practice"] as const,
+  skillAvailability: () =>
+    [...assessmentKeys.all, "skill", "availability"] as const,
 };
 
 export const dashboardKeys = {
@@ -133,4 +136,9 @@ export const employerAssessmentsKeys = {
   detail: (id: string) => [...employerAssessmentsKeys.details(), id] as const,
   results: (id: string) =>
     [...employerAssessmentsKeys.all, "results", id] as const,
+};
+
+export const certificateKeys = {
+  all: ["certificates"] as const,
+  mine: () => [...certificateKeys.all, "mine"] as const,
 };

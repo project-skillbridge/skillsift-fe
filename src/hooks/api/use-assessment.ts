@@ -3,9 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  checkPracticeAnswer,
   flagAssessmentEvent,
+  getPracticeSet,
   getAssessmentSession,
   getPersonalAssessmentSession,
+  getSkillAssessmentAvailability,
   resolveAdvancedAssessmentSession,
   startAdvancedAssessment,
   startPersonalAssessment,
@@ -49,6 +52,16 @@ export function useSubmitPersonalAssessment() {
 }
 
 // ─── Skill Assessment ─────────────────────────────────────────────────────────
+
+/** Whether a skill assessment can start now, so the UI can say "available soon". */
+export function useSkillAvailability(enabled = true) {
+  return useQuery({
+    queryKey: assessmentKeys.skillAvailability(),
+    queryFn: () => getSkillAssessmentAvailability(),
+    enabled,
+    staleTime: 60_000,
+  });
+}
 
 export function useStartSkillAssessment() {
   return useMutation({
@@ -94,6 +107,24 @@ export function useAssessmentSession(
     queryKey: assessmentKeys.session(id),
     queryFn: () => getAssessmentSession(id),
     enabled: options?.enabled ?? false,
+  });
+}
+
+/** Fresh shuffle every visit, so practising again feels different. */
+export function usePracticeSet() {
+  return useQuery({
+    queryKey: assessmentKeys.practice(),
+    queryFn: () => getPracticeSet(),
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+  });
+}
+
+export function useCheckPracticeAnswer() {
+  return useMutation({
+    mutationFn: (body: { questionId: string; answer: string }) =>
+      checkPracticeAnswer(body),
   });
 }
 

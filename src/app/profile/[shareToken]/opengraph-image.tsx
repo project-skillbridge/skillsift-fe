@@ -4,7 +4,7 @@ import { getPublicVerifiedProfile } from "@/actions/public-verified-profile";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "SkillBridge verified talent profile";
+export const alt = "SkillSift verified talent profile";
 
 const VERIFIED_GREEN = "#009F6A";
 
@@ -45,7 +45,7 @@ export default async function OpengraphImage({
       }}
     >
       <div style={{ display: "flex", fontSize: 28, fontWeight: 700 }}>
-        SkillBridge
+        SkillSift
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 56 }}>
@@ -80,13 +80,13 @@ export default async function OpengraphImage({
               color: VERIFIED_GREEN,
             }}
           >
-            {tierLabel} · Verified by SkillBridge
+            {tierLabel} · Verified by SkillSift
           </div>
         </div>
       </div>
 
       <div style={{ display: "flex", fontSize: 22, color: "#757575" }}>
-        skillbridge.com
+        skillsift.online
       </div>
     </div>,
     { ...size },

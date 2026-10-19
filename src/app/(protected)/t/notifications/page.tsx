@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Notifications",
-  description: "Skillbridge notifications webpage",
+  description: "SkillSift notifications webpage",
 };
 
 const Page = () => {

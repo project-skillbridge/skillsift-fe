@@ -11,7 +11,7 @@ const HowItWorks = () => {
             faster.
           </h2>
           <h2 className="hidden text-[32px] font-bold leading-10 text-primary-900 sm:block">
-            How SkillBridge works
+            How SkillSift works
           </h2>
 
           <p className="mx-auto mt-3 max-w-xl text-primary-900/70 sm:hidden">

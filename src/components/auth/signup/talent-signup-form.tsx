@@ -183,7 +183,7 @@ function TalentSignupForm() {
         />
 
         <p className="body-2 mx-auto w-full max-w-100 text-center font-light text-muted-foreground">
-          By continuing, you agree to Skillbridge Talent&apos;s{" "}
+          By continuing, you agree to SkillSift Talent&apos;s{" "}
           <Link
             href="/terms-of-use"
             className="underline decoration-muted-foreground underline-offset-4 transition-colors hover:text-foreground"

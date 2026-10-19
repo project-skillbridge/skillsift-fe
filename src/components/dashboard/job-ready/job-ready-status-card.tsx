@@ -78,7 +78,7 @@ export function JobReadyStatusCard({
   score = 85,
 }: JobReadyStatusCardProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-[#F2F2F2]">
+    <div className="overflow-hidden rounded-2xl border border-[#D5E5F4] bg-[#EEF7FF]">
       {/* Main row */}
       <div className="flex items-start justify-between gap-6 p-6">
         <div className="min-w-0 flex-1 space-y-2.5">

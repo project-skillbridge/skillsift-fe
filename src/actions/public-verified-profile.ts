@@ -40,6 +40,6 @@ export async function getPublicVerifiedProfile(
 ): Promise<PublicVerifiedProfile> {
   const res = await publicApi.get<
     ApiEnvelope<PublicVerifiedProfileResponseData>
-  >(`/public/verified-profile/${encodeURIComponent(shareToken)}`);
+  >(`/verified-profiles/${encodeURIComponent(shareToken)}`);
   return toPublicVerifiedProfile(unwrapData(res));
 }

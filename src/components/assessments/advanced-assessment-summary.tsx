@@ -26,9 +26,9 @@ const AdvancedAssessmentSummary = () => {
             the Job Readiness Evaluation.
           </p>
           <p>
-            Your results are currently being reviewed and a detailed performance
-            report will be sent to your email shortly. The report will include
-            your validated skill level, strengths, and recommended growth areas.
+            Your answers are being scored. When they are ready, you will get a
+            notification here and a detailed report by email with your validated
+            skill level, strengths, and recommended growth areas.
           </p>
         </div>
       </section>
@@ -40,7 +40,8 @@ const AdvancedAssessmentSummary = () => {
           src={"/assets/icons/achievement-icon.svg"}
         />
         <p className="md:mt-4 md:mb-10 mt-2 mb-5 text-base font-semibold max-md:text-center md:text-lg">
-          Your results will be ready in 5 minutes. Check your mailbox.
+          Your results will be ready in a few minutes. We&apos;ll notify you
+          here and by email.
         </p>
       </div>
       <NextUpCard

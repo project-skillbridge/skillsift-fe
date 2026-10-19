@@ -15,8 +15,11 @@ import {
   toAdvancedSubmitAnswers,
 } from "@/lib/assessment-questions";
 import {
+  ASSESSMENT_PREPARING_MESSAGE,
+  ASSESSMENT_PREPARING_TITLE,
   ASSESSMENT_START_FAILED_MESSAGE,
   ASSESSMENT_START_TIMEOUT_MESSAGE,
+  isAssessmentPreparingError,
   isAssessmentStartTimeoutError,
   withAssessmentStartTimeout,
 } from "@/lib/assessment-start";
@@ -26,6 +29,7 @@ import type { AdvancedAssessmentApiQuestion } from "@/types/api";
 type AdvancedStartState =
   | "loading"
   | "ready"
+  | "preparing"
   | "unavailable"
   | "retake-locked"
   | "failed";
@@ -46,8 +50,7 @@ function formatRetakeDate(iso: string | undefined): string {
 function readRetakeLockedDate(error: unknown): string | undefined {
   if (!(error instanceof ApiError) || error.status !== 403) return undefined;
   const data = error.data as
-    | { error?: string; probation_ends_at?: string }
-    | undefined;
+    { error?: string; probation_ends_at?: string } | undefined;
   if (data?.error !== "ADVANCED_RETAKE_LOCKED") return undefined;
   return typeof data.probation_ends_at === "string"
     ? data.probation_ends_at
@@ -96,6 +99,10 @@ export function AdvancedAssessmentFlow() {
       .catch((e) => {
         if (cancelled) return;
 
+        if (isAssessmentPreparingError(e)) {
+          setStartState("preparing");
+          return;
+        }
         if (isServiceUnavailableError(e)) {
           setStartState("unavailable");
           return;
@@ -123,6 +130,17 @@ export function AdvancedAssessmentFlow() {
     () => mapAdvancedQuestions(apiQuestions),
     [apiQuestions],
   );
+
+  if (startState === "preparing") {
+    return (
+      <AssessmentStartBlocked
+        title={ASSESSMENT_PREPARING_TITLE}
+        message={ASSESSMENT_PREPARING_MESSAGE}
+        backHref={ADVANCED_PREVIEW_PATH}
+        backLabel="Back to assessments"
+      />
+    );
+  }
 
   if (startState === "unavailable") {
     return (
@@ -169,16 +187,17 @@ export function AdvancedAssessmentFlow() {
       answers: toAdvancedSubmitAnswers(questions, answersByKey, timeSpentByKey),
     }).then(() => {});
 
-  const recordViolation = (count: number) => {
-    if (count >= 3 && !flagViolation.isPending && !flagViolation.isSuccess)
-      flagViolation.mutate({ eventType: "tab_switch" });
+  // Every violation goes to the server, which keeps the count and ends the
+  // session at the limit, so the rule holds even if this page is tampered with.
+  const recordViolation = () => {
+    flagViolation.mutate({ eventType: "tab_switch" });
   };
 
   return (
     <ViolationDetector
       enabled={startState === "ready"}
       onViolation={recordViolation}
-      submissionConfirmed={flagViolation.isSuccess}
+      submissionConfirmed={flagViolation.data?.sessionVoided === true}
     >
       <QuestionnaireFlow
         questions={questions}
@@ -186,6 +205,7 @@ export function AdvancedAssessmentFlow() {
         isSubmitting={isSubmitting}
         initialSeconds={remainingSeconds}
         totalQuestions={apiQuestions.length}
+        persistKey={sessionId || undefined}
         onSubmit={submit}
       />
     </ViolationDetector>

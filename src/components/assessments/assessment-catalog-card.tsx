@@ -185,6 +185,17 @@ export function AssessmentCatalogCard({ step }: AssessmentCatalogCardProps) {
               </Button>
             )}
 
+            {step.slug === "skill" && !isComingSoon && !isLocked ? (
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-10 w-full rounded-lg text-base font-semibold sm:w-auto"
+              >
+                <Link href="/t/assessments/practice">Practice first</Link>
+              </Button>
+            ) : null}
+
             {step.cooldownLabel ? (
               <p className="text-center text-sm leading-6 tracking-[0.016em] text-[#757575] sm:text-left">
                 {step.cooldownLabel}

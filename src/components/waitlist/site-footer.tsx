@@ -6,8 +6,7 @@ const SiteFooter = () => {
     <footer className="bg-[#05060F] text-white">
       <div className="mx-auto flex w-full max-w-360 flex-col items-start justify-between gap-4 px-6 py-6 sm:h-14 sm:flex-row sm:items-center sm:gap-0 sm:px-16 sm:py-0">
         <p className="text-sm font-light leading-[150%] tracking-[0.024em] text-white">
-          &copy; {new Date().getFullYear()} SkillBridge Inc. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} SkillSift Inc. All rights reserved.
         </p>
         <nav className="flex flex-wrap items-center gap-x-2 gap-y-2">
           {footerLinks.map((link, idx) => (
