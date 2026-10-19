@@ -12,6 +12,8 @@ import {
   getEmployerAssessmentResults,
   getEmployerAssessments,
   getEmployerAssessmentsOverview,
+  getAssessmentShareLink,
+  regenerateAssessmentAccessCode,
   importAssessmentQuestions,
   inviteToAssessment,
   searchAssessmentTalent,
@@ -157,5 +159,24 @@ export function useSearchAssessmentTalent(q: string, track?: string) {
     queryKey: [...employerAssessmentsKeys.all, "talent-search", q, track ?? ""],
     queryFn: () => searchAssessmentTalent(q, track),
     staleTime: 30_000,
+  });
+}
+
+export function useAssessmentShareLink(assessmentId: string, enabled = true) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.shareLink(assessmentId),
+    queryFn: () => getAssessmentShareLink(assessmentId),
+    enabled: enabled && Boolean(assessmentId),
+  });
+}
+
+export function useRegenerateAccessCode(assessmentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => regenerateAssessmentAccessCode(assessmentId),
+    onSuccess: () =>
+      qc.invalidateQueries({
+        queryKey: employerAssessmentsKeys.shareLink(assessmentId),
+      }),
   });
 }

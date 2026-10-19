@@ -15,6 +15,9 @@ export type PublicAssessment = {
   type: "internal" | "external";
   employer_name: string | null;
   welcome_message?: string | null;
+  /** Link assessments hide their questions until sign in. */
+  question_count?: number;
+  requires_access_code?: boolean;
   role_track: string;
   experience_level: string;
   time_limit_minutes: number;
@@ -37,6 +40,7 @@ export type ExternalRegistration = {
   time_limit_minutes: number;
   remaining_seconds: number;
   submitted: boolean;
+  questions: TakerQuestion[];
 };
 
 export type TalentAttempt = {

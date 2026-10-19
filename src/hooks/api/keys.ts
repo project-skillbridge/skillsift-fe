@@ -139,6 +139,8 @@ export const employerAssessmentsKeys = {
   results: (id: string) =>
     [...employerAssessmentsKeys.all, "results", id] as const,
   overview: () => [...employerAssessmentsKeys.all, "overview"] as const,
+  shareLink: (id: string) =>
+    [...employerAssessmentsKeys.all, "share-link", id] as const,
   library: (params: { roleTrack?: string; experienceLevel?: string }) =>
     [...employerAssessmentsKeys.all, "library", params] as const,
   libraryEntry: (id: string) =>

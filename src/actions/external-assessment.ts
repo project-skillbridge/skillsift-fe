@@ -19,13 +19,20 @@ export async function getPublicAssessment(token: string) {
 
 export async function registerExternalApplicant(input: {
   token: string;
+  fullName: string;
+  accessCode: string;
   email: string;
   consentedMarketing: boolean;
 }) {
-  const { token, email, consentedMarketing } = input;
+  const { token, email, consentedMarketing, fullName, accessCode } = input;
   const res = await publicApi.post<ApiEnvelope<ExternalRegistration>>(
     `/assessments/external/${token}/register`,
-    { email, consented_marketing: consentedMarketing },
+    {
+      email,
+      full_name: fullName,
+      access_code: accessCode,
+      consented_marketing: consentedMarketing,
+    },
   );
   return unwrapData(res);
 }

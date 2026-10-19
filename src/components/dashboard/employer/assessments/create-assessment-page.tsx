@@ -86,6 +86,7 @@ export function CreateAssessmentPage() {
   const [libraryCount, setLibraryCount] = useState<number | null>(null);
   const [recipients, setRecipients] = useState<AssessmentTalentOption[]>([]);
   const [shareLink, setShareLink] = useState("");
+  const [createdId, setCreatedId] = useState("");
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const { mutate: createAssessment, isPending } = useCreateEmployerAssessment();
@@ -148,6 +149,7 @@ export function CreateAssessmentPage() {
       {
         onSuccess: (data) => {
           if (type === "external") {
+            setCreatedId(data.id);
             setShareLink(`${window.location.origin}/assessment/${data.token}`);
             setShareModalOpen(true);
             return;
@@ -280,6 +282,7 @@ export function CreateAssessmentPage() {
           if (!open) router.push("/e/assessments");
         }}
         link={shareLink}
+        assessmentId={createdId}
       />
     </div>
   );

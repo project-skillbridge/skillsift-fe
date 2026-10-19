@@ -30,7 +30,7 @@ export function buildEmployerAssessmentPreview(
   assessment: PublicAssessment,
 ): AssessmentPreview {
   const minutes = assessment.time_limit_minutes;
-  const count = assessment.questions.length;
+  const count = assessment.question_count ?? assessment.questions.length;
   return {
     slug: "employer",
     title: assessment.title,

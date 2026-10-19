@@ -167,6 +167,7 @@ export function EmployerAssessmentDetailPage({ assessmentId }: Props) {
           open={shareOpen}
           onOpenChange={setShareOpen}
           link={shareUrl}
+          assessmentId={assessment.id}
         />
       ) : null}
     </div>

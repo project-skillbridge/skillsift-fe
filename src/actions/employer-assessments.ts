@@ -295,3 +295,20 @@ export async function getEmployerAssessmentsOverview(): Promise<EmployerAssessme
   );
   return unwrapData(res);
 }
+
+/** Link and access code for a link assessment. */
+export async function getAssessmentShareLink(assessmentId: string) {
+  const res = await authApi.get<
+    ApiEnvelope<{ share_url: string; access_code: string | null }>
+  >(`/employer/assessments/${assessmentId}/share-link`);
+  const raw = unwrapData(res);
+  return { shareUrl: raw.share_url, accessCode: raw.access_code };
+}
+
+/** Replaces the access code; the old one stops working. */
+export async function regenerateAssessmentAccessCode(assessmentId: string) {
+  const res = await authApi.post<ApiEnvelope<{ access_code: string }>>(
+    `/employer/assessments/${assessmentId}/access-code`,
+  );
+  return unwrapData(res).access_code;
+}
