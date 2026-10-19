@@ -76,7 +76,10 @@ function actionsForStatus(status: EmployerOfferStatus): {
   return {
     canMarkHired: status === "accepted" || status === "interview_accepted",
     canWithdraw: status === "pending" || status === "interview_invited",
-    canAddInterviewLink: status === "interview_accepted",
+    canAddInterviewLink:
+      status === "pending" ||
+      status === "accepted" ||
+      status === "interview_accepted",
   };
 }
 

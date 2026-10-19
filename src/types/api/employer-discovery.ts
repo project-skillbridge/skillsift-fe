@@ -76,7 +76,18 @@ export type EmployerSavedCandidatesListParams = {
   limit?: number;
 };
 
+/** The employer's latest invite to this talent. */
+export type CandidatePipeline = {
+  offerId: string;
+  roleTitle: string;
+  status: "pending" | "accepted" | "declined" | "expired" | "withdrawn";
+  hired: boolean;
+  interviewLink: string | null;
+  sentAt: string;
+};
+
 export type EmployerDiscoveryCandidateProfile = VerifiedProfileResponseData & {
+  pipeline: CandidatePipeline | null;
   userId: string;
   email: string | null;
   isSaved: boolean;
@@ -151,6 +162,14 @@ export type RawEmployerDiscoveryCandidateProfile =
     is_saved: boolean;
     offer_sent: boolean;
     offer_status: "pending" | "accepted" | null;
+    pipeline?: {
+      offer_id: string;
+      role_title: string;
+      status: CandidatePipeline["status"];
+      hired: boolean;
+      interview_link: string | null;
+      sent_at: string;
+    } | null;
     is_unlocked?: boolean;
     role_track?: string | null;
     validated_level?: string | null;

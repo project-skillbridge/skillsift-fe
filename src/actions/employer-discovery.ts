@@ -80,6 +80,7 @@ function mapDiscoveryProfile(
     is_saved,
     offer_sent,
     offer_status,
+    pipeline,
     is_unlocked,
     role_track,
     validated_level,
@@ -98,6 +99,16 @@ function mapDiscoveryProfile(
     isSaved: is_saved,
     offerSent: offer_sent,
     offerStatus: offer_status,
+    pipeline: pipeline
+      ? {
+          offerId: pipeline.offer_id,
+          roleTitle: pipeline.role_title,
+          status: pipeline.status,
+          hired: pipeline.hired,
+          interviewLink: pipeline.interview_link,
+          sentAt: pipeline.sent_at,
+        }
+      : null,
     isUnlocked: is_unlocked ?? false,
     roleTrack: role_track ?? null,
     validatedLevel: validated_level ?? null,
