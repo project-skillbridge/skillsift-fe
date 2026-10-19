@@ -104,6 +104,8 @@ export function CreateAssessmentPage() {
       )
     : 0;
 
+  const [welcomeMessage, setWelcomeMessage] = useState("");
+
   const currentStep = steps[stepIndex];
   const isLastStep = stepIndex === steps.length - 1;
   const meta = CREATE_ASSESSMENT_STEP_META[currentStep.id];
@@ -126,6 +128,7 @@ export function CreateAssessmentPage() {
         experienceLevel: level,
         timeLimitMinutes,
         passingThreshold: passRate,
+        welcomeMessage: welcomeMessage.trim() || undefined,
         ...(useLibrary && selectedLibrary
           ? {
               questionSource: "credlane_bank" as const,
@@ -210,6 +213,8 @@ export function CreateAssessmentPage() {
         questionCount={useLibrary ? libraryQuestionCount : questions.length}
         recipientCount={type === "internal" ? recipients.length : null}
         type={type}
+        welcomeMessage={welcomeMessage}
+        onWelcomeMessageChange={setWelcomeMessage}
       />
     );
   })();

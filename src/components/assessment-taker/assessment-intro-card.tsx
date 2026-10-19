@@ -26,6 +26,18 @@ export function AssessmentIntroCard({
   return (
     <div className="flex min-h-[calc(100dvh-72px)] items-start justify-center px-0 pt-8 pb-14 sm:pt-12 lg:pt-14">
       <div className="mx-auto w-full max-w-200 xl:max-w-217.5 2xl:max-w-238">
+        {assessment.welcome_message ? (
+          <div className="mb-4 rounded-2xl border border-[#D3E6DF] bg-[#F4FBF8] p-5">
+            <p className="text-xs font-medium tracking-wide text-[#008458] uppercase">
+              {assessment.employer_name
+                ? `A note from ${assessment.employer_name}`
+                : "A note from the employer"}
+            </p>
+            <p className="mt-2 text-sm leading-6 whitespace-pre-line text-[#0d2025]">
+              {assessment.welcome_message}
+            </p>
+          </div>
+        ) : null}
         <AssessmentPreviewCard
           assessment={buildEmployerAssessmentPreview(assessment)}
           startLabel={isStarting ? "Starting..." : "Start assessment"}

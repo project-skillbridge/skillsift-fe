@@ -13,6 +13,7 @@ export type CreateEmployerAssessmentInput = {
   experienceLevel: "junior" | "mid" | "senior";
   timeLimitMinutes: 20 | 30 | 40 | 60;
   passingThreshold: number;
+  welcomeMessage?: string;
   questionSource: "credlane_bank" | "company_questions";
   /** Required when `questionSource` is `credlane_bank`. */
   credlaneAssessmentId?: string;

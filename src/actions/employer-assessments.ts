@@ -59,6 +59,9 @@ export async function createEmployerAssessment(
     type: input.type,
   };
 
+  if (input.welcomeMessage) {
+    body.welcomeMessage = input.welcomeMessage;
+  }
   if (input.questions && input.questions.length) {
     body.questions = input.questions;
   }

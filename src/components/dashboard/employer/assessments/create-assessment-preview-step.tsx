@@ -1,5 +1,6 @@
 "use client";
 
+import { Textarea } from "@/components/ui/textarea";
 import { levelLabel, trackLabel } from "@/constants/employer-roles";
 import { ASSESSMENT_TIME_LIMIT_OPTIONS } from "@/constants/employer-assessments";
 
@@ -11,6 +12,8 @@ type CreateAssessmentPreviewStepProps = {
   questionCount: number;
   recipientCount: number | null;
   type: "internal" | "external";
+  welcomeMessage: string;
+  onWelcomeMessageChange: (value: string) => void;
 };
 
 function SummaryItem({ label, value }: { label: string; value: string }) {
@@ -30,6 +33,8 @@ export function CreateAssessmentPreviewStep({
   questionCount,
   recipientCount,
   type,
+  welcomeMessage,
+  onWelcomeMessageChange,
 }: CreateAssessmentPreviewStepProps) {
   const timeLabel =
     ASSESSMENT_TIME_LIMIT_OPTIONS.find(
@@ -52,6 +57,25 @@ export function CreateAssessmentPreviewStep({
               : "Shareable link"
           }
         />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="welcome-message"
+          className="font-sans text-sm font-medium text-[#101828]"
+        >
+          Welcome message <span className="text-[#667085]">(optional)</span>
+        </label>
+        <Textarea
+          id="welcome-message"
+          value={welcomeMessage}
+          maxLength={500}
+          rows={3}
+          placeholder="A short note candidates read before they start, e.g. what to expect and who they are speaking with."
+          onChange={(e) => onWelcomeMessageChange(e.target.value)}
+        />
+        <span className="text-xs text-[#667085]">
+          {welcomeMessage.length}/500
+        </span>
       </div>
       <p className="font-sans text-sm leading-6 text-[#667085]">
         {type === "internal"

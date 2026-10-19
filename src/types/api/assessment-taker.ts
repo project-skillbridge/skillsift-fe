@@ -14,6 +14,7 @@ export type PublicAssessment = {
   title: string;
   type: "internal" | "external";
   employer_name: string | null;
+  welcome_message?: string | null;
   role_track: string;
   experience_level: string;
   time_limit_minutes: number;
