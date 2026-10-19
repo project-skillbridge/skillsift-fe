@@ -3,6 +3,8 @@
 Goal: find out whether the assessment separates real developers by level well enough to put a
 public certificate on it. Start with Frontend Developer, the only live track.
 
+---
+
 ## Questions to answer
 
 1. Does the score order people the way their real level does (junior < mid < senior < expert)?
