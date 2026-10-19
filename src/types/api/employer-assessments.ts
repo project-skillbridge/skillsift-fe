@@ -14,7 +14,8 @@ export type CreateEmployerAssessmentInput = {
   timeLimitMinutes: 20 | 30 | 40 | 60;
   passingThreshold: number;
   welcomeMessage?: string;
-  questionSource: "credlane_bank" | "company_questions";
+  questionSource:
+    "credlane_bank" | "company_questions" | "manual" | "admin_upload";
   /** Required when `questionSource` is `credlane_bank`. */
   credlaneAssessmentId?: string;
   /** Library only: how many questions to take (5 up to what the entry has). */
