@@ -7,6 +7,7 @@ import type {
   EmployerDiscoveryCandidate,
   EmployerDiscoveryCandidateProfile,
   EmployerDiscoveryCandidatesListData,
+  EmployerHiringBriefResponse,
   EmployerSavedCandidatesListParams,
   RawEmployerDiscoveryCandidate,
   RawEmployerDiscoveryCandidateProfile,
@@ -49,6 +50,7 @@ function mapDiscoveryCandidate(
     isSaved: raw.is_saved,
     offerSent: raw.offer_sent,
     offerStatus: raw.offer_status,
+    isUnlocked: raw.is_unlocked ?? false,
     averageHireRating: raw.average_hire_rating ?? null,
     hireRatingCount: raw.hire_rating_count ?? 0,
     wouldHireAgainRate: raw.would_hire_again_rate ?? null,
@@ -78,6 +80,12 @@ function mapDiscoveryProfile(
     is_saved,
     offer_sent,
     offer_status,
+    pipeline,
+    is_unlocked,
+    role_track,
+    validated_level,
+    portfolio_url,
+    linkedin_url,
     average_hire_rating,
     hire_rating_count,
     would_hire_again_rate,
@@ -91,6 +99,21 @@ function mapDiscoveryProfile(
     isSaved: is_saved,
     offerSent: offer_sent,
     offerStatus: offer_status,
+    pipeline: pipeline
+      ? {
+          offerId: pipeline.offer_id,
+          roleTitle: pipeline.role_title,
+          status: pipeline.status,
+          hired: pipeline.hired,
+          interviewLink: pipeline.interview_link,
+          sentAt: pipeline.sent_at,
+        }
+      : null,
+    isUnlocked: is_unlocked ?? false,
+    roleTrack: role_track ?? null,
+    validatedLevel: validated_level ?? null,
+    portfolioUrl: portfolio_url ?? null,
+    linkedinUrl: linkedin_url ?? null,
     averageHireRating: average_hire_rating ?? null,
     hireRatingCount: hire_rating_count ?? 0,
     wouldHireAgainRate: would_hire_again_rate ?? null,
@@ -121,6 +144,15 @@ export async function getDiscoveryCandidateProfile(
   return mapDiscoveryProfile(unwrapData(res));
 }
 
+export async function getHiringBrief(
+  userId: string,
+): Promise<EmployerHiringBriefResponse> {
+  const res = await authApi.get<ApiEnvelope<EmployerHiringBriefResponse>>(
+    `/employer/discovery/candidates/${encodeURIComponent(userId)}/hiring-brief`,
+  );
+  return unwrapData(res);
+}
+
 export async function getSavedCandidates(
   params?: EmployerSavedCandidatesListParams,
 ): Promise<EmployerDiscoveryCandidatesListData> {
@@ -141,4 +173,18 @@ export async function removeCandidate(userId: string): Promise<void> {
   await authApi.delete(
     `/employer/discovery/candidates/${encodeURIComponent(userId)}/save`,
   );
+}
+
+/** Spends one unlock to reveal a candidate. Throws an ApiError with status 402 when none are left. */
+export async function unlockCandidate(
+  userId: string,
+): Promise<{ alreadyUnlocked: boolean; unlocksRemaining: number }> {
+  const res = await authApi.post<
+    ApiEnvelope<{ already_unlocked: boolean; unlocks_remaining: number }>
+  >(`/employer/discovery/candidates/${encodeURIComponent(userId)}/unlock`);
+  const data = unwrapData(res);
+  return {
+    alreadyUnlocked: data.already_unlocked,
+    unlocksRemaining: data.unlocks_remaining,
+  };
 }

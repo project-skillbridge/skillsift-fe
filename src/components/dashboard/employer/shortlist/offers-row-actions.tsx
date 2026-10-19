@@ -61,7 +61,7 @@ const CONFIRM_COPY: Record<
       `Withdrawing will revoke the offer to ${name}. They'll be notified, and the offer can't be re-sent for the same role.`,
     actionLabel: "Withdraw offer",
     pendingLabel: "Withdrawing…",
-    successLabel: "Offer withdrawn.",
+    successLabel: "Invite withdrawn.",
     destructive: true,
   },
 };
@@ -76,7 +76,10 @@ function actionsForStatus(status: EmployerOfferStatus): {
   return {
     canMarkHired: status === "accepted" || status === "interview_accepted",
     canWithdraw: status === "pending" || status === "interview_invited",
-    canAddInterviewLink: status === "interview_accepted",
+    canAddInterviewLink:
+      status === "pending" ||
+      status === "accepted" ||
+      status === "interview_accepted",
   };
 }
 

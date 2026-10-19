@@ -8,6 +8,10 @@ const MULTI_PICK_PILL_THRESHOLD = 8;
 /** Used when the question doesn't declare its own `maxLength`. */
 const TEXT_ANSWER_FALLBACK_MAX_LENGTH = 2000;
 
+function optionLabel(question: Question, option: string): string {
+  return question.rawOptions ? option : formatOptionLabel(option);
+}
+
 export function isOtherReveal(question: Question, value: string): boolean {
   return question.conditional?.trigger_option === value;
 }
@@ -100,7 +104,7 @@ export function QuestionnaireQuestionFieldBody({
                 )}
               >
                 <RadioGroupItem id={id} value={option} />
-                <span>{formatOptionLabel(option)}</span>
+                <span>{optionLabel(question, option)}</span>
                 {isOtherReveal(question, option) && isSelected && (
                   <span className="sr-only"> — additional input required</span>
                 )}
@@ -147,7 +151,7 @@ export function QuestionnaireQuestionFieldBody({
                   checked={isSelected}
                   onCheckedChange={(c) => toggle(option, c === true)}
                 />
-                <span>{formatOptionLabel(option)}</span>
+                <span>{optionLabel(question, option)}</span>
               </label>
             );
           })}

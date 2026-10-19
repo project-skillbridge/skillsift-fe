@@ -14,9 +14,9 @@ export function buildDiscoveryQueryString(
     searchParams.set("minScore", String(params.minScore));
   if (params.maxScore != null)
     searchParams.set("maxScore", String(params.maxScore));
-  for (const value of params.region ?? []) {
-    searchParams.append("region", value);
-  }
+  // The API takes one comma-separated value for several regions.
+  if (params.region?.length)
+    searchParams.set("region", params.region.join(","));
   if (params.search) searchParams.set("search", params.search);
 
   for (const value of params.roleTrack ?? []) {

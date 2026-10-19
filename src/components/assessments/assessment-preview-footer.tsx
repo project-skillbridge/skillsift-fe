@@ -13,6 +13,8 @@ type AssessmentPreviewFooterProps = {
   /** CTA label. Defaults to "Start". */
   startLabel?: string;
   startDisabled?: boolean;
+  /** When set the CTA is a button that calls this instead of a link. */
+  onStart?: () => void;
 };
 
 const START_BUTTON_CLASS =
@@ -52,6 +54,7 @@ function AssessmentPreviewFooter({
   startHref,
   startLabel = "Start",
   startDisabled = false,
+  onStart,
 }: AssessmentPreviewFooterProps) {
   const href = startHref ?? `/t/assessments/${assessmentSlug}/q`;
 
@@ -61,7 +64,16 @@ function AssessmentPreviewFooter({
         {renderConsent(consent)}
       </p>
 
-      {startDisabled ? (
+      {onStart ? (
+        <Button
+          type="button"
+          onClick={onStart}
+          disabled={startDisabled}
+          className={START_BUTTON_CLASS}
+        >
+          {startLabel}
+        </Button>
+      ) : startDisabled ? (
         <Button type="button" disabled className={START_BUTTON_CLASS}>
           {startLabel}
         </Button>

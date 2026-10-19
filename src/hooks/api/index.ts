@@ -20,3 +20,4 @@ export * from "./use-talent-offers";
 export * from "./use-hire-feedback";
 export * from "./use-public-verified-profile";
 export * from "./use-certificates";
+export * from "./use-employer-billing";

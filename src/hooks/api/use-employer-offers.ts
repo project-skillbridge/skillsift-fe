@@ -51,6 +51,8 @@ export function useSendOffer() {
 
 function invalidateOffersList(qc: ReturnType<typeof useQueryClient>) {
   void qc.invalidateQueries({ queryKey: employerOffersKeys.lists() });
+  // The talent profile shows where this offer stands.
+  void qc.invalidateQueries({ queryKey: employerDiscoveryKeys.profiles() });
 }
 
 /** Mark an accepted offer as hire-complete (the candidate has been hired). */

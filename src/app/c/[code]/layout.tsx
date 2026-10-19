@@ -1,5 +1,5 @@
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { Fraunces } from "next/font/google";
-import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 
@@ -22,13 +22,7 @@ export default function PublicCertificateLayout({
     >
       <header className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-4 sm:px-6 sm:py-6">
         <Link href="/" className="flex items-center">
-          <Image
-            src="/assets/logo/logo-with-text.svg"
-            alt="SkillSift"
-            width={140}
-            height={32}
-            priority
-          />
+          <BrandLogo tone="dark" />
         </Link>
         <span className="text-sm font-medium text-[#757575]">
           Skill Certificate

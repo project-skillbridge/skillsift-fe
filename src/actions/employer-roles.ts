@@ -9,6 +9,7 @@ import type {
   UpdateRoleInput,
 } from "@/types/api/employer-roles";
 
+import { NO_EDUCATION_REQUIREMENT } from "@/constants/employer-roles";
 import { unwrapData } from "./utils";
 
 type RolesListEnvelope = {
@@ -31,6 +32,8 @@ function normalizeRole(raw: RawEmployerRole): EmployerRoleItem {
     isFull:
       raw.applicant_cap !== null && raw.interested_count >= raw.applicant_cap,
     createdAt: raw.created_at,
+    track: raw.track ?? null,
+    level: raw.level ?? null,
   };
 }
 
@@ -83,6 +86,8 @@ export async function createRole(
 ): Promise<RawEmployerRole> {
   const {
     title,
+    track,
+    level,
     category,
     jdHtml,
     jdFile,
@@ -98,6 +103,8 @@ export async function createRole(
     assessmentId,
   } = input;
 
+  const apiEducation =
+    education && education !== NO_EDUCATION_REQUIREMENT ? education : undefined;
   const min = parseSalary(salaryMin);
   const max = parseSalary(salaryMax);
 
@@ -105,10 +112,12 @@ export async function createRole(
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", category);
+    formData.append("track", track);
+    if (level) formData.append("level", level);
     formData.append("jd_file", jdFile);
     if (employmentType) formData.append("employmentType", employmentType);
     if (workArrangement) formData.append("workArrangement", workArrangement);
-    if (education) formData.append("education", education);
+    if (apiEducation) formData.append("education", apiEducation);
     keywords.forEach((k) => formData.append("keywords", k));
     if (min !== undefined) formData.append("salaryMin", String(min));
     if (max !== undefined) formData.append("salaryMax", String(max));
@@ -127,11 +136,12 @@ export async function createRole(
     return unwrapData(res);
   }
 
-  const payload: Record<string, unknown> = { title, category };
+  const payload: Record<string, unknown> = { title, category, track };
+  if (level) payload.level = level;
   if (jdHtml) payload.description = jdHtml;
   if (employmentType) payload.employmentType = employmentType;
   if (workArrangement) payload.workArrangement = workArrangement;
-  if (education) payload.education = education;
+  if (apiEducation) payload.education = apiEducation;
   if (keywords.length > 0) payload.keywords = keywords;
   if (min !== undefined) payload.salaryMin = min;
   if (max !== undefined) payload.salaryMax = max;

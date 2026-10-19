@@ -2,16 +2,18 @@
 
 import { Check } from "lucide-react";
 
-import { CREATE_ASSESSMENT_STEPS } from "@/constants/create-assessment-wizard";
+import type { CreateAssessmentStep } from "@/constants/create-assessment-wizard";
 
 type CreateAssessmentMobileProgressProps = {
+  steps: readonly CreateAssessmentStep[];
   currentStepIndex: number;
 };
 
 export function CreateAssessmentMobileProgress({
+  steps,
   currentStepIndex,
 }: CreateAssessmentMobileProgressProps) {
-  const width = `${((currentStepIndex + 1) / CREATE_ASSESSMENT_STEPS.length) * 100}%`;
+  const width = `${((currentStepIndex + 1) / steps.length) * 100}%`;
 
   return (
     <div className="lg:hidden">
@@ -20,15 +22,15 @@ export function CreateAssessmentMobileProgress({
           <Check className="size-3 stroke-[2.5]" />
         </div>
         <p className="font-sans text-sm font-semibold text-[#101828]">
-          Step {currentStepIndex + 1} of {CREATE_ASSESSMENT_STEPS.length} ·{" "}
-          {CREATE_ASSESSMENT_STEPS[currentStepIndex].title}
+          Step {currentStepIndex + 1} of {steps.length} ·{" "}
+          {steps[currentStepIndex].title}
         </p>
       </div>
       <div
         role="progressbar"
         aria-valuenow={currentStepIndex + 1}
         aria-valuemin={1}
-        aria-valuemax={CREATE_ASSESSMENT_STEPS.length}
+        aria-valuemax={steps.length}
         className="h-1 w-full overflow-hidden rounded-full bg-[#E5E7EB]"
       >
         <div

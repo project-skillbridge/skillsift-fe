@@ -23,34 +23,13 @@ export const EMPLOYER_ACTION_ITEMS = [
     iconBg: "#cbb0eb",
   },
   {
-    title: "Create & Send offers",
+    title: "Create roles & invite talent",
     description:
       "Define the roles you're hiring for, attach assessments, and start sending to verified talents.",
     actionLabel: "View my roles",
     href: "/e/roles",
     iconSrc: "/assets/icons/icon-my-roles.svg",
     iconBg: "#EDEEF2",
-  },
-] as const;
-
-export const EMPLOYER_TESTIMONIALS = [
-  {
-    name: "Chioma Osei, Co-Founder — Verdant Labs",
-    rating: 5,
-    quote:
-      "We had an open role for two months. What was delaying the hire was the number of CVs we had to sieve through. Went on CredLane and got already evaluated and shortlisted candidates. Our hiring time reduced by more than half.",
-  },
-  {
-    name: "Tunde Adeyemi, Head of Engineering — Pivo Africa",
-    rating: 5,
-    quote:
-      "The assessment scores are accurate. Our guy's assessment report showed strong on system design and that's exactly what he demonstrated on the job. I highly recommend.",
-  },
-  {
-    name: "Amara Nwosu, People Lead — Kuda",
-    rating: 4,
-    quote:
-      "Hiring for a role used to take us months. Now we just shortlist candidates based on their assessments results then probe a bit to make the final choice. It's way faster.",
   },
 ] as const;
 

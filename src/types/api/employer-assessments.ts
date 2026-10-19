@@ -2,10 +2,9 @@ export type EmployerAssessmentStatus = "active" | "inactive";
 
 export type EmployerAssessmentQuestionInput = {
   questionText: string;
-  questionType: "single_pick" | "multi_pick" | "required_text";
+  questionType: "multiple_choice" | "true_false" | "short_answer";
   options?: string[];
   correctAnswer?: string | string[];
-  points?: number;
 };
 
 export type CreateEmployerAssessmentInput = {
@@ -14,12 +13,34 @@ export type CreateEmployerAssessmentInput = {
   experienceLevel: "junior" | "mid" | "senior";
   timeLimitMinutes: 20 | 30 | 40 | 60;
   passingThreshold: number;
+  welcomeMessage?: string;
   questionSource:
     "credlane_bank" | "company_questions" | "manual" | "admin_upload";
+  /** Required when `questionSource` is `credlane_bank`. */
+  credlaneAssessmentId?: string;
+  /** Library only: how many questions to take (5 up to what the entry has). */
+  questionCount?: number;
   shareViaLink: boolean;
   sendToCandidates: boolean;
   type: "internal" | "external";
+  /** Required (5 or more) when `questionSource` is `company_questions`. */
   questions?: EmployerAssessmentQuestionInput[];
+  /** Required when `sendToCandidates` is true. */
+  candidateUserIds?: string[];
+};
+
+/** Result of POST /employer/assessments/import-questions. */
+export type ImportedQuestionsResult = {
+  questions: EmployerAssessmentQuestionInput[];
+  questionCount: number;
+};
+
+/** One row of GET /employer/assessments/search-talent. */
+export type AssessmentTalentOption = {
+  userId: string;
+  fullName: string;
+  roleTrack: string | null;
+  verifiedLevel: string | null;
 };
 
 export type InviteToAssessmentInput = {
@@ -60,6 +81,7 @@ export type RawEmployerAssessment = {
   /** None of the below are on the wire yet. Kept optional so the UI can
    *  light up the moment backend adds them, without another rewrite. */
   submissions_count?: number;
+  submission_count?: number;
   talents_count?: number;
   /** 0–100. */
   pass_rate?: number;
@@ -123,15 +145,139 @@ export type ListEmployerAssessmentsResponse = {
   limit?: number;
 };
 
-export type AssessmentResultItem = {
-  candidateId: string;
-  candidateName: string;
+/** One ranked row from GET /employer/assessments/:id/results. */
+export type AssessmentSubmission = {
+  id: string;
+  /** Talent are verified SkillSift users; external takers only left an email. */
+  source: "talent" | "external";
+  candidateUserId: string | null;
+  candidateName: string | null;
+  email: string | null;
   score: number;
-  passed: boolean;
-  submittedAt: string;
+  status: "pass" | "fail";
+  timeTakenSeconds: number | null;
+  dateCompleted: string;
+  deliveryMode: string | null;
+  /** 1-based by score across all submissions; ties share a rank. */
+  rank: number;
+  /** Null until there are at least 3 submissions to compare against. */
+  percentile: number | null;
+  /** Advisory only. Null for results from before integrity checks existed. */
+  integrityLevel: "clean" | "review" | "flagged" | null;
+  integrityReasons: string[];
+  /** Set when a link taker later joined SkillSift with a verified account. */
+  joinedSkillsiftUserId: string | null;
+};
+
+export type AssessmentResultsSummary = {
+  total: number;
+  averageScore: number | null;
+  medianScore: number | null;
+  topScore: number | null;
+  passRate: number | null;
+};
+
+export type AssessmentResultQuestion = {
+  questionId: string;
+  position: number;
+  questionText: string;
+  questionType: string;
+  options: string[] | null;
+  /** Null for SkillSift library assessments: the key stays private. */
+  correctAnswer: string | null;
+  givenAnswer: string | null;
+  isCorrect: boolean;
+};
+
+/** GET /employer/assessments/:id/results/:submissionId */
+export type AssessmentResultDetail = AssessmentSubmission & {
+  questions: AssessmentResultQuestion[];
+  correctCount: number;
+  questionCount: number;
+  integrityEvents: {
+    tabSwitches: number;
+    awaySeconds: number;
+    pasteAttempts: number;
+    copyAttempts: number;
+  } | null;
+};
+
+export type AssessmentResultsParams = {
+  page?: number;
+  limit?: number;
+  status?: "pass" | "fail";
+  source?: "talent" | "external";
+  sort?: "score" | "date";
+};
+
+export type EmployerAssessmentDetail = {
+  assessment: EmployerAssessmentItem;
+  shareUrl: string | null;
+  isExternal: boolean;
+  questions: EmployerAssessmentQuestion[];
+  submissions: AssessmentSubmission[];
+  submissionsTotal: number;
 };
 
 export type ListEmployerAssessmentResultsResponse = {
-  results: AssessmentResultItem[];
+  submissions: AssessmentSubmission[];
+  summary: AssessmentResultsSummary;
   total: number;
+  emptyState?: string | null;
+};
+
+export type DraftAssessmentQuestionsInput = {
+  jobDescription: string;
+  experienceLevel?: "junior" | "mid" | "senior";
+  count?: number;
+};
+
+export type DraftAssessmentQuestionsResult = {
+  questions: EmployerAssessmentQuestionInput[];
+  dropped: number;
+};
+
+/** A ready-made SkillSift assessment an employer can pick instead of writing questions. */
+export type LibraryAssessmentItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  estimatedCompletionTime: string;
+  roleTrack: string;
+  experienceLevel: string;
+  questionCount: number;
+};
+
+/** Preview of a library assessment. SkillSift never sends the answer key. */
+export type LibraryAssessmentDetail = LibraryAssessmentItem & {
+  questions: {
+    position: number;
+    questionText: string;
+    questionType: "multiple_choice" | "true_false" | "short_answer";
+    options: string[] | null;
+  }[];
+};
+
+/** GET /employer/assessments/overview */
+export type EmployerAssessmentsOverview = {
+  last30Days: {
+    assessed: number;
+    passRate: number | null;
+    averageScore: number | null;
+    /** Results whose integrity level is "review" or "flagged". */
+    needsReview: number;
+  };
+  activeAssessments: number;
+  recent: Array<{
+    id: string;
+    assessmentId: string;
+    assessmentTitle: string;
+    source: "talent" | "external";
+    candidateName: string | null;
+    email: string | null;
+    score: number;
+    passed: boolean;
+    integrityLevel: "clean" | "review" | "flagged" | null;
+    completedAt: string;
+  }>;
 };

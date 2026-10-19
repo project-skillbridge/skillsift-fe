@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { FlaskConical, Package, PencilLine } from "lucide-react";
@@ -70,6 +71,17 @@ export function EmployerSendOfferPage({
       {
         onSuccess: (result) => {
           setIsConfirmOpen(false);
+          // The API answers 200 even when nothing was sent (e.g. the role has
+          // no pay set), so don't tell the employer it went out.
+          if (result.sentCount === 0) {
+            const first = result.warnings[0] as { reason?: string } | undefined;
+            appToast.error(
+              first?.reason
+                ? `Invite not sent: ${first.reason}. Update the role and try again.`
+                : "Invite not sent. Check the role details and try again.",
+            );
+            return;
+          }
           if (result.warnings.length > 0) {
             appToast.success(
               `Interview invite sent with ${result.warnings.length} warning${
@@ -89,7 +101,12 @@ export function EmployerSendOfferPage({
   }
 
   function handleViewAssessment() {
-    appToast.success("Viewing assessments is coming soon.");
+    if (!role?.assessment_id) return;
+    window.open(
+      `/e/assessments/${encodeURIComponent(role.assessment_id)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   const compensation = formatCompensation(
@@ -192,7 +209,7 @@ export function EmployerSendOfferPage({
                   Education
                 </p>
                 <p className="text-base font-medium tracking-[0.017em] text-[#151515]">
-                  {role.education}
+                  {educationLabel(role.education)}
                 </p>
               </div>
             ) : null}

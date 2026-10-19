@@ -1,7 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import {
   type Control,
   Controller,
@@ -9,15 +7,15 @@ import {
 } from "react-hook-form";
 
 import { FormInput } from "@/components/custom/form-input";
-import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
+import {
+  ASSESSMENT_LEVEL_OPTIONS,
+  ASSESSMENT_TIME_LIMIT_OPTIONS,
+  MAX_ASSESSMENT_PASS_RATE,
+  MIN_ASSESSMENT_PASS_RATE,
+} from "@/constants/employer-assessments";
 import { TRACK_SELECT_OPTIONS } from "@/constants/talent-onboarding";
 import { cn } from "@/lib/utils";
 import type { CreateAssessmentValues } from "@/types/create-assessment-schema";
@@ -26,26 +24,15 @@ const formFieldLabelClass =
   "inline-flex flex-row items-start gap-0.5 p-0 shadow-none select-none " +
   "font-sans text-base font-medium leading-normal tracking-[0.256px] text-foreground";
 
-const formFieldControlClass =
-  "h-9 w-full min-w-0 rounded-[5px] border border-border bg-background px-3 py-2 text-base font-normal leading-5 tracking-[0.017em] md:text-base md:leading-5 " +
-  "text-foreground shadow-none outline-none transition-[color,box-shadow,border-color] " +
-  "font-sans placeholder:text-sm placeholder:text-muted-foreground " +
-  "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 " +
-  "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
-
 const formFieldHintClass =
   "font-sans text-sm font-normal leading-[18px] tracking-[0.016em] text-muted-foreground";
-
-const formFieldErrorClass =
-  "font-sans text-sm font-normal leading-[18px] text-error";
 
 type CreateAssessmentDialogFieldsProps = {
   register: UseFormRegister<CreateAssessmentValues>;
   control: Control<CreateAssessmentValues>;
   passRate: number;
   titleError?: string;
-  categoryError?: string;
-  deadlineError?: string;
+  trackError?: string;
 };
 
 export function CreateAssessmentDialogFields({
@@ -53,46 +40,73 @@ export function CreateAssessmentDialogFields({
   control,
   passRate,
   titleError,
-  categoryError,
-  deadlineError,
+  trackError,
 }: CreateAssessmentDialogFieldsProps) {
   return (
     <div className="space-y-4">
       <FormInput
         label="Assessment title"
         placeholder="e.g. frontend developer assessment"
-        description="Placeholder for more info"
         error={titleError}
         {...register("title")}
       />
 
       <Controller
-        name="category"
+        name="roleTrack"
         control={control}
         render={({ field }) => (
           <FormInput
             mode="select"
-            label="Category"
-            placeholder="Select.."
-            description="Placeholder for more info"
+            label="Role track"
+            placeholder="Select the closest track"
+            description="Matches the track talent are verified on."
             options={TRACK_SELECT_OPTIONS}
             value={field.value ?? ""}
             onValueChange={field.onChange}
-            error={categoryError}
+            error={trackError}
           />
         )}
       />
 
+      <div className="grid grid-cols-2 gap-3">
+        <Controller
+          name="experienceLevel"
+          control={control}
+          render={({ field }) => (
+            <FormInput
+              mode="select"
+              label="Level"
+              options={[...ASSESSMENT_LEVEL_OPTIONS]}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
+        <Controller
+          name="timeLimitMinutes"
+          control={control}
+          render={({ field }) => (
+            <FormInput
+              mode="select"
+              label="Time limit"
+              options={[...ASSESSMENT_TIME_LIMIT_OPTIONS]}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
+      </div>
+
       <div className="flex w-full flex-col items-stretch gap-1.5">
-        <Label className={formFieldLabelClass}>Pass rate %</Label>
+        <Label className={formFieldLabelClass}>Pass mark</Label>
         <Controller
           name="passRate"
           control={control}
           render={({ field }) => (
             <div className="relative pt-0.5">
               <Slider
-                min={0}
-                max={100}
+                min={MIN_ASSESSMENT_PASS_RATE}
+                max={MAX_ASSESSMENT_PASS_RATE}
                 step={1}
                 value={[field.value]}
                 onValueChange={(value) => field.onChange(value[0] ?? 0)}
@@ -113,7 +127,9 @@ export function CreateAssessmentDialogFields({
               />
               <span
                 className="pointer-events-none absolute top-7 -translate-x-1/2 rounded-md bg-[#151515] px-2 py-0.5 text-xs font-semibold text-white"
-                style={{ left: `${passRate}%` }}
+                style={{
+                  left: `${((passRate - MIN_ASSESSMENT_PASS_RATE) / (MAX_ASSESSMENT_PASS_RATE - MIN_ASSESSMENT_PASS_RATE)) * 100}%`,
+                }}
               >
                 {passRate}%
               </span>
@@ -134,59 +150,19 @@ export function CreateAssessmentDialogFields({
             </div>
           )}
         />
-        <p className={formFieldHintClass}>Placeholder for more info</p>
-      </div>
-
-      <div className="flex w-full flex-col items-stretch gap-1.5">
-        <Label className={formFieldLabelClass}>Deadline</Label>
-        <Controller
-          name="deadline"
-          control={control}
-          render={({ field }) => (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    formFieldControlClass,
-                    "flex items-center justify-start gap-2 text-left",
-                    !field.value && "text-muted-foreground",
-                    deadlineError && "border-error ring-2 ring-error/20",
-                  )}
-                >
-                  <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
-                  {field.value ? format(field.value, "PPP") : "Select.."}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  disabled={(date) =>
-                    date < new Date(new Date().setHours(0, 0, 0, 0))
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          )}
-        />
-        {deadlineError ? (
-          <p className={formFieldErrorClass} role="alert">
-            {deadlineError}
-          </p>
-        ) : (
-          <p className={formFieldHintClass}>Placeholder for more info</p>
-        )}
+        <p className={formFieldHintClass}>
+          Candidates scoring below this do not pass.
+        </p>
       </div>
 
       <div className="flex items-center justify-between pt-2">
         <div className="space-y-0.5">
           <Label htmlFor="assessment-type" className={formFieldLabelClass}>
-            External Assessment
+            Share by link
           </Label>
           <p className={formFieldHintClass}>
-            Generate a shareable link for external applicants.
+            Anyone with the link can take it. Leave off to invite verified
+            SkillSift talent.
           </p>
         </div>
         <Controller

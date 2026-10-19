@@ -3,16 +3,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createEmployerAssessment,
   deactivateEmployerAssessment,
+  draftAssessmentQuestions,
   getEmployerAssessment,
+  getEmployerAssessmentDetail,
+  getEmployerAssessmentResultDetail,
+  getLibraryAssessment,
+  getLibraryAssessments,
   getEmployerAssessmentResults,
   getEmployerAssessments,
+  getEmployerAssessmentsOverview,
+  getAssessmentShareLink,
+  regenerateAssessmentAccessCode,
+  importAssessmentQuestions,
   inviteToAssessment,
+  searchAssessmentTalent,
 } from "@/actions/employer-assessments";
 import type {
+  AssessmentResultsParams,
   CreateEmployerAssessmentInput,
+  DraftAssessmentQuestionsInput,
   InviteToAssessmentInput,
 } from "@/types/api/employer-assessments";
-import { employerAssessmentsKeys } from "./keys";
+import { employerAssessmentsKeys, employerBillingKeys } from "./keys";
 
 export function useEmployerAssessments(params?: {
   page?: number;
@@ -32,14 +44,38 @@ export function useEmployerAssessment(assessmentId: string) {
   });
 }
 
+export function useEmployerAssessmentDetail(assessmentId: string) {
+  return useQuery({
+    queryKey: [...employerAssessmentsKeys.detail(assessmentId), "full"],
+    queryFn: () => getEmployerAssessmentDetail(assessmentId),
+    enabled: !!assessmentId,
+  });
+}
+
 export function useEmployerAssessmentResults(
   assessmentId: string,
-  params?: { page?: number; limit?: number },
+  params?: AssessmentResultsParams,
 ) {
   return useQuery({
     queryKey: [...employerAssessmentsKeys.results(assessmentId), params ?? {}],
     queryFn: () => getEmployerAssessmentResults(assessmentId, params),
     enabled: !!assessmentId,
+  });
+}
+
+export function useEmployerAssessmentResultDetail(
+  assessmentId: string,
+  submissionId: string | null,
+) {
+  return useQuery({
+    queryKey: [
+      ...employerAssessmentsKeys.results(assessmentId),
+      "detail",
+      submissionId,
+    ],
+    queryFn: () =>
+      getEmployerAssessmentResultDetail(assessmentId, submissionId as string),
+    enabled: !!assessmentId && !!submissionId,
   });
 }
 
@@ -69,8 +105,78 @@ export function useDeactivateEmployerAssessment() {
   });
 }
 
+export function useEmployerAssessmentsOverview() {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.overview(),
+    queryFn: () => getEmployerAssessmentsOverview(),
+  });
+}
+
 export function useInviteToAssessment() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: InviteToAssessmentInput) => inviteToAssessment(input),
+    // Inviting spends from the employer's allowance.
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: employerBillingKeys.all }),
+  });
+}
+
+export function useLibraryAssessments(params: {
+  roleTrack?: string;
+  experienceLevel?: string;
+}) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.library(params),
+    queryFn: () => getLibraryAssessments(params),
+    enabled: !!params.roleTrack,
+  });
+}
+
+export function useLibraryAssessment(id: string | null) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.libraryEntry(id ?? ""),
+    queryFn: () => getLibraryAssessment(id as string),
+    enabled: !!id,
+  });
+}
+
+export function useDraftAssessmentQuestions() {
+  return useMutation({
+    mutationFn: (input: DraftAssessmentQuestionsInput) =>
+      draftAssessmentQuestions(input),
+  });
+}
+
+export function useImportAssessmentQuestions() {
+  return useMutation({
+    mutationFn: (file: File) => importAssessmentQuestions(file),
+  });
+}
+
+export function useSearchAssessmentTalent(q: string, track?: string) {
+  return useQuery({
+    queryKey: [...employerAssessmentsKeys.all, "talent-search", q, track ?? ""],
+    queryFn: () => searchAssessmentTalent(q, track),
+    staleTime: 30_000,
+  });
+}
+
+export function useAssessmentShareLink(assessmentId: string, enabled = true) {
+  return useQuery({
+    queryKey: employerAssessmentsKeys.shareLink(assessmentId),
+    queryFn: () => getAssessmentShareLink(assessmentId),
+    enabled: enabled && Boolean(assessmentId),
+  });
+}
+
+export function useRegenerateAccessCode(assessmentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => regenerateAssessmentAccessCode(assessmentId),
+    onSuccess: () =>
+      qc.invalidateQueries({
+        queryKey: employerAssessmentsKeys.shareLink(assessmentId),
+      }),
   });
 }

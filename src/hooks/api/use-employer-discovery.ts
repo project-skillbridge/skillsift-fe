@@ -5,9 +5,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   discoverCandidates,
   getDiscoveryCandidateProfile,
+  getHiringBrief,
   getSavedCandidates,
   removeCandidate,
   saveCandidate,
+  unlockCandidate,
 } from "@/actions/employer-discovery";
 import { toDiscoveryCandidatesParams } from "@/lib/employer-discovery-params";
 import type {
@@ -17,7 +19,7 @@ import type {
 } from "@/types/api/employer-discovery";
 import type { TalentFilters } from "@/types/employer-talents";
 
-import { employerDiscoveryKeys } from "./keys";
+import { employerBillingKeys, employerDiscoveryKeys } from "./keys";
 
 export function useDiscoveryCandidates(
   filters: TalentFilters,
@@ -41,6 +43,17 @@ export function useDiscoveryCandidateProfile(
     queryKey: employerDiscoveryKeys.profile(userId),
     queryFn: () => getDiscoveryCandidateProfile(userId),
     enabled: (options?.enabled ?? true) && Boolean(userId),
+  });
+}
+
+/** The brief is written on first request, so poll until the server says ready. */
+export function useHiringBrief(userId: string) {
+  return useQuery({
+    queryKey: employerDiscoveryKeys.hiringBrief(userId),
+    queryFn: () => getHiringBrief(userId),
+    enabled: Boolean(userId),
+    refetchInterval: (query) =>
+      query.state.data?.status === "generating" ? 3000 : false,
   });
 }
 
@@ -69,6 +82,18 @@ export function useSaveCandidate() {
       void qc.invalidateQueries({
         queryKey: employerDiscoveryKeys.profiles(),
       });
+    },
+  });
+}
+
+/** Spend an unlock on a candidate; refreshes everything that shows their details. */
+export function useUnlockCandidate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => unlockCandidate(userId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: employerDiscoveryKeys.all });
+      void qc.invalidateQueries({ queryKey: employerBillingKeys.all });
     },
   });
 }

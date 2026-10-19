@@ -20,6 +20,7 @@ import {
   useSaveTalentOnboardingProfile,
 } from "@/hooks/api/use-talent-onboarding";
 
+import { uploadTalentResume } from "@/actions/settings";
 import { useUploadAvatar } from "@/hooks/api/use-avatar";
 import { useSessionUserProfile } from "@/hooks/use-session-user-profile";
 import { authFailureMessage } from "@/lib/api";
@@ -64,6 +65,8 @@ function OnboardingPageClient() {
 
   const [profileStepReady, setProfileStepReady] = React.useState(false);
   const [profileImage, setProfileImage] = React.useState<File | null>(null);
+  const [resumeFile, setResumeFile] = React.useState<File | null>(null);
+  const [portfolioUrl, setPortfolioUrl] = React.useState("");
 
   React.useEffect(() => {
     if (!userId || ownerUserId === userId) return;
@@ -152,14 +155,17 @@ function OnboardingPageClient() {
       }
 
       if (currentStepId === "complete-profile" && profileStepReady) {
-        const avatarResult = profileImage
-          ? ((await uploadAvatar(profileImage)) as { avatarUrl: string })
-          : null;
+        if (!profileImage || !resumeFile || !portfolioUrl) return;
+        const avatarResult = (await uploadAvatar(profileImage)) as {
+          avatarUrl: string;
+        };
+        await uploadTalentResume(resumeFile);
         await saveProfile({
           region: profileRegion,
           educationLevel: profileEducation,
           ...(profileLinkedin ? { linkedinUrl: profileLinkedin } : {}),
-          ...(avatarResult ? { avatarUrl: avatarResult.avatarUrl } : {}),
+          avatarUrl: avatarResult.avatarUrl,
+          portfolioUrl,
         });
         if (!profileSaved) setProfileSaved(true);
         const updatedUser = await getMe();
@@ -215,6 +221,8 @@ function OnboardingPageClient() {
           onReadyChange={setProfileStepReady}
           onValueChange={onProfileValueChange}
           onImageChange={setProfileImage}
+          onResumeChange={setResumeFile}
+          onPortfolioChange={setPortfolioUrl}
         />
       );
       break;

@@ -8,6 +8,8 @@ export type EmployerRoleItem = {
   requirements: string;
   isFull: boolean;
   createdAt: string;
+  track: string | null;
+  level: string | null;
 };
 
 import { z } from "zod";
@@ -22,6 +24,8 @@ export type RawEmployerRole = {
   employer_user_id: string;
   title: string;
   category: string;
+  track?: string | null;
+  level?: string | null;
   description: string | null;
   jd_file_url: string | null;
   employment_type: string | null;
@@ -63,6 +67,10 @@ export type CatalogueResponse = {
 /** Shape passed to the createRole action from the wizard. */
 export type CreateRoleInput = {
   title: string;
+  /** Backend track slug, e.g. `frontend_developer`. Required by the API. */
+  track: string;
+  /** Target level (`junior` | `mid` | `senior` | `expert`). */
+  level?: string;
   category: string;
   jdHtml: string;
   jdFile: File | null;

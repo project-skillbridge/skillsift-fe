@@ -1,12 +1,12 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import { notFound } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployerRole } from "@/hooks/api";
 import { useDiscoveryCandidateProfile } from "@/hooks/api/use-employer-discovery";
-import { appToast } from "@/lib/toast";
 
 import { ConfirmSendOfferDialog } from "./edit-role-wizard/confirm-send-offer-dialog";
 import {
@@ -136,7 +136,12 @@ export function EmployerEditRolePage({
   }
 
   function handleViewAssessment() {
-    appToast.success("Viewing assessments is coming soon.");
+    if (!selectedAssessmentId) return;
+    window.open(
+      `/e/assessments/${encodeURIComponent(selectedAssessmentId)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   return (
@@ -184,7 +189,7 @@ export function EmployerEditRolePage({
               roleDetails={roleDetails}
               selectedAssessmentId={selectedAssessmentId}
               salaryRangeLabel={salaryRangeLabel}
-              educationLabel={loadedRole.education ?? undefined}
+              educationLabel={educationLabel(loadedRole.education) || undefined}
               onViewAssessment={handleViewAssessment}
             />
           )}

@@ -45,6 +45,8 @@ export const employerDiscoveryKeys = {
   profiles: () => [...employerDiscoveryKeys.all, "profile"] as const,
   profile: (userId: string) =>
     [...employerDiscoveryKeys.profiles(), userId] as const,
+  hiringBrief: (userId: string) =>
+    [...employerDiscoveryKeys.all, "hiring-brief", userId] as const,
   savedLists: () => [...employerDiscoveryKeys.all, "saved"] as const,
   savedList: (params?: { page?: number; limit?: number }) =>
     [...employerDiscoveryKeys.savedLists(), params ?? {}] as const,
@@ -136,9 +138,21 @@ export const employerAssessmentsKeys = {
   detail: (id: string) => [...employerAssessmentsKeys.details(), id] as const,
   results: (id: string) =>
     [...employerAssessmentsKeys.all, "results", id] as const,
+  overview: () => [...employerAssessmentsKeys.all, "overview"] as const,
+  shareLink: (id: string) =>
+    [...employerAssessmentsKeys.all, "share-link", id] as const,
+  library: (params: { roleTrack?: string; experienceLevel?: string }) =>
+    [...employerAssessmentsKeys.all, "library", params] as const,
+  libraryEntry: (id: string) =>
+    [...employerAssessmentsKeys.all, "library", "entry", id] as const,
 };
 
 export const certificateKeys = {
   all: ["certificates"] as const,
   mine: () => [...certificateKeys.all, "mine"] as const,
+};
+
+export const employerBillingKeys = {
+  all: ["employer-billing"] as const,
+  summary: () => [...employerBillingKeys.all, "summary"] as const,
 };

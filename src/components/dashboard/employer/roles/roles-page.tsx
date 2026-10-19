@@ -9,6 +9,7 @@ import { CreateRoleDialog } from "@/components/dashboard/employer/roles/create-r
 import { EmptyRolesState } from "@/components/dashboard/employer/roles/empty-roles-state";
 import { FilledRolesState } from "@/components/dashboard/employer/roles/filled-roles-state";
 import { useEmployerRoles } from "@/hooks/api";
+import { buildCreateRoleUrl } from "@/lib/create-role-url";
 import type { CreateRoleValues } from "@/types/api/employer-roles";
 
 function RolesPageSkeleton() {
@@ -27,12 +28,7 @@ export function EmployerRolesPage() {
   const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
 
   const handleDialogContinue = (values: CreateRoleValues) => {
-    const params = new URLSearchParams({
-      title: values.roleTitle.trim(),
-      category: values.category,
-      companyUrl: values.companyUrl.trim(),
-    });
-    router.push(`/e/roles/create?${params.toString()}`);
+    router.push(buildCreateRoleUrl(values));
   };
 
   return (

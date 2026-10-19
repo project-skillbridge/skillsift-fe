@@ -20,9 +20,11 @@ type TalentCardProps = {
 };
 
 const shortlistButtonBase = cn(
-  "shrink-0 rounded-lg border-[0.5px] border-[#D9D9D9] bg-[#EBEBEB]",
-  "text-[#151515] disabled:cursor-not-allowed disabled:opacity-60",
+  "shrink-0 rounded-lg border border-[#D0D5DD] bg-white transition-colors",
+  "text-[#0D2025] hover:bg-[#F2F4F7] disabled:cursor-not-allowed",
 );
+const shortlistedStyle =
+  "border-[#A7F3D0] bg-[#ECFDF5] text-[#065F46] hover:bg-[#ECFDF5]";
 
 export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
   const { mutate: saveCandidate, isPending: isSaving } = useSaveCandidate();
@@ -52,7 +54,7 @@ export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
   );
 
   return (
-    <div className="box-border w-full rounded-2xl border border-[#DBDBDB] bg-white p-4">
+    <div className="box-border w-full rounded-2xl border border-[#E4E7EC] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,40,0.08)]">
       <div className="flex items-start justify-between gap-2 sm:gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <ScoreBadge
@@ -80,7 +82,7 @@ export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
             <p
               className={cn(
                 "truncate font-bold leading-normal text-[#151515]",
-                isGrid ? "text-lg" : "text-lg sm:text-2xl",
+                isGrid ? "text-lg" : "text-lg sm:text-xl",
               )}
             >
               {candidate.fullName}
@@ -105,6 +107,7 @@ export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
             aria-label={candidate.isSaved ? "Shortlisted" : "Add to shortlist"}
             className={cn(
               shortlistButtonBase,
+              candidate.isSaved && shortlistedStyle,
               "flex size-8 items-center justify-center",
             )}
           >
@@ -121,6 +124,7 @@ export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
               }
               className={cn(
                 shortlistButtonBase,
+                candidate.isSaved && shortlistedStyle,
                 "flex size-8 items-center justify-center sm:hidden",
               )}
             >
@@ -135,21 +139,26 @@ export function TalentCard({ candidate, view = "list" }: TalentCardProps) {
               }
               className={cn(
                 shortlistButtonBase,
-                "hidden items-center gap-1 px-2 py-1.5 text-xs font-normal sm:flex",
+                candidate.isSaved && shortlistedStyle,
+                "hidden items-center gap-1.5 px-3 py-2 text-sm font-medium sm:flex",
               )}
             >
-              {candidate.isSaved ? "Shortlisted" : "Add to Shortlist"}
-              <PlusCircle className="size-4" aria-hidden />
+              {candidate.isSaved ? "Shortlisted" : "Add to shortlist"}
+              {candidate.isSaved ? (
+                <Check className="size-4" aria-hidden />
+              ) : (
+                <PlusCircle className="size-4" aria-hidden />
+              )}
             </button>
           </>
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2 sm:mt-6">
+      <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
         {tags.map((tag) => (
           <span
             key={tag}
-            className="box-border rounded-xl border-[0.5px] border-[#D9D9D9] bg-white px-3 py-1.5 text-sm font-normal text-[#151515] sm:px-6 sm:py-2 sm:text-base"
+            className="box-border rounded-full bg-[#F2F4F7] px-3 py-1.5 text-xs font-medium text-[#344054] sm:px-4 sm:text-sm"
           >
             {tag}
           </span>

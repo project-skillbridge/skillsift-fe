@@ -1,88 +1,340 @@
 "use client";
 
-import Image from "next/image";
+import { Download, FileUp, Plus, Trash2 } from "lucide-react";
+import { useRef } from "react";
 
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  ASSESSMENT_QUESTION_ICON,
-  ASSESSMENT_QUESTION_OPTIONS,
-  type AssessmentQuestionOptionId,
-} from "@/constants/create-assessment-wizard";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { MIN_COMPANY_QUESTIONS } from "@/constants/employer-assessments";
+import { useImportAssessmentQuestions } from "@/hooks/api/use-employer-assessments";
+import {
+  createDraftQuestion,
+  fromImportedQuestion,
+  isDraftQuestionValid,
+  MAX_MC_OPTIONS,
+  optionsForType,
+  QUESTION_TYPE_OPTIONS,
+  type DraftQuestion,
+  type DraftQuestionType,
+} from "@/lib/employer-assessment-questions";
+import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import { AssessmentAiDraftPanel } from "./assessment-ai-draft-panel";
+
 type CreateAssessmentQuestionsStepProps = {
-  selectedQuestionIds: AssessmentQuestionOptionId[];
-  onSelectionChange: (ids: AssessmentQuestionOptionId[]) => void;
+  level: "junior" | "mid" | "senior";
+  questions: DraftQuestion[];
+  onQuestionsChange: (questions: DraftQuestion[]) => void;
 };
 
-export function CreateAssessmentQuestionsStep({
-  selectedQuestionIds,
-  onSelectionChange,
-}: CreateAssessmentQuestionsStepProps) {
-  const toggleQuestion = (
-    questionId: AssessmentQuestionOptionId,
-    checked: boolean,
-  ) => {
-    if (checked) {
-      onSelectionChange([...selectedQuestionIds, questionId]);
-      return;
-    }
+function QuestionCard({
+  index,
+  question,
+  onChange,
+  onRemove,
+}: {
+  index: number;
+  question: DraftQuestion;
+  onChange: (next: DraftQuestion) => void;
+  onRemove: () => void;
+}) {
+  const isChoice = question.questionType === "multiple_choice";
 
-    onSelectionChange(selectedQuestionIds.filter((id) => id !== questionId));
+  const changeType = (type: DraftQuestionType) =>
+    onChange({
+      ...question,
+      questionType: type,
+      options: optionsForType(type),
+      correctAnswer: type === "true_false" ? "True" : "",
+    });
+
+  const setOption = (optionIndex: number, value: string) => {
+    const wasCorrect = question.options[optionIndex] === question.correctAnswer;
+    const options = question.options.map((o, i) =>
+      i === optionIndex ? value : o,
+    );
+    onChange({
+      ...question,
+      options,
+      correctAnswer: wasCorrect ? value : question.correctAnswer,
+    });
+  };
+
+  const removeOption = (optionIndex: number) => {
+    const removed = question.options[optionIndex];
+    onChange({
+      ...question,
+      options: question.options.filter((_, i) => i !== optionIndex),
+      correctAnswer:
+        removed === question.correctAnswer ? "" : question.correctAnswer,
+    });
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {ASSESSMENT_QUESTION_OPTIONS.map((option) => {
-        const isSelected = selectedQuestionIds.includes(option.id);
-
-        return (
-          <div
-            key={option.id}
-            className={cn(
-              "flex items-start gap-4 rounded-xl border bg-white p-4 transition-colors",
-              isSelected ? "border-[#34A853]" : "border-[#E5E7EB]",
-            )}
+    <div className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+      {question.aiDrafted ? (
+        <div className="mb-3 flex items-center justify-between gap-2 rounded-md bg-[#FFF7E6] px-3 py-2 text-xs text-[#8A5A00]">
+          <span>AI draft. Check the question and the marked answer.</span>
+          <button
+            type="button"
+            onClick={() => onChange({ ...question, aiDrafted: false })}
+            className="font-semibold underline underline-offset-2"
           >
-            <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-[#153140]">
-              <Image
-                src={ASSESSMENT_QUESTION_ICON}
-                alt=""
-                width={40}
-                height={40}
-                aria-hidden
-                className="size-10 object-contain"
-              />
-            </div>
+            Looks right
+          </button>
+        </div>
+      ) : null}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="font-sans text-sm font-semibold text-[#101828]">
+          Question {index + 1}
+        </p>
+        <div className="flex items-center gap-2">
+          <Select
+            value={question.questionType}
+            onValueChange={(v) => changeType(v as DraftQuestionType)}
+          >
+            <SelectTrigger className="h-8 w-40 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {QUESTION_TYPE_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-8 text-[#667085]"
+            aria-label={`Remove question ${index + 1}`}
+            onClick={onRemove}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      </div>
 
-            <div className="min-w-0 flex-1">
-              <p className="font-sans text-sm font-semibold text-[#101828]">
-                {option.title}
-              </p>
-              <p className="mt-1 font-sans text-sm leading-5 text-[#667085]">
-                {option.description}
-              </p>
-              <p className="mt-2 font-sans text-xs text-[#667085]">
-                Estimated time: {option.estimatedTime}
-              </p>
-              {option.recommended ? (
-                <p className="mt-1 font-sans text-xs font-medium text-[#34A853]">
-                  Recommended for this role
-                </p>
+      <Textarea
+        value={question.questionText}
+        onChange={(e) =>
+          onChange({ ...question, questionText: e.target.value })
+        }
+        placeholder="Type the question"
+        className="min-h-16 text-sm"
+      />
+
+      {question.questionType === "short_answer" ? (
+        <div className="mt-3">
+          <label className="text-xs font-medium text-[#344054]">
+            Expected answer
+          </label>
+          <Input
+            value={question.correctAnswer}
+            onChange={(e) =>
+              onChange({ ...question, correctAnswer: e.target.value })
+            }
+            placeholder="The answer a strong candidate would give"
+            className="mt-1 h-9 text-sm"
+          />
+        </div>
+      ) : (
+        <fieldset className="mt-3 flex flex-col gap-2">
+          <legend className="mb-1 text-xs font-medium text-[#344054]">
+            Pick the correct answer
+          </legend>
+          {question.options.map((option, optionIndex) => (
+            <div key={optionIndex} className="flex items-center gap-2">
+              <input
+                type="radio"
+                name={`correct-${question.id}`}
+                aria-label={`Mark option ${optionIndex + 1} as correct`}
+                checked={option !== "" && option === question.correctAnswer}
+                disabled={option.trim() === ""}
+                onChange={() =>
+                  onChange({ ...question, correctAnswer: option })
+                }
+                className="size-4 accent-[#19A878]"
+              />
+              {isChoice ? (
+                <Input
+                  value={option}
+                  onChange={(e) => setOption(optionIndex, e.target.value)}
+                  placeholder={`Option ${optionIndex + 1}`}
+                  className="h-9 flex-1 text-sm"
+                />
+              ) : (
+                <span className="text-sm text-[#101828]">{option}</span>
+              )}
+              {isChoice && question.options.length > 2 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 text-[#667085]"
+                  aria-label={`Remove option ${optionIndex + 1}`}
+                  onClick={() => removeOption(optionIndex)}
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
               ) : null}
             </div>
-
-            <Switch
-              checked={isSelected}
-              onCheckedChange={(checked) =>
-                toggleQuestion(option.id, checked === true)
+          ))}
+          {isChoice && question.options.length < MAX_MC_OPTIONS ? (
+            <button
+              type="button"
+              onClick={() =>
+                onChange({ ...question, options: [...question.options, ""] })
               }
-              aria-label={`Include ${option.title}`}
-              className="mt-1 shrink-0 data-checked:bg-[#111827]"
-            />
-          </div>
-        );
-      })}
+              className="w-fit text-xs font-medium text-[#101828] underline underline-offset-2"
+            >
+              Add option
+            </button>
+          ) : null}
+        </fieldset>
+      )}
+    </div>
+  );
+}
+
+export function CreateAssessmentQuestionsStep({
+  level,
+  questions,
+  onQuestionsChange,
+}: CreateAssessmentQuestionsStepProps) {
+  const fileInput = useRef<HTMLInputElement>(null);
+  const importMutation = useImportAssessmentQuestions();
+
+  const validCount = questions.filter(isDraftQuestionValid).length;
+  const remaining = Math.max(0, MIN_COMPANY_QUESTIONS - validCount);
+  const unreviewed = questions.filter((q) => q.aiDrafted).length;
+
+  const handleFile = (file: File | undefined) => {
+    if (!file) return;
+    importMutation.mutate(file, {
+      onSuccess: (result) => {
+        onQuestionsChange([
+          ...questions.filter(
+            (q) => q.questionText.trim() || q.correctAnswer.trim(),
+          ),
+          ...result.questions.map(fromImportedQuestion),
+        ]);
+        appToast.success(`Imported ${result.questionCount} questions.`);
+      },
+      onError: (err: unknown) =>
+        appToast.error(
+          err instanceof Error
+            ? err.message
+            : "We couldn't read that file. Use the template and try again.",
+        ),
+    });
+    if (fileInput.current) fileInput.current.value = "";
+  };
+
+  const withoutBlanks = () =>
+    questions.filter((q) => q.questionText.trim() || q.correctAnswer.trim());
+
+  return (
+    <div className="flex flex-col gap-4">
+      <AssessmentAiDraftPanel
+        level={level}
+        onDrafted={(drafted) =>
+          onQuestionsChange([...withoutBlanks(), ...drafted])
+        }
+      />
+      <div className="flex flex-col gap-3 rounded-xl border border-dashed border-[#D0D5DD] bg-[#FAFAFA] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-sans text-sm font-semibold text-[#101828]">
+            Have a spreadsheet?
+          </p>
+          <p className="font-sans text-xs text-[#667085]">
+            Download the template, fill it in, and upload it (CSV or XLSX).
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="h-9 gap-1.5">
+            <a href="/backend/employer/assessments/template.csv" download>
+              <Download className="size-4" /> CSV template
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="h-9 gap-1.5">
+            <a href="/backend/employer/assessments/template.xlsx" download>
+              <Download className="size-4" /> XLSX template
+            </a>
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 gap-1.5 bg-[#111827] text-white"
+            disabled={importMutation.isPending}
+            onClick={() => fileInput.current?.click()}
+          >
+            <FileUp className="size-4" />
+            {importMutation.isPending ? "Reading..." : "Upload file"}
+          </Button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".csv,.xlsx"
+            className="hidden"
+            onChange={(e) => handleFile(e.target.files?.[0])}
+          />
+        </div>
+      </div>
+
+      {questions.map((question, index) => (
+        <QuestionCard
+          key={question.id}
+          index={index}
+          question={question}
+          onChange={(next) =>
+            onQuestionsChange(
+              questions.map((q) => (q.id === question.id ? next : q)),
+            )
+          }
+          onRemove={() =>
+            onQuestionsChange(questions.filter((q) => q.id !== question.id))
+          }
+        />
+      ))}
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-9 gap-1.5"
+          onClick={() =>
+            onQuestionsChange([...questions, createDraftQuestion()])
+          }
+        >
+          <Plus className="size-4" /> Add question
+        </Button>
+        <p
+          className={cn(
+            "font-sans text-xs",
+            remaining === 0 && unreviewed === 0
+              ? "text-[#19A878]"
+              : "text-[#667085]",
+          )}
+        >
+          {unreviewed > 0
+            ? `${unreviewed} AI ${unreviewed === 1 ? "draft needs" : "drafts need"} a check before you continue`
+            : remaining === 0
+              ? `${validCount} questions ready`
+              : `${validCount} ready · ${remaining} more needed`}
+        </p>
+      </div>
     </div>
   );
 }

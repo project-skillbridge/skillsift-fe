@@ -21,7 +21,7 @@ function ActivityCard({ item }: { item: EmployerRecentActivityItem }) {
   return (
     <Link
       href={meta.route}
-      className="flex items-center gap-6 rounded-[10px] border border-[#D9D9D9] bg-white px-4 py-4 transition-colors hover:bg-[#FAFAFA]"
+      className="flex items-center gap-6 rounded-xl px-3 py-3.5 transition-colors hover:bg-[#F9FAFB]"
     >
       <div className="flex flex-1 items-center gap-4">
         <div
@@ -31,17 +31,17 @@ function ActivityCard({ item }: { item: EmployerRecentActivityItem }) {
           <Image src={meta.icon} alt="" width={17} height={17} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <p className="font-sans text-base font-medium leading-[150%] text-[#151515]">
+          <p className="font-sans text-sm font-semibold text-[#0D2025]">
             {item.title}
           </p>
           {item.description ? (
-            <p className="font-sans text-sm font-normal leading-[150%] text-[#757575]">
+            <p className="font-sans text-xs text-[#667085]">
               {item.description}
             </p>
           ) : null}
         </div>
       </div>
-      <span className="shrink-0 font-sans text-base font-normal leading-[150%] text-[#757575]">
+      <span className="shrink-0 font-sans text-xs text-[#667085]">
         {formatRelativeTime(item.occurredAt)}
       </span>
     </Link>
@@ -52,20 +52,20 @@ export function EmployerRecentActivity({ items }: EmployerRecentActivityProps) {
   if (items.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-6 rounded-2xl bg-[#F2F2F2] p-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-[#E4E7EC] bg-white p-5">
       <div className="flex items-center justify-between">
-        <h2 className="font-sans text-xl font-semibold leading-[150%] text-[#151515]">
+        <h2 className="font-sans text-lg font-semibold text-[#0D2025]">
           Recent activity
         </h2>
         <Link
           href="/e/notifications"
-          className="flex items-center gap-0.5 font-sans text-base font-semibold leading-[150%] tracking-[0.016em] text-[#05060F] underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-[#475467] hover:text-[#0D2025]"
         >
           See all
           <ArrowRight className="size-4" />
         </Link>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col divide-y divide-[#EEF0F3]">
         {items.map((item) => (
           <ActivityCard key={item.id} item={item} />
         ))}

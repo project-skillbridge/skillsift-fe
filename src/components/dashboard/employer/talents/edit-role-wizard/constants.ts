@@ -19,7 +19,7 @@ export const EDIT_ROLE_STEP_META = [
     description: "Choose the assessment you would like your talent to take",
   },
   {
-    title: "Review and send offer",
+    title: "Review and send invite",
     description: "Take a last look at your information before sending.",
   },
 ];

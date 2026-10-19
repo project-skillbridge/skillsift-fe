@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ROLE_CATEGORY_OPTIONS } from "@/constants/employer-roles";
+import { EMPLOYER_ROLE_TRACKS } from "@/constants/employer-onboarding";
+import { ROLE_LEVEL_OPTIONS } from "@/constants/employer-roles";
 import type { CreateRoleValues } from "@/types/api/employer-roles";
 
 type CreateRoleDialogFieldsProps = {
@@ -48,7 +49,6 @@ export function CreateRoleDialogFields({
           disabled={profilePrefilled}
           className="h-10 rounded-lg border-[#D0D5DD] bg-white text-sm placeholder:text-[#98A2B3] disabled:cursor-not-allowed disabled:opacity-60"
         />
-        <p className="text-[11px] text-[#98A2B3]">Placeholder for more info</p>
       </div>
 
       <div className="space-y-1.5">
@@ -70,26 +70,52 @@ export function CreateRoleDialogFields({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[#344054]">Category</label>
+        <label className="text-xs font-medium text-[#344054]">Role track</label>
         <Controller
-          name="category"
+          name="track"
           control={control}
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger className="h-10 w-full rounded-lg border-[#D0D5DD] bg-white text-sm text-[#101828] data-placeholder:text-[#98A2B3]">
-                <SelectValue placeholder="Select..." />
+                <SelectValue placeholder="Select the closest track" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl">
-                {ROLE_CATEGORY_OPTIONS.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+                {EMPLOYER_ROLE_TRACKS.map((track) => (
+                  <SelectItem key={track.id} value={track.id}>
+                    {track.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           )}
         />
-        <p className="text-[11px] text-[#98A2B3]">Placeholder for more info</p>
+        <p className="text-[11px] text-[#98A2B3]">
+          We match this role to verified talent on the same track.
+        </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-[#344054]">
+          Experience level
+        </label>
+        <Controller
+          name="level"
+          control={control}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger className="h-10 w-full rounded-lg border-[#D0D5DD] bg-white text-sm text-[#101828] data-placeholder:text-[#98A2B3]">
+                <SelectValue placeholder="Select a level" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl">
+                {ROLE_LEVEL_OPTIONS.map((level) => (
+                  <SelectItem key={level.value} value={level.value}>
+                    {level.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
 
       <div className="space-y-1.5">
@@ -106,7 +132,6 @@ export function CreateRoleDialogFields({
           disabled={profilePrefilled}
           className="h-10 rounded-lg border-[#D0D5DD] bg-white text-sm placeholder:text-[#98A2B3] disabled:cursor-not-allowed disabled:opacity-60"
         />
-        <p className="text-[11px] text-[#98A2B3]">Placeholder for more info</p>
       </div>
 
       <div className="flex items-center justify-between">

@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 
-import { CreateAssessmentPage } from "@/components/dashboard/employer/assessments/create-assessment-page";
+import { EmployerAssessmentDetailPage } from "@/components/dashboard/employer/assessments/employer-assessment-detail-page";
 
 export const metadata: Metadata = {
-  title: "Create Assessment",
+  title: "Assessment",
 };
 
-export default function Page() {
-  return <CreateAssessmentPage />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <EmployerAssessmentDetailPage assessmentId={id} />;
 }

@@ -39,7 +39,7 @@ export function usePatchAndSendOffer({
           }.`,
         );
       } else {
-        appToast.success("Offer sent successfully.");
+        appToast.success("Interview invite sent successfully.");
       }
       router.push("/e/shortlist");
     } catch (error) {

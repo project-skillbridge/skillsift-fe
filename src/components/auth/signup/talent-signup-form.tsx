@@ -20,6 +20,7 @@ import { authKeys } from "@/hooks/api/keys";
 import { authFailureMessage } from "@/lib/api";
 import { signInWithGoogle } from "@/lib/auth-client";
 import { prepareGoogleAuth } from "@/lib/google-auth";
+import { takeSignupEmail } from "@/lib/signup-prefill";
 import { useSignupFlowStore } from "@/stores/signup-flow-store";
 import {
   signupFormSchema,
@@ -38,6 +39,7 @@ function TalentSignupForm() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
@@ -49,6 +51,12 @@ function TalentSignupForm() {
       confirmPassword: "",
     },
   });
+
+  // Link takers arrive from an assessment with their email already known.
+  useEffect(() => {
+    const email = takeSignupEmail();
+    if (email) setValue("email", email);
+  }, [setValue]);
 
   const passwordValue = useWatch({ control, name: "password" }) ?? "";
   const confirmPasswordValue =

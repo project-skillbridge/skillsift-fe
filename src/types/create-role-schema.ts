@@ -6,7 +6,8 @@ export const createRoleDialogSchema = z.object({
     .string()
     .min(1, "Role title is required")
     .refine((val) => !/\d/.test(val), "Role title cannot contain numbers"),
-  category: z.string().min(1, "Category is required"),
+  track: z.string().min(1, "Role track is required"),
+  level: z.string().min(1, "Experience level is required"),
   companyUrl: z.string(),
   showOnExploreJobs: z.boolean(),
   applicantCap: z

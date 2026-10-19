@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import { FlaskConical } from "lucide-react";
 
 import {
@@ -72,7 +73,7 @@ export function StepPreview({
           <PreviewField label="Employment type" value={employmentType} />
           <PreviewField label="Work arrangement" value={workArrangement} />
           <PreviewField label="Salary range" value={salaryDisplay} />
-          <PreviewField label="Education" value={education} />
+          <PreviewField label="Education" value={educationLabel(education)} />
           {keywords && keywords.length > 0 && (
             <PreviewField
               label="Keywords"

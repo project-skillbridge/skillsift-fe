@@ -1,5 +1,6 @@
 "use client";
 
+import { educationLabel } from "@/constants/employer-roles";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { ChevronLeft, Package } from "lucide-react";
@@ -108,7 +109,7 @@ export function EmployerRoleDetailPage({
               <span className="text-2xl font-semibold">
                 {role.offers_sent_count}
               </span>{" "}
-              <span className="text-[#667085]">offers sent</span>
+              <span className="text-[#667085]">invites sent</span>
             </p>
             {role.applicant_cap !== null && (
               <p className="text-sm font-medium text-[#101828]">
@@ -138,7 +139,10 @@ export function EmployerRoleDetailPage({
             />
           ) : null}
           {role.education ? (
-            <DetailField label="Education" value={role.education} />
+            <DetailField
+              label="Education"
+              value={educationLabel(role.education)}
+            />
           ) : null}
           {compensation ? (
             <DetailField label="Salary range" value={compensation} />
@@ -190,7 +194,7 @@ export function EmployerRoleDetailPage({
             <Link href={`/e/roles/${role.id}/candidates`}>View Candidates</Link>
           </Button>
           <Button asChild variant="secondary" className="h-10 rounded-lg">
-            <Link href="/e/shortlist">View offers sent</Link>
+            <Link href="/e/shortlist">View invites sent</Link>
           </Button>
         </div>
       </div>

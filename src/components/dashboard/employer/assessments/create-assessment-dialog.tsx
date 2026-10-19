@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DEFAULT_ASSESSMENT_PASS_RATE } from "@/constants/employer-assessments";
+import { levelLabel, trackLabel } from "@/constants/employer-roles";
 import {
   createAssessmentDialogSchema,
   type CreateAssessmentValues,
@@ -38,15 +39,17 @@ export function CreateAssessmentDialog({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    setValue,
+    formState: { errors, isValid, dirtyFields },
   } = useForm<CreateAssessmentValues>({
     resolver: zodResolver(createAssessmentDialogSchema),
     mode: "onChange",
     defaultValues: {
       title: "",
-      category: "",
+      roleTrack: "",
+      experienceLevel: "mid",
+      timeLimitMinutes: "30",
       passRate: DEFAULT_ASSESSMENT_PASS_RATE,
-      deadline: undefined,
       type: "internal",
     },
   });
@@ -54,17 +57,24 @@ export function CreateAssessmentDialog({
   const passRate =
     useWatch({ control, name: "passRate" }) ?? DEFAULT_ASSESSMENT_PASS_RATE;
 
+  const roleTrack = useWatch({ control, name: "roleTrack" });
+  const experienceLevel = useWatch({ control, name: "experienceLevel" });
+  const titleEdited = !!dirtyFields.title;
+
+  // Suggest a title until the employer types their own.
+  useEffect(() => {
+    if (!roleTrack || titleEdited) return;
+    const suggested = `${trackLabel(roleTrack)} ${levelLabel(experienceLevel)} screening`;
+    setValue("title", suggested, { shouldValidate: true });
+  }, [roleTrack, experienceLevel, titleEdited, setValue]);
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) reset();
     onOpenChange(nextOpen);
   };
 
   const onSubmit = (values: CreateAssessmentValues) => {
-    if (onContinue) {
-      onContinue(values);
-    } else {
-      toast("Assessment creation is coming soon.");
-    }
+    onContinue?.(values);
     reset();
     onOpenChange(false);
   };
@@ -77,7 +87,7 @@ export function CreateAssessmentDialog({
             Create assessment
           </DialogTitle>
           <DialogDescription className="text-xs leading-5 text-[#667085]">
-            Personalize your roles and offers sent to talents
+            Set it up in a minute, then add your questions.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,8 +96,7 @@ export function CreateAssessmentDialog({
           control={control}
           passRate={passRate}
           titleError={errors.title?.message}
-          categoryError={errors.category?.message}
-          deadlineError={errors.deadline?.message}
+          trackError={errors.roleTrack?.message}
         />
 
         <DialogFooter className="grid grid-cols-2 gap-3 sm:grid-cols-2">

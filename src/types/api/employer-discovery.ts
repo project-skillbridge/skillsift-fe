@@ -36,6 +36,8 @@ export type EmployerDiscoveryCandidate = {
   isSaved: boolean;
   offerSent: boolean;
   offerStatus: string | null;
+  /** False until the employer spends an unlock (name, photo and links stay hidden). */
+  isUnlocked: boolean;
   averageHireRating: number | null;
   hireRatingCount: number;
   wouldHireAgainRate: number | null;
@@ -74,12 +76,28 @@ export type EmployerSavedCandidatesListParams = {
   limit?: number;
 };
 
+/** The employer's latest invite to this talent. */
+export type CandidatePipeline = {
+  offerId: string;
+  roleTitle: string;
+  status: "pending" | "accepted" | "declined" | "expired" | "withdrawn";
+  hired: boolean;
+  interviewLink: string | null;
+  sentAt: string;
+};
+
 export type EmployerDiscoveryCandidateProfile = VerifiedProfileResponseData & {
+  pipeline: CandidatePipeline | null;
   userId: string;
   email: string | null;
   isSaved: boolean;
   offerSent: boolean;
   offerStatus: "pending" | "accepted" | null;
+  isUnlocked: boolean;
+  roleTrack: string | null;
+  validatedLevel: string | null;
+  portfolioUrl: string | null;
+  linkedinUrl: string | null;
   averageHireRating: number | null;
   hireRatingCount: number;
   wouldHireAgainRate: number | null;
@@ -115,6 +133,7 @@ export type RawEmployerDiscoveryCandidate = {
   is_saved: boolean;
   offer_sent: boolean;
   offer_status: "pending" | "accepted" | null;
+  is_unlocked?: boolean;
   average_hire_rating?: number | null;
   hire_rating_count?: number;
   would_hire_again_rate?: number | null;
@@ -143,7 +162,65 @@ export type RawEmployerDiscoveryCandidateProfile =
     is_saved: boolean;
     offer_sent: boolean;
     offer_status: "pending" | "accepted" | null;
+    pipeline?: {
+      offer_id: string;
+      role_title: string;
+      status: CandidatePipeline["status"];
+      hired: boolean;
+      interview_link: string | null;
+      sent_at: string;
+    } | null;
+    is_unlocked?: boolean;
+    role_track?: string | null;
+    validated_level?: string | null;
+    portfolio_url?: string | null;
+    linkedin_url?: string | null;
     average_hire_rating?: number | null;
     hire_rating_count?: number;
     would_hire_again_rate?: number | null;
   };
+
+export type HiringBriefSource = "skills" | "job_ready" | "open_ended";
+
+export type EmployerHiringBrief = {
+  headline: string;
+  hire_case: string;
+  strengths: { title: string; evidence: string; source: HiringBriefSource }[];
+  gaps: {
+    title: string;
+    evidence: string;
+    source: HiringBriefSource;
+    severity: "minor" | "moderate" | "significant";
+  }[];
+  open_ended: {
+    topic: string;
+    quality: "strong" | "solid" | "basic" | "weak";
+    takeaway: string;
+  }[];
+  interview_questions: string[];
+  confidence: "high" | "medium" | "low";
+  confidence_note: string;
+};
+
+export type EmployerHiringBriefStats = {
+  skill_percentage: number | null;
+  job_ready_percentage: number | null;
+  job_ready_tier: string | null;
+  competencies: {
+    assessment: "skill" | "job_ready";
+    name: string;
+    score: number;
+    questions: number;
+  }[];
+  open_answers_reviewed: number;
+  questions_missed: number;
+};
+
+/** GET /employer/discovery/candidates/:userId/hiring-brief */
+export type EmployerHiringBriefResponse =
+  | {
+      status: "ready";
+      brief: EmployerHiringBrief;
+      stats: EmployerHiringBriefStats;
+    }
+  | { status: "generating" | "unavailable" | "no_assessment" };

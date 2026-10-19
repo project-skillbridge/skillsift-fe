@@ -7,7 +7,7 @@ import { SHORTLIST_HERO } from "@/constants/employer-shortlist";
 export function ShortlistHeroBanner() {
   return (
     <section
-      className="relative flex items-center justify-between gap-6 overflow-hidden rounded-2xl bg-[#0E1116] px-6 py-6 text-white sm:px-8 sm:py-8"
+      className="relative flex items-center justify-between gap-6 overflow-hidden rounded-2xl bg-[#dfe4e2] px-6 py-6 text-[#0d2025] sm:px-8 sm:py-8"
       aria-label="Promotion"
     >
       <div className="flex max-w-xl flex-col gap-4">
@@ -15,13 +15,13 @@ export function ShortlistHeroBanner() {
           <h2 className="font-sans text-xl font-semibold leading-tight sm:text-2xl">
             {SHORTLIST_HERO.title}
           </h2>
-          <p className="font-sans text-sm leading-6 text-white/80 sm:text-base">
+          <p className="font-sans text-sm leading-6 text-[#0d2025]/70 sm:text-base">
             {SHORTLIST_HERO.description}
           </p>
         </div>
         <Button
           asChild
-          className="h-10 w-fit rounded-md bg-white px-4 text-sm font-semibold text-[#0E1116] hover:bg-white/90"
+          className="h-10 w-fit rounded-md bg-[#0d2025] px-4 text-sm font-semibold text-white hover:bg-[#0d2025]/90"
         >
           <Link href={SHORTLIST_HERO.ctaHref}>{SHORTLIST_HERO.ctaLabel}</Link>
         </Button>
