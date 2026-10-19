@@ -24,6 +24,7 @@ import { useEmployerBillingSummary } from "@/hooks/api/use-employer-billing";
 import { formatRelativeTime } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
 
+import { HiringFunnel } from "./hiring-funnel";
 import { IntegrityBadge } from "../assessments/results/results-shared";
 import { ProgressRing } from "../shared/progress-ring";
 import { StatTile } from "../shared/stat-tile";
@@ -247,6 +248,8 @@ export function EmployerCommandCenter({
           </>
         )}
       </section>
+
+      <HiringFunnel />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <section className="flex flex-col gap-4 rounded-2xl border border-[#E4E7EC] bg-white p-5 lg:col-span-3">
