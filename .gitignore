@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local AI-agent notes and plans, never committed
+AGENTS.md
+CLAUDE.md
+PILOT-PLAN.md
+.claude/
